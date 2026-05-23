@@ -1,0 +1,10 @@
+node_modules
+.nuxt
+.output
+.sanity
+dist
+.env
+.env.*
+!.env.example
+*.log
+.eslintcache

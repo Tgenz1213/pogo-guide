@@ -1,0 +1,4 @@
+nodeVersion: "24"
+packages:
+  - "web"
+  - "studio"
