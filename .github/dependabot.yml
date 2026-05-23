@@ -11,3 +11,13 @@ updates:
           - "@nuxt*"
           - "@vue*"
           - "vue*"
+      tooling-dependencies:
+        patterns:
+          - "eslint*"
+          - "@eslint*"
+          - "typescript-eslint*"
+          - "@typescript-eslint*"
+          - "prettier*"
+          - "knip*"
+          - "husky"
+          - "lint-staged"
