@@ -1,3 +1,6 @@
+allowBuilds:
+  '@parcel/watcher': false
+  esbuild: false
 nodeVersion: "24.16.0"
 packages:
   - "web"
