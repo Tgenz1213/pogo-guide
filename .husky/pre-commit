@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "=== Running pre-commit hooks ==="
+C:/Users/Tim/AppData/Local/pnpm/bin/pnpm lint-staged

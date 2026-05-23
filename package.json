@@ -2,11 +2,22 @@
   "name": "pogo-guide-monorepo",
   "private": true,
   "engines": {
-    "node": ">=24.0.0",
-    "pnpm": ">=11.0.0"
+    "node": ">=24.16.0",
+    "pnpm": ">=11.2.2"
   },
   "devDependencies": {
     "husky": "^9.1.7",
     "lint-staged": "^17.0.5"
+  },
+  "scripts": {
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts,vue,mjs}": [
+      "eslint --fix"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
   }
 }
