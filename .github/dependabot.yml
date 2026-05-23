@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      nuxt-dependencies:
+        patterns:
+          - "nuxt*"
+          - "@nuxt*"
+          - "@vue*"
+          - "vue*"
