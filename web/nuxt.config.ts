@@ -9,7 +9,11 @@ export default defineNuxtConfig({
     "@nuxtjs/sanity",
     "@nuxtjs/turnstile",
     "@nuxt/a11y",
+    "@nuxtjs/color-mode",
   ],
+  colorMode: {
+    classSuffix: "",
+  },
   turnstile: {
     siteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || "",
   },
