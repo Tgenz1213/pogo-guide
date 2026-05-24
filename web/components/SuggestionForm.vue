@@ -6,6 +6,7 @@ import { FetchError } from "ofetch";
 const route = useRoute();
 const content = ref("");
 const websiteAddress = ref("");
+const turnstileToken = ref("");
 const isSubmitting = ref(false);
 const successMessage = ref("");
 const errorMessage = ref("");
@@ -27,6 +28,7 @@ const submitSuggestion = async () => {
         guidePath: route.path,
         content: content.value,
         websiteAddress: websiteAddress.value,
+        turnstileToken: turnstileToken.value,
       },
     });
 
@@ -86,6 +88,10 @@ const submitSuggestion = async () => {
         />
       </div>
 
+      <div class="mt-2">
+        <NuxtTurnstile v-model="turnstileToken" />
+      </div>
+
       <div class="flex items-center justify-between">
         <div class="text-sm">
           <span v-if="errorMessage" class="text-red-400">{{
@@ -100,7 +106,7 @@ const submitSuggestion = async () => {
         </div>
         <button
           type="submit"
-          :disabled="isSubmitting || content.length < 10"
+          :disabled="isSubmitting || content.length < 10 || !turnstileToken"
           class="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors"
         >
           {{ isSubmitting ? "Submitting..." : "Submit" }}

@@ -7,8 +7,12 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@nuxt/image",
     "@nuxtjs/sanity",
+    "@nuxtjs/turnstile",
     "@nuxt/a11y",
   ],
+  turnstile: {
+    siteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || "",
+  },
   css: ["~~/assets/css/tailwind.css"],
   nitro: {
     preset: "cloudflare-pages",
@@ -20,6 +24,9 @@ export default defineNuxtConfig({
     format: ["avif", "webp"],
   },
   runtimeConfig: {
+    turnstile: {
+      secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
+    },
     sanityWriteToken: process.env.SANITY_WRITE_TOKEN || "",
     public: {
       testMode: process.env.TEST_MODE || "",
