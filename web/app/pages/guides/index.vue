@@ -2,25 +2,25 @@
 // guides/index.vue
 const guideCategories = [
   {
-    title: "Event Prep",
-    tag: "Event",
-    desc: "Checklists and breakdown guides for upcoming Community Days or GO Fests.",
-    color: "text-instinct-yellow",
-    border: "border-instinct-yellow/30",
+    title: "Getting Started",
+    tag: "Basics",
+    desc: "Learn basic app navigation, menus, settings, and UI walkthroughs.",
+    color: "text-mystic-blue",
+    border: "border-mystic-blue/30",
   },
   {
-    title: "Raid Strategies",
-    tag: "PvE",
-    desc: "Deep-dives on specific bosses, highlighting optimal attacker party layouts.",
+    title: "Gameplay Mechanics",
+    tag: "Mechanics",
+    desc: "How to tell if a Pokémon is good, IVs, levels, and catching techniques.",
     color: "text-valor-red",
     border: "border-valor-red/30",
   },
   {
-    title: "PvP Fundamentals",
-    tag: "PvP",
-    desc: "Articles explaining core mechanics like optimal move timing and team building.",
-    color: "text-mystic-blue",
-    border: "border-mystic-blue/30",
+    title: "Wayfarer & World",
+    tag: "Wayfarer",
+    desc: "How to submit a good PokéStop, S2 cells, and gym creation rules.",
+    color: "text-instinct-yellow",
+    border: "border-instinct-yellow/30",
   },
 ];
 </script>
@@ -34,8 +34,8 @@ const guideCategories = [
         Guides
       </h1>
       <p class="text-brand-accent text-lg max-w-2xl">
-        Deep-dive articles, event prep, and strategies to help you master
-        Pokémon GO mechanics.
+        Foundational how-tos and mechanic deep-dives to help you master Pokémon
+        GO.
       </p>
     </div>
 
