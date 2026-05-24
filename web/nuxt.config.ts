@@ -34,6 +34,7 @@ export default defineNuxtConfig({
     sanityWriteToken: process.env.SANITY_WRITE_TOKEN || "",
     public: {
       testMode: process.env.TEST_MODE || "",
+      e2eMode: process.env.NUXT_PUBLIC_E2E_MODE === "true",
     },
   },
   sanity: {
@@ -44,5 +45,10 @@ export default defineNuxtConfig({
   },
   typescript: {
     typeCheck: true,
+  },
+  app: {
+    head: {
+      link: [{ rel: "icon", type: "image/svg", href: "/favicon.svg" }],
+    },
   },
 });
