@@ -40,15 +40,15 @@ packages:
   - "studio"
 ```
 
-Create `package.json` at the root (enforcing Node 26 and PNPM 11 constraints):
+Create `package.json` at the root (enforcing Node 22 and PNPM 9 constraints):
 
 ```json
 {
   "name": "pogo-guide-monorepo",
   "private": true,
   "engines": {
-    "node": ">=26.0.0",
-    "pnpm": ">=11.0.0"
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
   },
   "devDependencies": {
     "husky": "^9.1.7",
@@ -142,8 +142,8 @@ Update root `package.json` to configure `lint-staged`:
   "name": "pogo-guide-monorepo",
   "private": true,
   "engines": {
-    "node": ">=26.0.0",
-    "pnpm": ">=11.0.0"
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
   },
   "scripts": {
     "prepare": "husky"
@@ -386,7 +386,7 @@ Expected: `False`, `False`
 Run the command above.
 
 **Step 3: Write minimal implementation**
-Create `.github/workflows/ci.yml` (configured for Node 26 and PNPM 11):
+Create `.github/workflows/ci.yml` (configured for Node 22 and PNPM 9):
 
 ```yaml
 name: CI Pipeline
@@ -406,12 +406,12 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
         with:
-          version: 11
+          version: 9
 
       - name: Use Node.js
         uses: actions/setup-node@670825a89dc0abd596e7a3abd0f5e3f6e5faf37c # v6.4.0
         with:
-          node-version: 24
+          node-version: 22
           cache: "pnpm"
 
       - name: Install dependencies

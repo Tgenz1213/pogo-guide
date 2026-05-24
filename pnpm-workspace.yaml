@@ -4,7 +4,7 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
-nodeVersion: "24.16.0"
+nodeVersion: "22.16.0"
 packages:
   - "web"
   - "studio"

@@ -22,8 +22,8 @@ Content-driven Pokemon GO guide platform built with a Nuxt web app and a Sanity 
 
 ## Prerequisites
 
-- Node.js >= 24.16.0
-- pnpm >= 11.2.2
+- Node.js >= 22.0.0
+- pnpm >= 9.0.0
 
 ## Getting Started
 

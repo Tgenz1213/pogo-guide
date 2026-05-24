@@ -19,7 +19,7 @@ This project is a monorepo using `pnpm` workspaces. It consists of two main code
 
 To get started with local development:
 
-1.  **Prerequisites**: Ensure you have Node.js (>= 24.16.0) and pnpm (>= 11.2.2) installed.
+1.  **Prerequisites**: Ensure you have Node.js (>= 22.0.0) and pnpm (>= 9.0.0) installed.
 2.  **Install Dependencies**: Run `pnpm install` from the repository root.
 3.  **Run Development Servers**:
     - Web: `pnpm --filter web dev`
