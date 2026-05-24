@@ -8,7 +8,7 @@ const suggestionSchema = z.object({
     .min(10, "Suggestion must be at least 10 characters")
     .max(2000, "Suggestion must not exceed 2000 characters"),
   websiteAddress: z.string().optional(),
-  turnstileToken: z.string(),
+  turnstileToken: z.string().optional().default(""),
 });
 
 export default defineEventHandler(async (event) => {
@@ -34,9 +34,20 @@ export default defineEventHandler(async (event) => {
 
   const runtimeConfig = useRuntimeConfig();
   const isE2eMode = runtimeConfig.public.e2eMode;
+  const shouldVerifyTurnstile =
+    !isE2eMode &&
+    process.env.NODE_ENV === "production" &&
+    Boolean(runtimeConfig.turnstile?.secretKey);
 
   // 2. Turnstile Verification
-  if (!isE2eMode) {
+  if (shouldVerifyTurnstile) {
+    if (!turnstileToken) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Invalid Turnstile token. Please try again.",
+      });
+    }
+
     const turnstileValidation = await verifyTurnstileToken(turnstileToken);
     if (!turnstileValidation.success) {
       throw createError({
