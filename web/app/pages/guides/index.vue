@@ -1,28 +1,27 @@
 <script setup lang="ts">
+import type { CategoriesQueryResult } from "~~/types/sanity";
+
 // guides/index.vue
-const guideCategories = [
-  {
-    title: "Getting Started",
-    tag: "Basics",
-    desc: "Learn basic app navigation, menus, settings, and UI walkthroughs.",
-    color: "text-mystic-blue",
-    border: "border-mystic-blue/30",
-  },
-  {
-    title: "Gameplay Mechanics",
-    tag: "Mechanics",
-    desc: "How to tell if a Pokémon is good, IVs, levels, and catching techniques.",
-    color: "text-valor-red",
-    border: "border-valor-red/30",
-  },
-  {
-    title: "Wayfarer & World",
-    tag: "Wayfarer",
-    desc: "How to submit a good PokéStop, S2 cells, and gym creation rules.",
-    color: "text-instinct-yellow",
-    border: "border-instinct-yellow/30",
-  },
+const categoriesQuery = groq`*[_type == "category"] {
+  _id,
+  title,
+  "slug": slug.current,
+  description
+}`;
+
+const { data } = await useSanityQuery<CategoriesQueryResult>(categoriesQuery);
+const categories = computed(() => data.value || []);
+
+// Dynamic theme mapping based on index to replicate original styling
+const themes = [
+  { color: "text-mystic-blue", border: "border-mystic-blue/30" },
+  { color: "text-valor-red", border: "border-valor-red/30" },
+  { color: "text-instinct-yellow", border: "border-instinct-yellow/30" },
 ];
+
+const getTheme = (index: number) => {
+  return themes[index % themes.length]!;
+};
 </script>
 
 <template>
@@ -41,28 +40,29 @@ const guideCategories = [
 
     <!-- Grid Layout -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <article
-        v-for="(cat, idx) in guideCategories"
-        :key="idx"
-        class="flex flex-col p-6 rounded-3xl bg-white dark:bg-brand-surface/20 border border-slate-200 dark:border-brand-surface hover:bg-white dark:bg-brand-surface/40 transition-all duration-300 cursor-pointer"
-        :class="`hover:${cat.border}`"
+      <NuxtLink
+        v-for="(cat, idx) in categories"
+        :key="cat?._id || idx"
+        :to="`/guides/category/${cat?.slug}`"
+        class="flex flex-col p-6 rounded-3xl bg-white dark:bg-brand-surface/20 border border-slate-200 dark:border-brand-surface hover:bg-white dark:bg-brand-surface/40 transition-all duration-300 cursor-pointer group"
+        :class="`hover:${getTheme(idx).border}`"
       >
         <span
           class="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-slate-50 dark:bg-brand-bg border border-slate-200 dark:border-brand-surface w-max mb-4"
-          :class="cat.color"
+          :class="getTheme(idx).color"
         >
-          {{ cat.tag }}
+          {{ cat?.title || "Untitled" }}
         </span>
         <h2
           class="text-2xl font-bold text-slate-900 dark:text-brand-text mb-3"
-          :class="`group-hover:${cat.color}`"
+          :class="`group-hover:${getTheme(idx).color}`"
         >
-          {{ cat.title }}
+          {{ cat?.title || "Untitled" }}
         </h2>
         <p class="text-slate-500 dark:text-brand-accent leading-relaxed">
-          {{ cat.desc }}
+          {{ cat?.description || "" }}
         </p>
-      </article>
+      </NuxtLink>
     </div>
   </main>
 </template>

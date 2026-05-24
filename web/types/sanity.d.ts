@@ -12,6 +12,9 @@
  * ---------------------------------------------------------------------------------
  */
 
+// Query TypeMap
+import "@sanity/client";
+
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: ../studio/schema.json
@@ -97,6 +100,7 @@ export type Category = {
   _rev: string;
   title?: string;
   slug?: Slug;
+  description?: string;
 };
 
 export type SanityImagePaletteSwatch = {
@@ -230,3 +234,33 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint;
+
+// Source: app/pages/guides/category/[slug].vue
+// Variable: categoryGuidesQuery
+// Query: *[_type == "category" && slug.current == $slug][0] {  _id,  title,  description,  "guides": *[_type == "guide" && references(^._id)] {    _id,    title,    "slug": slug.current  }}
+export type CategoryGuidesQueryResult = {
+  _id: string;
+  title: string | null;
+  description: string | null;
+  guides: Array<{
+    _id: string;
+    title: string | null;
+    slug: string | null;
+  }>;
+} | null;
+
+// Source: app/pages/guides/index.vue
+// Variable: categoriesQuery
+// Query: *[_type == "category"] {  _id,  title,  "slug": slug.current,  description}
+export type CategoriesQueryResult = Array<{
+  _id: string;
+  title: string | null;
+  slug: string | null;
+  description: string | null;
+}>;
+declare module "@sanity/client" {
+  interface SanityQueries {
+    '*[_type == "category" && slug.current == $slug][0] {\n  _id,\n  title,\n  description,\n  "guides": *[_type == "guide" && references(^._id)] {\n    _id,\n    title,\n    "slug": slug.current\n  }\n}': CategoryGuidesQueryResult;
+    '*[_type == "category"] {\n  _id,\n  title,\n  "slug": slug.current,\n  description\n}': CategoriesQueryResult;
+  }
+}
