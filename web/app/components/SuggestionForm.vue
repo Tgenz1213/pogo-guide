@@ -6,6 +6,9 @@ const route = useRoute();
 const isE2eMode = computed(
   () => config.public.e2eMode || route.query.test === "true",
 );
+const hasTurnstileSiteKey = computed(() =>
+  Boolean(config.public.turnstileSiteKey),
+);
 
 const isHydrated = ref(false);
 onMounted(() => {
@@ -26,7 +29,7 @@ const submitSuggestion = async () => {
     return;
   }
 
-  if (!turnstileToken.value && !isE2eMode.value) {
+  if (!turnstileToken.value && !isE2eMode.value && hasTurnstileSiteKey.value) {
     errorMessage.value = "Please complete the security check to continue.";
     return;
   }
@@ -70,10 +73,10 @@ const submitSuggestion = async () => {
   <div
     class="mt-12 bg-slate-50 dark:bg-brand-bg/5 border border-white/10 rounded-xl p-6"
   >
-    <h3 class="text-xl font-bold text-slate-900 dark:text-brand-text mb-2">
+    <h2 class="text-xl font-bold text-slate-900 dark:text-brand-text mb-2">
       Suggest an Edit
-    </h3>
-    <p class="text-sm text-gray-400 mb-4">
+    </h2>
+    <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
       Did we miss something? Found a typo? Let us know below.
     </p>
 
@@ -106,7 +109,7 @@ const submitSuggestion = async () => {
         />
       </div>
 
-      <div class="mt-2">
+      <div v-if="hasTurnstileSiteKey && !isE2eMode" class="mt-2">
         <NuxtTurnstile v-model="turnstileToken" />
       </div>
 
@@ -125,7 +128,7 @@ const submitSuggestion = async () => {
         <button
           type="submit"
           :disabled="!isHydrated || isSubmitting"
-          class="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 dark:text-brand-text text-sm font-semibold rounded-lg transition-colors"
+          class="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors"
         >
           {{ isSubmitting ? "Submitting..." : "Submit" }}
         </button>

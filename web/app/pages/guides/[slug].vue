@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { useSanityQuery } from "#imports";
+import { PortableText } from "@portabletext/vue";
 
 const route = useRoute();
 
@@ -8,6 +9,7 @@ const route = useRoute();
 const { data: guide } = await useSanityQuery<{
   title?: string;
   description?: string;
+  content?: unknown[];
 }>(`*[_type == "guide" && slug.current == $slug][0]`, {
   slug: route.params.slug,
 });
@@ -16,6 +18,7 @@ const pageTitle = guide?.value?.title || "Wayfarer Review Criteria";
 const pageDescription =
   guide?.value?.description ||
   "In-depth guide covering Pokémon GO Wayfarer PokéStop and Gym nomination review criteria, tips, and best practices.";
+const guideContent = computed(() => guide?.value?.content || []);
 
 useSeo(pageTitle, pageDescription);
 </script>
@@ -24,7 +27,7 @@ useSeo(pageTitle, pageDescription);
   <main class="max-w-4xl mx-auto px-6 py-16">
     <NuxtLink
       to="/guides"
-      class="text-sm font-bold text-slate-500 hover:text-mystic-blue transition-colors mb-8 inline-block"
+      class="text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-mystic-blue transition-colors mb-8 inline-block"
     >
       &larr; Back to Guides
     </NuxtLink>
@@ -45,13 +48,9 @@ useSeo(pageTitle, pageDescription);
       Preview Mode Active
     </div>
 
-    <div
-      class="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300"
-    >
-      <p>
-        This is a placeholder for the actual guide content, which will be
-        rendered here dynamically via PortableText.
-      </p>
+    <div class="guide-content max-w-none text-slate-600 dark:text-slate-300">
+      <PortableText v-if="guideContent.length" :value="guideContent as any" />
+      <p v-else>This guide has no published body content yet.</p>
     </div>
 
     <!-- The suggestion form -->
@@ -60,3 +59,56 @@ useSeo(pageTitle, pageDescription);
     </div>
   </main>
 </template>
+
+<style scoped>
+.guide-content :deep(p) {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  line-height: 1.75;
+}
+
+.guide-content :deep(ul) {
+  list-style-type: disc;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.guide-content :deep(ol) {
+  list-style-type: decimal;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.guide-content :deep(li) {
+  margin-top: 0.375rem;
+  margin-bottom: 0.375rem;
+}
+
+.guide-content :deep(h2) {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: rgb(15 23 42);
+}
+
+.dark .guide-content :deep(h2) {
+  color: rgb(248 250 252);
+}
+
+.guide-content :deep(h3) {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: rgb(15 23 42);
+}
+
+.dark .guide-content :deep(h3) {
+  color: rgb(248 250 252);
+}
+</style>

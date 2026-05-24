@@ -28,6 +28,11 @@ export default defineNuxtConfig({
   image: {
     format: ["avif", "webp"],
   },
+  vite: {
+    optimizeDeps: {
+      include: ["@portabletext/vue", "@sanity/client"],
+    },
+  },
   runtimeConfig: {
     turnstile: {
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
@@ -37,6 +42,7 @@ export default defineNuxtConfig({
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://pogo.guide",
       testMode: process.env.TEST_MODE || "",
       e2eMode: process.env.NUXT_PUBLIC_E2E_MODE === "true",
+      turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || "",
     },
   },
   sanity: {
