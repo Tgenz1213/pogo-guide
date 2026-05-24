@@ -53,8 +53,12 @@ const submitSuggestion = async () => {
 </script>
 
 <template>
-  <div class="mt-12 bg-white/5 border border-white/10 rounded-xl p-6">
-    <h3 class="text-xl font-bold text-white mb-2">Suggest an Edit</h3>
+  <div
+    class="mt-12 bg-slate-50 dark:bg-brand-bg/5 border border-white/10 rounded-xl p-6"
+  >
+    <h3 class="text-xl font-bold text-slate-900 dark:text-brand-text mb-2">
+      Suggest an Edit
+    </h3>
     <p class="text-sm text-gray-400 mb-4">
       Did we miss something? Found a typo? Let us know below.
     </p>
@@ -83,7 +87,7 @@ const submitSuggestion = async () => {
           v-model="content"
           rows="3"
           placeholder="I think you should add..."
-          class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 transition-shadow resize-none"
+          class="w-full bg-slate-50 dark:bg-brand-bg/5 border border-white/10 rounded-lg p-3 text-slate-900 dark:text-brand-text placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 transition-shadow resize-none"
           :disabled="isSubmitting"
         />
       </div>
@@ -107,7 +111,7 @@ const submitSuggestion = async () => {
         <button
           type="submit"
           :disabled="isSubmitting || content.length < 10 || !turnstileToken"
-          class="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors"
+          class="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 dark:text-brand-text text-sm font-semibold rounded-lg transition-colors"
         >
           {{ isSubmitting ? "Submitting..." : "Submit" }}
         </button>

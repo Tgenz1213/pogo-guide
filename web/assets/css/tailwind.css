@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 body {
-  @apply bg-brand-bg text-brand-text min-h-screen font-sans;
+  @apply bg-slate-50 dark:bg-brand-bg text-slate-900 dark:text-brand-text min-h-screen font-sans transition-colors duration-300;
 }

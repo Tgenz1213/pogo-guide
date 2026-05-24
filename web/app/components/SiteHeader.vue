@@ -1,24 +1,71 @@
 <script setup lang="ts">
-// SiteHeader component
+import { ref, computed } from "vue";
+
+const isMenuOpen = ref(false);
+const colorMode = useColorMode();
+
+const toggleDarkMode = () => {
+  colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
+};
+
+const isDark = computed(() => colorMode.value === "dark");
 </script>
 
 <template>
   <header
-    class="sticky top-0 z-50 bg-brand-bg border-b border-brand-surface shadow-md"
+    class="sticky top-0 z-50 bg-brand-lightSurface dark:bg-brand-bg shadow-sm shadow-slate-200/50 dark:shadow-none border-b border-brand-lightBorder dark:border-brand-surface"
   >
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <!-- Brand / Logo -->
-      <NuxtLink to="/" class="flex items-center gap-2 group">
-        <span
-          class="text-2xl font-black tracking-tight text-white group-hover:text-mystic-blue transition-colors duration-300"
+      <div class="flex items-center gap-4">
+        <!-- Mobile Menu Toggle -->
+        <button
+          class="md:hidden p-2 rounded-md text-slate-500 dark:text-brand-accent hover:bg-white dark:bg-brand-surface transition-colors focus:outline-none"
+          aria-label="Toggle Menu"
+          @click="isMenuOpen = !isMenuOpen"
         >
-          pogo<span class="text-valor-red">.</span>guide
-        </span>
-      </NuxtLink>
+          <svg
+            v-if="!isMenuOpen"
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+          <svg
+            v-else
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
 
-      <!-- Primary Navigation -->
+        <!-- Brand / Logo -->
+        <NuxtLink to="/" class="flex items-center gap-2 group">
+          <span
+            class="text-2xl font-black tracking-tight text-slate-900 dark:text-brand-text group-hover:text-mystic-blue transition-colors duration-300"
+          >
+            pogo<span class="text-valor-red">.</span>guide
+          </span>
+        </NuxtLink>
+      </div>
+
+      <!-- Primary Navigation (Desktop) -->
       <nav
-        class="hidden md:flex items-center gap-8 text-sm font-bold tracking-wide text-brand-accent"
+        class="hidden md:flex items-center gap-8 text-sm font-bold tracking-wide text-slate-500 dark:text-brand-accent"
       >
         <NuxtLink
           to="/guides"
@@ -38,7 +85,7 @@
       <div class="flex items-center gap-4">
         <div class="relative hidden sm:block">
           <svg
-            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-accent/50"
+            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-brand-accent/50"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -53,28 +100,124 @@
           <input
             type="search"
             placeholder="Search for a Pokémon, Move, or Event..."
-            class="w-72 bg-brand-surface border border-brand-surface/50 rounded-full py-2 pl-10 pr-4 text-xs text-brand-text placeholder-brand-accent/50 focus:outline-none focus:ring-2 focus:ring-mystic-blue transition-all"
+            class="w-72 bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-surface/50 rounded-full py-2 pl-10 pr-4 text-xs text-slate-900 dark:text-brand-text placeholder-brand-accent/50 focus:outline-none focus:ring-2 focus:ring-mystic-blue transition-all"
           />
         </div>
 
-        <!-- Dark/Light Mode Stub -->
+        <!-- Dark/Light Mode (Desktop) -->
         <button
-          class="p-2 rounded-full bg-brand-surface hover:bg-brand-surface/80 text-brand-accent transition-colors"
+          class="hidden md:block p-2 rounded-full bg-white dark:bg-brand-surface hover:bg-white dark:bg-brand-surface/80 text-slate-500 dark:text-brand-accent transition-colors"
           aria-label="Toggle Dark Mode"
+          @click="toggleDarkMode"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-            />
-          </svg>
+          <ClientOnly>
+            <svg
+              v-if="!isDark"
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
+            </svg>
+            <svg
+              v-else
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+            <template #fallback>
+              <div class="w-5 h-5"></div>
+            </template>
+          </ClientOnly>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Dropdown Tray -->
+    <div
+      v-show="isMenuOpen"
+      class="md:hidden bg-slate-50 dark:bg-brand-bg border-t border-slate-200 dark:border-brand-surface px-6 py-4 space-y-4"
+    >
+      <nav
+        class="flex flex-col gap-4 text-sm font-bold tracking-wide text-slate-500 dark:text-brand-accent"
+      >
+        <NuxtLink
+          to="/guides"
+          class="hover:text-mystic-blue transition-colors duration-200 block py-2 border-b border-slate-200 dark:border-brand-surface"
+          @click="isMenuOpen = false"
+        >
+          Guides
+        </NuxtLink>
+        <NuxtLink
+          to="/resources"
+          class="hover:text-instinct-yellow transition-colors duration-200 block py-2 border-b border-slate-200 dark:border-brand-surface"
+          @click="isMenuOpen = false"
+        >
+          Resources
+        </NuxtLink>
+      </nav>
+      <div class="pt-2">
+        <button
+          class="flex items-center gap-3 p-2 w-full rounded-md bg-white dark:bg-brand-surface hover:bg-white dark:bg-brand-surface/80 text-slate-500 dark:text-brand-accent transition-colors"
+          aria-label="Toggle Dark Mode"
+          @click="toggleDarkMode"
+        >
+          <ClientOnly>
+            <div class="flex items-center gap-3">
+              <svg
+                v-if="!isDark"
+                class="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+              <svg
+                v-else
+                class="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+              <span class="text-sm font-bold">{{
+                isDark ? "Light Mode" : "Dark Mode"
+              }}</span>
+            </div>
+
+            <template #fallback>
+              <div class="flex items-center gap-3">
+                <div class="w-5 h-5"></div>
+                <span class="text-sm font-bold">Theme</span>
+              </div>
+            </template>
+          </ClientOnly>
         </button>
       </div>
     </div>

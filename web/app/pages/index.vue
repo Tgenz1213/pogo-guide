@@ -25,17 +25,19 @@ const recentUpdates = [
 <template>
   <main class="w-full">
     <!-- Hero Section -->
-    <section class="max-w-7xl mx-auto px-6 py-16 md:py-24 space-y-10">
+    <section
+      class="max-w-7xl mx-auto px-6 min-h-[calc(100vh-4rem)] flex flex-col justify-center py-16 md:py-24 space-y-10"
+    >
       <div class="max-w-3xl space-y-6">
         <h1
-          class="text-5xl md:text-7xl font-black tracking-tight text-white leading-tight"
+          class="text-5xl md:text-7xl font-black tracking-tight text-slate-900 dark:text-brand-text leading-tight"
         >
           Your Complete Pokémon GO<br />
           <span class="text-mystic-blue">Knowledge Base.</span>
         </h1>
 
         <p
-          class="text-lg md:text-xl text-brand-accent max-w-2xl leading-relaxed font-medium"
+          class="text-lg md:text-xl text-slate-500 dark:text-brand-accent max-w-2xl leading-relaxed font-medium"
         >
           Learn how to evaluate Pokémon, submit PokéStops, and navigate the game
           with our beginner-friendly guides.
@@ -59,21 +61,23 @@ const recentUpdates = [
           <input
             type="search"
             placeholder="Search for a guide or resource..."
-            class="w-full bg-white border-2 border-transparent focus:border-mystic-blue rounded-2xl py-4 pl-14 pr-6 text-brand-bg placeholder-brand-surface font-semibold text-lg shadow-xl focus:outline-none transition-all"
+            class="w-full bg-slate-50 dark:bg-brand-bg border-2 border-transparent focus:border-mystic-blue rounded-2xl py-4 pl-14 pr-6 text-brand-bg placeholder-brand-surface font-semibold text-lg shadow-xl focus:outline-none transition-all"
           />
         </div>
       </div>
     </section>
 
     <!-- Featured Guides Dashboard -->
-    <section class="bg-brand-surface/30 border-y border-brand-surface">
+    <section
+      class="bg-white dark:bg-brand-surface/30 border-y border-slate-200 dark:border-brand-surface"
+    >
       <div class="max-w-7xl mx-auto px-6 py-8">
         <div class="flex items-center gap-2 mb-6">
           <div
             class="w-2 h-2 rounded-full bg-instinct-yellow animate-pulse"
           ></div>
           <h2
-            class="text-sm font-bold uppercase tracking-widest text-brand-accent"
+            class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-brand-accent"
           >
             Featured Guides
           </h2>
@@ -82,7 +86,7 @@ const recentUpdates = [
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Guide 1 -->
           <div
-            class="p-6 rounded-2xl bg-brand-bg border border-brand-surface flex items-start gap-4 shadow-lg group hover:border-mystic-blue transition-colors cursor-pointer"
+            class="p-6 rounded-2xl bg-slate-50 dark:bg-brand-bg border border-slate-200 dark:border-brand-surface flex items-start gap-4 shadow-lg group hover:border-mystic-blue transition-colors cursor-pointer"
           >
             <div
               class="w-12 h-12 rounded-full bg-mystic-blue/20 flex items-center justify-center shrink-0 border border-mystic-blue/30 text-mystic-blue"
@@ -103,16 +107,16 @@ const recentUpdates = [
             </div>
             <div>
               <div
-                class="text-xs font-bold uppercase tracking-wider text-mystic-blue mb-1"
+                class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-mystic-blue mb-1"
               >
                 Getting Started
               </div>
               <h3
-                class="text-lg font-black text-white group-hover:text-mystic-blue transition-colors"
+                class="text-lg font-black text-slate-900 dark:text-brand-text group-hover:text-mystic-blue transition-colors"
               >
                 App Navigation
               </h3>
-              <p class="text-sm text-brand-accent mt-2">
+              <p class="text-sm text-slate-500 dark:text-brand-accent mt-2">
                 Learn the UI basics, menus, and hidden features.
               </p>
             </div>
@@ -120,7 +124,7 @@ const recentUpdates = [
 
           <!-- Guide 2 -->
           <div
-            class="p-6 rounded-2xl bg-brand-bg border border-brand-surface flex items-start gap-4 shadow-lg group hover:border-valor-red transition-colors cursor-pointer"
+            class="p-6 rounded-2xl bg-slate-50 dark:bg-brand-bg border border-slate-200 dark:border-brand-surface flex items-start gap-4 shadow-lg group hover:border-valor-red transition-colors cursor-pointer"
           >
             <div
               class="w-12 h-12 rounded-full bg-valor-red/20 flex items-center justify-center shrink-0 border border-valor-red/30 text-valor-red"
@@ -141,16 +145,16 @@ const recentUpdates = [
             </div>
             <div>
               <div
-                class="text-xs font-bold uppercase tracking-wider text-valor-red mb-1"
+                class="text-xs font-bold uppercase tracking-wider text-red-700 dark:text-valor-red mb-1"
               >
                 Mechanics
               </div>
               <h3
-                class="text-lg font-black text-white group-hover:text-valor-red transition-colors"
+                class="text-lg font-black text-slate-900 dark:text-brand-text group-hover:text-valor-red transition-colors"
               >
                 Evaluating Pokémon
               </h3>
-              <p class="text-sm text-brand-accent mt-2">
+              <p class="text-sm text-slate-500 dark:text-brand-accent mt-2">
                 Understand IVs, levels, and appraisals.
               </p>
             </div>
@@ -158,7 +162,7 @@ const recentUpdates = [
 
           <!-- Guide 3 -->
           <div
-            class="p-6 rounded-2xl bg-brand-bg border border-brand-surface flex items-start gap-4 shadow-lg group hover:border-instinct-yellow transition-colors cursor-pointer"
+            class="p-6 rounded-2xl bg-slate-50 dark:bg-brand-bg border border-slate-200 dark:border-brand-surface flex items-start gap-4 shadow-lg group hover:border-instinct-yellow transition-colors cursor-pointer"
           >
             <div
               class="w-12 h-12 rounded-full bg-instinct-yellow/20 flex items-center justify-center shrink-0 border border-instinct-yellow/30 text-instinct-yellow"
@@ -185,16 +189,16 @@ const recentUpdates = [
             </div>
             <div>
               <div
-                class="text-xs font-bold uppercase tracking-wider text-instinct-yellow mb-1"
+                class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-instinct-yellow mb-1"
               >
                 Wayfarer
               </div>
               <h3
-                class="text-lg font-black text-white group-hover:text-instinct-yellow transition-colors"
+                class="text-lg font-black text-slate-900 dark:text-brand-text group-hover:text-instinct-yellow transition-colors"
               >
                 PokéStop Submissions
               </h3>
-              <p class="text-sm text-brand-accent mt-2">
+              <p class="text-sm text-slate-500 dark:text-brand-accent mt-2">
                 Create great nominations that get approved.
               </p>
             </div>
@@ -205,17 +209,19 @@ const recentUpdates = [
 
     <!-- Recent Updates -->
     <section class="max-w-7xl mx-auto px-6 py-20 space-y-8">
-      <h2 class="text-2xl font-black text-white">Recent Updates</h2>
+      <h2 class="text-2xl font-black text-slate-900 dark:text-brand-text">
+        Recent Updates
+      </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <article
           v-for="(update, idx) in recentUpdates"
           :key="idx"
-          class="group block p-6 rounded-3xl bg-brand-surface/10 border border-brand-surface hover:border-mystic-blue/50 hover:bg-brand-surface/30 transition-all duration-300 cursor-pointer"
+          class="group block p-6 rounded-3xl bg-white dark:bg-brand-surface/10 border border-slate-200 dark:border-brand-surface hover:border-mystic-blue/50 hover:bg-white dark:bg-brand-surface/30 transition-all duration-300 cursor-pointer"
         >
           <div class="flex items-center gap-3 mb-4">
             <span
-              class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-brand-bg border border-brand-surface text-brand-accent group-hover:border-mystic-blue/30 group-hover:text-mystic-blue transition-colors"
+              class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-slate-50 dark:bg-brand-bg border border-slate-200 dark:border-brand-surface text-slate-500 dark:text-brand-accent group-hover:border-mystic-blue/30 group-hover:text-mystic-blue transition-colors"
             >
               {{ update.category }}
             </span>
@@ -225,12 +231,14 @@ const recentUpdates = [
           </div>
 
           <h3
-            class="text-xl font-bold text-white mb-3 group-hover:text-mystic-blue transition-colors"
+            class="text-xl font-bold text-slate-900 dark:text-brand-text mb-3 group-hover:text-mystic-blue transition-colors"
           >
             {{ update.title }}
           </h3>
 
-          <p class="text-sm text-brand-accent leading-relaxed">
+          <p
+            class="text-sm text-slate-500 dark:text-brand-accent leading-relaxed"
+          >
             {{ update.desc }}
           </p>
         </article>

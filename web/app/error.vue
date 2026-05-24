@@ -13,7 +13,7 @@ const handleError = () => clearError({ redirect: "/" });
 
 <template>
   <div
-    class="min-h-screen flex items-center justify-center bg-brand-bg px-4 selection:bg-brand-accent selection:text-brand-bg font-sans"
+    class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-brand-bg px-4 selection:bg-brand-accent selection:text-brand-bg font-sans"
   >
     <!-- Visual Glow Background -->
     <div
@@ -21,7 +21,7 @@ const handleError = () => clearError({ redirect: "/" });
     ></div>
 
     <div
-      class="relative w-full max-w-lg p-8 md:p-12 rounded-3xl bg-brand-surface/40 border border-slate-700/60 backdrop-blur-xl shadow-2xl overflow-hidden"
+      class="relative w-full max-w-lg p-8 md:p-12 rounded-3xl bg-white dark:bg-brand-surface/40 border border-slate-700/60 backdrop-blur-xl shadow-2xl overflow-hidden"
     >
       <!-- Glow effect -->
       <div
@@ -59,7 +59,7 @@ const handleError = () => clearError({ redirect: "/" });
 
         <div class="pt-4">
           <button
-            class="inline-flex items-center justify-center px-6 py-3 border border-slate-700 hover:border-slate-500 rounded-xl bg-brand-bg text-brand-text font-medium transition-all duration-300 hover:shadow-[0_0_20px_rgba(56,189,248,0.2)] hover:scale-105 active:scale-95 cursor-pointer focus:outline-none"
+            class="inline-flex items-center justify-center px-6 py-3 border border-slate-700 hover:border-slate-500 rounded-xl bg-slate-50 dark:bg-brand-bg text-slate-900 dark:text-brand-text font-medium transition-all duration-300 hover:shadow-[0_0_20px_rgba(56,189,248,0.2)] hover:scale-105 active:scale-95 cursor-pointer focus:outline-none"
             @click="handleError"
           >
             Return to Homepage

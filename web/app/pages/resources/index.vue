@@ -34,11 +34,11 @@ const externalResources = [
   <main class="max-w-7xl mx-auto px-6 py-12 md:py-16">
     <div class="mb-10">
       <h1
-        class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4"
+        class="text-4xl md:text-5xl font-black text-slate-900 dark:text-brand-text tracking-tight mb-4"
       >
         Resources
       </h1>
-      <p class="text-brand-accent text-lg max-w-2xl">
+      <p class="text-slate-500 dark:text-brand-accent text-lg max-w-2xl">
         A curated directory of the best external tools and community resources.
       </p>
     </div>
@@ -53,8 +53,8 @@ const externalResources = [
             class="text-left px-4 py-3 rounded-xl font-semibold transition-all duration-200"
             :class="
               item.active
-                ? 'bg-mystic-blue text-white shadow-md'
-                : 'text-brand-accent hover:bg-brand-surface/50 hover:text-white'
+                ? 'bg-mystic-blue text-slate-900 dark:text-brand-text shadow-md'
+                : 'text-slate-500 dark:text-brand-accent hover:bg-white dark:bg-brand-surface/50 hover:text-slate-900 dark:text-brand-text'
             "
           >
             {{ item.name }}
@@ -70,12 +70,12 @@ const externalResources = [
           :href="resource.url"
           target="_blank"
           rel="noopener noreferrer"
-          class="group block bg-brand-surface/20 border border-brand-surface rounded-2xl p-6 hover:bg-brand-surface/40 hover:border-mystic-blue/50 transition-all duration-300"
+          class="group block bg-white dark:bg-brand-surface/20 border border-slate-200 dark:border-brand-surface rounded-2xl p-6 hover:bg-white dark:bg-brand-surface/40 hover:border-mystic-blue/50 transition-all duration-300"
         >
           <div class="flex items-start justify-between gap-4">
             <div>
               <h2
-                class="text-xl font-bold text-white mb-2 group-hover:text-mystic-blue transition-colors flex items-center gap-2"
+                class="text-xl font-bold text-slate-900 dark:text-brand-text mb-2 group-hover:text-mystic-blue transition-colors flex items-center gap-2"
               >
                 {{ resource.name }}
                 <svg
@@ -92,7 +92,9 @@ const externalResources = [
                   />
                 </svg>
               </h2>
-              <p class="text-brand-accent">{{ resource.desc }}</p>
+              <p class="text-slate-500 dark:text-brand-accent">
+                {{ resource.desc }}
+              </p>
             </div>
           </div>
         </a>

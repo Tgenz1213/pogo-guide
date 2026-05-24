@@ -29,11 +29,11 @@ const guideCategories = [
   <main class="max-w-7xl mx-auto px-6 py-16">
     <div class="mb-12">
       <h1
-        class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4"
+        class="text-4xl md:text-5xl font-black text-slate-900 dark:text-brand-text tracking-tight mb-4"
       >
         Guides
       </h1>
-      <p class="text-brand-accent text-lg max-w-2xl">
+      <p class="text-slate-500 dark:text-brand-accent text-lg max-w-2xl">
         Foundational how-tos and mechanic deep-dives to help you master Pokémon
         GO.
       </p>
@@ -44,22 +44,24 @@ const guideCategories = [
       <article
         v-for="(cat, idx) in guideCategories"
         :key="idx"
-        class="flex flex-col p-6 rounded-3xl bg-brand-surface/20 border border-brand-surface hover:bg-brand-surface/40 transition-all duration-300 cursor-pointer"
+        class="flex flex-col p-6 rounded-3xl bg-white dark:bg-brand-surface/20 border border-slate-200 dark:border-brand-surface hover:bg-white dark:bg-brand-surface/40 transition-all duration-300 cursor-pointer"
         :class="`hover:${cat.border}`"
       >
         <span
-          class="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-brand-bg border border-brand-surface w-max mb-4"
+          class="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-slate-50 dark:bg-brand-bg border border-slate-200 dark:border-brand-surface w-max mb-4"
           :class="cat.color"
         >
           {{ cat.tag }}
         </span>
         <h2
-          class="text-2xl font-bold text-white mb-3"
+          class="text-2xl font-bold text-slate-900 dark:text-brand-text mb-3"
           :class="`group-hover:${cat.color}`"
         >
           {{ cat.title }}
         </h2>
-        <p class="text-brand-accent leading-relaxed">{{ cat.desc }}</p>
+        <p class="text-slate-500 dark:text-brand-accent leading-relaxed">
+          {{ cat.desc }}
+        </p>
       </article>
     </div>
   </main>
