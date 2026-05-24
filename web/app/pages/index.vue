@@ -2,22 +2,22 @@
 // index.vue
 const recentUpdates = [
   {
-    title: "GBL Season 18 Rebalance Analysis",
+    title: "Understanding IVs & PvP Ranks",
     date: "2 days ago",
-    category: "PvP",
-    desc: "Complete breakdown of the new Scald debuffs and its impact on the Great League meta.",
+    category: "Mechanics",
+    desc: "A beginner's guide to how IVs work and why 0/15/15 is often the best spread for Great League.",
   },
   {
-    title: "Shadow Mewtwo Raid Weekend Prep",
+    title: "How to Submit a 5-Star PokéStop",
     date: "5 days ago",
-    category: "Event",
-    desc: "Optimal counters, duo requirements, and breakpoints for the upcoming Shadow Mewtwo raids.",
+    category: "Wayfarer",
+    desc: "Tips on framing your photos, writing good descriptions, and avoiding common rejection reasons.",
   },
   {
-    title: "S2 Cell Update: Showcase Stops",
+    title: "Navigating the Campfire App",
     date: "1 week ago",
-    category: "Map Rules",
-    desc: "New findings on how Niantic selects which PokéStops become Showcase eligible based on Level 13 cells.",
+    category: "Community",
+    desc: "Learn how to find local communities, coordinate raids, and light flares using Campfire.",
   },
 ];
 </script>
@@ -30,15 +30,15 @@ const recentUpdates = [
         <h1
           class="text-5xl md:text-7xl font-black tracking-tight text-white leading-tight"
         >
-          Master the Meta.<br />
-          <span class="text-mystic-blue">Dominate Your Raids.</span>
+          Your Complete Pokémon GO<br />
+          <span class="text-mystic-blue">Knowledge Base.</span>
         </h1>
 
         <p
           class="text-lg md:text-xl text-brand-accent max-w-2xl leading-relaxed font-medium"
         >
-          Accurate frame data, dynamic raid counters, and up-to-date guides for
-          Pokémon GO.
+          Learn how to evaluate Pokémon, submit PokéStops, and navigate the game
+          with our beginner-friendly guides.
         </p>
 
         <!-- Search CTA -->
@@ -58,97 +58,145 @@ const recentUpdates = [
           </svg>
           <input
             type="search"
-            placeholder="Search for a Pokémon, Move, or Event..."
+            placeholder="Search for a guide or resource..."
             class="w-full bg-white border-2 border-transparent focus:border-mystic-blue rounded-2xl py-4 pl-14 pr-6 text-brand-bg placeholder-brand-surface font-semibold text-lg shadow-xl focus:outline-none transition-all"
           />
         </div>
       </div>
     </section>
 
-    <!-- Current State Dashboard -->
+    <!-- Featured Guides Dashboard -->
     <section class="bg-brand-surface/30 border-y border-brand-surface">
       <div class="max-w-7xl mx-auto px-6 py-8">
         <div class="flex items-center gap-2 mb-6">
-          <div class="w-2 h-2 rounded-full bg-valor-red animate-pulse"></div>
+          <div
+            class="w-2 h-2 rounded-full bg-instinct-yellow animate-pulse"
+          ></div>
           <h2
             class="text-sm font-bold uppercase tracking-widest text-brand-accent"
           >
-            Current State
+            Featured Guides
           </h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Raid Boss -->
+          <!-- Guide 1 -->
           <div
-            class="p-6 rounded-2xl bg-brand-bg border border-brand-surface flex items-start gap-4 shadow-lg"
+            class="p-6 rounded-2xl bg-brand-bg border border-brand-surface flex items-start gap-4 shadow-lg group hover:border-mystic-blue transition-colors cursor-pointer"
           >
             <div
-              class="w-12 h-12 rounded-full bg-mystic-blue/20 flex items-center justify-center shrink-0 border border-mystic-blue/30"
+              class="w-12 h-12 rounded-full bg-mystic-blue/20 flex items-center justify-center shrink-0 border border-mystic-blue/30 text-mystic-blue"
             >
-              <span class="text-mystic-blue font-bold text-xl">5★</span>
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                />
+              </svg>
             </div>
             <div>
               <div
                 class="text-xs font-bold uppercase tracking-wider text-mystic-blue mb-1"
               >
-                Legendary Raid
+                Getting Started
               </div>
-              <h3 class="text-lg font-black text-white">Origin Forme Dialga</h3>
-              <NuxtLink
-                to="/guides"
-                class="text-xs text-brand-accent hover:text-white underline mt-2 inline-block"
-                >View Counters →</NuxtLink
+              <h3
+                class="text-lg font-black text-white group-hover:text-mystic-blue transition-colors"
               >
+                App Navigation
+              </h3>
+              <p class="text-sm text-brand-accent mt-2">
+                Learn the UI basics, menus, and hidden features.
+              </p>
             </div>
           </div>
 
-          <!-- Mega Boss -->
+          <!-- Guide 2 -->
           <div
-            class="p-6 rounded-2xl bg-brand-bg border border-brand-surface flex items-start gap-4 shadow-lg"
+            class="p-6 rounded-2xl bg-brand-bg border border-brand-surface flex items-start gap-4 shadow-lg group hover:border-valor-red transition-colors cursor-pointer"
           >
             <div
-              class="w-12 h-12 rounded-full bg-valor-red/20 flex items-center justify-center shrink-0 border border-valor-red/30"
+              class="w-12 h-12 rounded-full bg-valor-red/20 flex items-center justify-center shrink-0 border border-valor-red/30 text-valor-red"
             >
-              <span class="text-valor-red font-bold text-xl">M</span>
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
             </div>
             <div>
               <div
                 class="text-xs font-bold uppercase tracking-wider text-valor-red mb-1"
               >
-                Mega Raid
+                Mechanics
               </div>
-              <h3 class="text-lg font-black text-white">Mega Garchomp</h3>
-              <NuxtLink
-                to="/guides"
-                class="text-xs text-brand-accent hover:text-white underline mt-2 inline-block"
-                >View Counters →</NuxtLink
+              <h3
+                class="text-lg font-black text-white group-hover:text-valor-red transition-colors"
               >
+                Evaluating Pokémon
+              </h3>
+              <p class="text-sm text-brand-accent mt-2">
+                Understand IVs, levels, and appraisals.
+              </p>
             </div>
           </div>
 
-          <!-- GBL League -->
+          <!-- Guide 3 -->
           <div
-            class="p-6 rounded-2xl bg-brand-bg border border-brand-surface flex items-start gap-4 shadow-lg"
+            class="p-6 rounded-2xl bg-brand-bg border border-brand-surface flex items-start gap-4 shadow-lg group hover:border-instinct-yellow transition-colors cursor-pointer"
           >
             <div
-              class="w-12 h-12 rounded-full bg-instinct-yellow/20 flex items-center justify-center shrink-0 border border-instinct-yellow/30"
+              class="w-12 h-12 rounded-full bg-instinct-yellow/20 flex items-center justify-center shrink-0 border border-instinct-yellow/30 text-instinct-yellow"
             >
-              <span class="text-instinct-yellow font-bold text-xl">⚔️</span>
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
             </div>
             <div>
               <div
                 class="text-xs font-bold uppercase tracking-wider text-instinct-yellow mb-1"
               >
-                Active League
+                Wayfarer
               </div>
-              <h3 class="text-lg font-black text-white">
-                Great League & Sunshine Cup
-              </h3>
-              <NuxtLink
-                to="/resources"
-                class="text-xs text-brand-accent hover:text-white underline mt-2 inline-block"
-                >View Frame Data →</NuxtLink
+              <h3
+                class="text-lg font-black text-white group-hover:text-instinct-yellow transition-colors"
               >
+                PokéStop Submissions
+              </h3>
+              <p class="text-sm text-brand-accent mt-2">
+                Create great nominations that get approved.
+              </p>
             </div>
           </div>
         </div>

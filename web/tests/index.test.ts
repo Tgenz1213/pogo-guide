@@ -11,8 +11,8 @@ describe("IndexPage", () => {
         },
       },
     });
-    expect(wrapper.text()).toContain("Master the Meta.");
-    expect(wrapper.text()).toContain("Dominate Your Raids.");
-    expect(wrapper.text()).toContain("Legendary Raid");
+    expect(wrapper.text()).toContain("Your Complete Pokémon GO");
+    expect(wrapper.text()).toContain("Knowledge Base.");
+    expect(wrapper.text()).toContain("Evaluating Pokémon");
   });
 });
