@@ -8,6 +8,7 @@ const suggestionSchema = z.object({
     .min(10, "Suggestion must be at least 10 characters")
     .max(2000, "Suggestion must not exceed 2000 characters"),
   websiteAddress: z.string().optional(),
+  turnstileToken: z.string(),
 });
 
 export default defineEventHandler(async (event) => {
@@ -22,12 +23,22 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { guidePath, content, websiteAddress } = validation.data;
+  const { guidePath, content, websiteAddress, turnstileToken } =
+    validation.data;
 
-  // Honeypot check: If the hidden field is filled, silently reject the bot.
+  // 1. Honeypot check: If the hidden field is filled, silently reject the bot.
   if (websiteAddress && websiteAddress.trim() !== "") {
     console.warn("Honeypot triggered, ignoring request.");
     return { success: true, mocked: true };
+  }
+
+  // 2. Turnstile Verification
+  const turnstileValidation = await verifyTurnstileToken(turnstileToken);
+  if (!turnstileValidation.success) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid Turnstile token. Please try again.",
+    });
   }
 
   const runtimeConfig = useRuntimeConfig();
