@@ -18,6 +18,12 @@ export default defineNuxtConfig({
   image: {
     format: ["avif", "webp"],
   },
+  runtimeConfig: {
+    sanityWriteToken: process.env.SANITY_WRITE_TOKEN || "",
+    public: {
+      testMode: process.env.TEST_MODE || "",
+    },
+  },
   sanity: {
     projectId: "84tfhiiz",
     dataset: "production",

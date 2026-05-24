@@ -12,7 +12,6 @@ const suggestionSchema = z.object({
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
-  // 1. Zod payload validation
   const validation = suggestionSchema.safeParse(body);
   if (!validation.success) {
     throw createError({
@@ -24,16 +23,21 @@ export default defineEventHandler(async (event) => {
 
   const { guidePath, content } = validation.data;
 
-  // 2. Fetch runtime environment variables
   const runtimeConfig = useRuntimeConfig();
-  const writeToken =
-    process.env.SANITY_WRITE_TOKEN || runtimeConfig.sanityWriteToken;
-  const projectId = runtimeConfig.public.sanity?.projectId || "84tfhiiz";
+  const writeToken = runtimeConfig.sanityWriteToken;
+  const projectId = runtimeConfig.public.sanity?.projectId;
   const dataset = runtimeConfig.public.sanity?.dataset || "production";
+
+  if (!projectId) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Sanity Project ID is missing from configuration",
+    });
+  }
 
   // Stub Mode to prevent API limit exhaustion on routine PR pipelines when no write token is provided
   const isMockMode =
-    process.env.TEST_MODE === "mock" ||
+    runtimeConfig.public.testMode === "mock" ||
     (!writeToken && process.env.NODE_ENV !== "production");
   if (isMockMode) {
     return {
@@ -53,7 +57,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // 3. Post to Sanity Mutations API securely from edge worker
   const mutationUrl = `https://${projectId}.api.sanity.io/v2024-03-01/data/mutate/${dataset}`;
 
   const mutationPayload = {
