@@ -61,7 +61,7 @@ const recentUpdates = [
           <input
             type="search"
             placeholder="Search for a guide or resource..."
-            class="w-full bg-slate-50 dark:bg-brand-bg border-2 border-transparent focus:border-mystic-blue rounded-2xl py-4 pl-14 pr-6 text-brand-bg placeholder-brand-surface font-semibold text-lg shadow-xl focus:outline-none transition-all"
+            class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-mystic-blue rounded-2xl py-4 pl-14 pr-6 text-brand-bg placeholder-brand-surface font-semibold text-lg shadow-xl focus:outline-none transition-all"
           />
         </div>
       </div>

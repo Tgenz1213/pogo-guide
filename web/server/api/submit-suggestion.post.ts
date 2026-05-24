@@ -32,16 +32,20 @@ export default defineEventHandler(async (event) => {
     return { success: true, mocked: true };
   }
 
+  const runtimeConfig = useRuntimeConfig();
+  const isE2eMode = runtimeConfig.public.e2eMode;
+
   // 2. Turnstile Verification
-  const turnstileValidation = await verifyTurnstileToken(turnstileToken);
-  if (!turnstileValidation.success) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Invalid Turnstile token. Please try again.",
-    });
+  if (!isE2eMode) {
+    const turnstileValidation = await verifyTurnstileToken(turnstileToken);
+    if (!turnstileValidation.success) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Invalid Turnstile token. Please try again.",
+      });
+    }
   }
 
-  const runtimeConfig = useRuntimeConfig();
   const writeToken = runtimeConfig.sanityWriteToken;
   const projectId = runtimeConfig.public.sanity?.projectId;
   const dataset = runtimeConfig.public.sanity?.dataset || "production";
@@ -54,9 +58,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Stub Mode to prevent API limit exhaustion on routine PR pipelines when no write token is provided
-  const isMockMode =
-    runtimeConfig.public.testMode === "mock" ||
-    (!writeToken && process.env.NODE_ENV !== "production");
+  const isMockMode = !writeToken && process.env.NODE_ENV !== "production";
   if (isMockMode) {
     return {
       success: true,

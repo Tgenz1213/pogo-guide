@@ -1,10 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRoute } from "vue-router";
 import { FetchError } from "ofetch";
 
+const config = useRuntimeConfig();
 const route = useRoute();
+const isE2eMode = computed(
+  () => config.public.e2eMode || route.query.test === "true",
+);
+
+const isHydrated = ref(false);
+onMounted(() => {
+  isHydrated.value = true;
+});
+
 const content = ref("");
+
 const websiteAddress = ref("");
 const turnstileToken = ref("");
 const isSubmitting = ref(false);
@@ -14,6 +23,11 @@ const errorMessage = ref("");
 const submitSuggestion = async () => {
   if (content.value.length < 10) {
     errorMessage.value = "Suggestion must be at least 10 characters long.";
+    return;
+  }
+
+  if (!turnstileToken.value && !isE2eMode.value) {
+    errorMessage.value = "Please complete the security check to continue.";
     return;
   }
 
@@ -110,7 +124,7 @@ const submitSuggestion = async () => {
         </div>
         <button
           type="submit"
-          :disabled="isSubmitting || content.length < 10 || !turnstileToken"
+          :disabled="!isHydrated || isSubmitting"
           class="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 dark:text-brand-text text-sm font-semibold rounded-lg transition-colors"
         >
           {{ isSubmitting ? "Submitting..." : "Submit" }}
