@@ -20,12 +20,18 @@
   "scripts": {
     "prepare": "husky",
     "knip": "knip",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint": "eslint . && pnpm --dir studio lint",
+    "lint:fix": "eslint . --fix && pnpm --dir studio lint:fix"
   },
   "lint-staged": {
-    "*.{js,ts,vue,mjs}": [
+    "*.{js,ts,mjs}": [
+      "eslint --fix --ignore-pattern studio/** --no-warn-ignored"
+    ],
+    "web/**/*.{js,ts,vue,mjs}": [
       "eslint --fix"
+    ],
+    "studio/**/*.{js,ts,mjs}": [
+      "pnpm --dir studio exec eslint --fix"
     ],
     "*.{json,md,css}": [
       "prettier --write"
