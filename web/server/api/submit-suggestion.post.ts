@@ -7,6 +7,7 @@ const suggestionSchema = z.object({
     .string()
     .min(10, "Suggestion must be at least 10 characters")
     .max(2000, "Suggestion must not exceed 2000 characters"),
+  websiteAddress: z.string().optional(),
 });
 
 export default defineEventHandler(async (event) => {
@@ -21,7 +22,13 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { guidePath, content } = validation.data;
+  const { guidePath, content, websiteAddress } = validation.data;
+
+  // Honeypot check: If the hidden field is filled, silently reject the bot.
+  if (websiteAddress && websiteAddress.trim() !== "") {
+    console.warn("Honeypot triggered, ignoring request.");
+    return { success: true, mocked: true };
+  }
 
   const runtimeConfig = useRuntimeConfig();
   const writeToken = runtimeConfig.sanityWriteToken;

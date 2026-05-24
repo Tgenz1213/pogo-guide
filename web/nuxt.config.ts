@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@nuxt/image",
     "@nuxtjs/sanity",
+    "@nuxt/a11y",
   ],
   css: ["~~/assets/css/tailwind.css"],
   nitro: {

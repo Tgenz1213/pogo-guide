@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute } from "vue-router";
+import { FetchError } from "ofetch";
 
 const route = useRoute();
 const content = ref("");
+const websiteAddress = ref("");
 const isSubmitting = ref(false);
 const successMessage = ref("");
 const errorMessage = ref("");
@@ -24,6 +26,7 @@ const submitSuggestion = async () => {
       body: {
         guidePath: route.path,
         content: content.value,
+        websiteAddress: websiteAddress.value,
       },
     });
 
@@ -35,9 +38,12 @@ const submitSuggestion = async () => {
       errorMessage.value = "Failed to submit suggestion. Please try again.";
     }
   } catch (err) {
-    const error = err as { data?: { statusMessage?: string } };
-    errorMessage.value =
-      error.data?.statusMessage || "An unexpected error occurred.";
+    if (err instanceof FetchError) {
+      errorMessage.value =
+        err.data?.statusMessage || "Failed to submit suggestion.";
+    } else {
+      errorMessage.value = "An unexpected error occurred.";
+    }
   } finally {
     isSubmitting.value = false;
   }
@@ -52,8 +58,26 @@ const submitSuggestion = async () => {
     </p>
 
     <form class="space-y-4" @submit.prevent="submitSuggestion">
+      <!-- Honeypot field (hidden from real users but bots will fill it) -->
+      <div class="hidden" aria-hidden="true">
+        <label for="websiteAddress"
+          >Leave this field blank if you are human</label
+        >
+        <input
+          id="websiteAddress"
+          v-model="websiteAddress"
+          type="text"
+          tabindex="-1"
+          autocomplete="off"
+        />
+      </div>
+
       <div>
+        <label for="suggestionContent" class="sr-only"
+          >Suggestion content</label
+        >
         <textarea
+          id="suggestionContent"
           v-model="content"
           rows="3"
           placeholder="I think you should add..."
@@ -70,6 +94,9 @@ const submitSuggestion = async () => {
           <span v-else-if="successMessage" class="text-green-400">{{
             successMessage
           }}</span>
+          <span v-else class="text-gray-400">
+            {{ content.length }} / 10 minimum
+          </span>
         </div>
         <button
           type="submit"
