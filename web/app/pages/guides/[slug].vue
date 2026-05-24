@@ -5,16 +5,19 @@ import { useSanityQuery } from "#imports";
 const route = useRoute();
 
 // Attempt to fetch from Sanity
-const { data: guide } = await useSanityQuery<{ title?: string }>(
-  `*[_type == "guide" && slug.current == $slug][0]`,
-  {
-    slug: route.params.slug,
-  },
-);
-
-useHead({
-  title: guide?.value?.title || "Wayfarer review criteria",
+const { data: guide } = await useSanityQuery<{
+  title?: string;
+  description?: string;
+}>(`*[_type == "guide" && slug.current == $slug][0]`, {
+  slug: route.params.slug,
 });
+
+const pageTitle = guide?.value?.title || "Wayfarer Review Criteria";
+const pageDescription =
+  guide?.value?.description ||
+  "In-depth guide covering Pokémon GO Wayfarer PokéStop and Gym nomination review criteria, tips, and best practices.";
+
+useSeo(pageTitle, pageDescription);
 </script>
 
 <template>
@@ -30,7 +33,7 @@ useHead({
     <h1
       class="text-4xl md:text-5xl font-black text-slate-900 dark:text-brand-text mb-4"
     >
-      {{ guide?.title || "Wayfarer review criteria" }}
+      {{ pageTitle }}
     </h1>
 
     <!-- Preview Banner Mock -->

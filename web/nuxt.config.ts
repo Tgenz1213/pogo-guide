@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "@nuxtjs/turnstile",
     "@nuxt/a11y",
     "@nuxtjs/color-mode",
+    "@sentry/nuxt/module",
   ],
   colorMode: {
     classSuffix: "",
@@ -33,6 +34,7 @@ export default defineNuxtConfig({
     },
     sanityWriteToken: process.env.SANITY_WRITE_TOKEN || "",
     public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://pogo.guide",
       testMode: process.env.TEST_MODE || "",
       e2eMode: process.env.NUXT_PUBLIC_E2E_MODE === "true",
     },
@@ -45,6 +47,11 @@ export default defineNuxtConfig({
   },
   typescript: {
     typeCheck: true,
+  },
+  sentry: {
+    sourceMapsUploadOptions: {
+      enabled: false, // Enable in production CI with SENTRY_AUTH_TOKEN env var
+    },
   },
   app: {
     head: {

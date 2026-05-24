@@ -7,6 +7,12 @@ useHead({
     return titleChunk ? `${titleChunk} - pogo.guide` : "pogo.guide";
   },
 });
+
+// App-wide fallback SEO — overridden per-page by individual useSeo() calls
+useSeo(
+  "pogo.guide",
+  "The ultimate edge-rendered, open-source guide database for Pokémon GO PvE, PvP, inventory management, and Wayfarer review criteria.",
+);
 </script>
 
 <template>
