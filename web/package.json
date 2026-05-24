@@ -13,7 +13,9 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@nuxtjs/robots": "^6.0.8",
     "@nuxtjs/sanity": "^2.3.0",
+    "@nuxtjs/sitemap": "^8.0.15",
     "@nuxtjs/turnstile": "^1.1.3",
     "@portabletext/vue": "^1.0.14",
     "@sentry/nuxt": "^10.53.1",

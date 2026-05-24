@@ -11,6 +11,8 @@ export default defineNuxtConfig({
     "@nuxt/a11y",
     "@nuxtjs/color-mode",
     "@sentry/nuxt/module",
+    "@nuxtjs/sitemap",
+    "@nuxtjs/robots",
   ],
   colorMode: {
     classSuffix: "",
@@ -63,5 +65,8 @@ export default defineNuxtConfig({
     head: {
       link: [{ rel: "icon", type: "image/svg", href: "/favicon.svg" }],
     },
+  },
+  site: {
+    url: process.env.NUXT_PUBLIC_SITE_URL || "https://pogo.guide",
   },
 });
