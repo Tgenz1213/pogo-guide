@@ -8,3 +8,4 @@ dist
 !.env.example
 *.log
 .eslintcache
+.worktrees/
