@@ -1460,6 +1460,124 @@ git add web/nuxt.config.ts web/package.json
 git commit -m "feat: integrate Sentry Nuxt module for Edge error capturing"
 ```
 
+### Task 18: Optimize SEO & Meta Definitions
+
+**Files:**
+*   Create: `web/composables/useSeo.ts`
+*   Modify: `web/app/app.vue`
+*   Modify: `web/nuxt.config.ts`
+
+**Step 1: Write the failing test**
+Verify the useSeo composable does not exist.
+Run:
+```bash
+powershell -Command "Test-Path web/composables/useSeo.ts"
+```
+Expected: `False`
+
+**Step 2: Run test to verify it fails**
+Run the command above.
+
+**Step 3: Write minimal implementation**
+Modify `/web/nuxt.config.ts` to register global static site settings:
+```typescript
+export default defineNuxtConfig({
+  compatibilityDate: "2025-07-15",
+  devtools: { enabled: true },
+  modules: ["@nuxt/eslint"],
+  runtimeConfig: {
+    public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://pogo.guide"
+    }
+  }
+})
+```
+
+Create `/web/composables/useSeo.ts` mapping reactive routes, siteUrl, canonical URLs, and ogImage:
+```typescript
+import { computed } from "vue"
+import { useRoute, useRuntimeConfig, useSeoMeta, useHead } from "#imports"
+
+export const useSeo = (title: string, description: string, image?: string) => {
+  const route = useRoute()
+  const config = useRuntimeConfig()
+  
+  // 1. Dynamic Canonical URL generation ignoring query parameter pollution
+  const canonicalUrl = computed(() => `${config.public.siteUrl}${route.path}`)
+  
+  // 2. Open Graph & Twitter Image fallback logic
+  const ogImage = computed(() => image || `${config.public.siteUrl}/images/social-fallback.png`)
+
+  useSeoMeta({
+    title,
+    description,
+    ogTitle: title,
+    ogDescription: description,
+    ogImage: ogImage.value,
+    twitterImage: ogImage.value,
+    twitterCard: "summary_large_image"
+  })
+
+  useHead({
+    link: [
+      {
+        rel: "canonical",
+        href: canonicalUrl.value
+      }
+    ]
+  })
+}
+```
+
+Modify `/web/app/app.vue` to declare global titleTemplate formatting and initial values:
+```vue
+<script setup lang="ts">
+import { useHead } from "#imports"
+import { useSeo } from "~/composables/useSeo"
+
+// 1. Global Head & Title Suffix configuration
+useHead({
+  titleTemplate: "%s | pogo.guide",
+  htmlAttrs: {
+    lang: "en"
+  }
+})
+
+// 2. App-wide fallback SEO defaults
+useSeo(
+  "Pokemon GO Ultimate Reference Guide", 
+  "The ultimate edge-rendered, open-source guide database for Pokemon GO PvE, PvP, inventory, and Wayfarer review criteria."
+)
+</script>
+
+<template>
+  <NuxtPage />
+</template>
+```
+
+#### Architectural Defense ("Happy Path" Bias Mitigation)
+If a dynamic guide route (e.g. `/guides/[slug]`) experiences network fetch latency, backend failures, or requests a non-existent guide:
+1. **Suspended SSR Rendition:** Nuxt nitro edge worker suspends response delivery during server-side execution of asynchronous setups (`await useAsyncData()` or `await useFetch()`). The crawler receives no html stream until data fetch promises resolve.
+2. **Fatal Error Redirection:** If the fetched guide payload returns `null` or throws, the setup block immediately executes:
+   ```typescript
+   throw createError({ statusCode: 404, statusMessage: "Guide Not Found", fatal: true })
+   ```
+3. **Strict HTTP 404 Response:** Nuxt interrupts standard page compilation, renders `/error.vue`, and returns a hard **`404 Not Found` HTTP status code** to the crawler.
+4. **Index Safeguard:** Google crawlers refuse to index non-2xx response payloads, completely preventing the generic `app.vue` fallback title from contaminating dynamic search indexes.
+
+**Step 4: Run test to verify it passes**
+Run the linter check to verify typescript compilations:
+```bash
+pnpm.cmd run lint
+```
+Expected: PASS
+
+**Step 5: Commit**
+```bash
+git add web/nuxt.config.ts web/composables/useSeo.ts web/app/app.vue
+git commit -m "feat: implement robust SEO useSeo composable and add edge error-catching guidelines"
+```
+
 ---
 
 ## Verification Plan
