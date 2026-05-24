@@ -61,7 +61,7 @@ const recentUpdates = [
           <input
             type="search"
             placeholder="Search for a guide or resource..."
-            class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-mystic-blue rounded-2xl py-4 pl-14 pr-6 text-brand-bg placeholder-brand-surface font-semibold text-lg shadow-xl focus:outline-none transition-all"
+            class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-mystic-blue rounded-2xl py-4 pl-14 pr-6 text-brand-bg dark:text-brand-text placeholder-slate-500 dark:placeholder-brand-accent/80 font-semibold text-lg shadow-xl focus:outline-none transition-all"
           />
         </div>
       </div>
@@ -225,9 +225,10 @@ const recentUpdates = [
             >
               {{ update.category }}
             </span>
-            <span class="text-xs font-semibold text-brand-surface">{{
-              update.date
-            }}</span>
+            <span
+              class="text-xs font-semibold text-slate-600 dark:text-brand-accent"
+              >{{ update.date }}</span
+            >
           </div>
 
           <h3

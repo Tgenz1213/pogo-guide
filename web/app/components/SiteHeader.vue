@@ -69,6 +69,7 @@ const closeMenu = () => {
 
       <!-- Primary Navigation (Desktop) -->
       <nav
+        aria-label="Primary"
         class="hidden md:flex items-center gap-8 text-sm font-bold tracking-wide text-slate-500 dark:text-brand-accent"
       >
         <NuxtLink
@@ -164,6 +165,7 @@ const closeMenu = () => {
         @click.stop
       >
         <nav
+          aria-label="Mobile"
           class="flex flex-col gap-4 text-sm font-bold tracking-wide text-slate-500 dark:text-brand-accent"
         >
           <NuxtLink

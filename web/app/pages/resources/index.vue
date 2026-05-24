@@ -46,14 +46,14 @@ const externalResources = [
     <div class="flex flex-col md:flex-row gap-10">
       <!-- Sidebar Menu -->
       <aside class="w-full md:w-64 shrink-0">
-        <nav class="flex flex-col space-y-2">
+        <nav aria-label="Resource categories" class="flex flex-col space-y-2">
           <button
             v-for="item in sideMenu"
             :key="item.name"
             class="text-left px-4 py-3 rounded-xl font-semibold transition-all duration-200"
             :class="
               item.active
-                ? 'bg-mystic-blue text-slate-900 dark:text-brand-text shadow-md'
+                ? 'bg-mystic-blue text-white dark:text-brand-text shadow-md'
                 : 'text-slate-500 dark:text-brand-accent hover:bg-white dark:bg-brand-surface/50 hover:text-slate-900 dark:text-brand-text'
             "
           >
