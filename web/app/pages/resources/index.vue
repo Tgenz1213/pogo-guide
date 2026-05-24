@@ -1,16 +1,32 @@
 <script setup lang="ts">
 // resources/index.vue
 const sideMenu = [
-  { name: "Fast Move Frame-Data", active: true },
-  { name: "Search String Generator", active: false },
-  { name: "Type Effectiveness Matrix", active: false },
+  { name: "News & Events", active: true },
+  { name: "PvP & Meta", active: false },
+  { name: "Maps & Data", active: false },
 ];
 
-const mockMoves = [
-  { name: "Counter", type: "Fighting", turns: 2, ept: 3.5, dpt: 4.0 },
-  { name: "Shadow Claw", type: "Ghost", turns: 2, ept: 4.0, dpt: 3.0 },
-  { name: "Dragon Breath", type: "Dragon", turns: 1, ept: 3.0, dpt: 4.0 },
-  { name: "Vine Whip", type: "Grass", turns: 2, ept: 4.0, dpt: 2.5 },
+const externalResources = [
+  {
+    name: "LeekDuck",
+    desc: "The gold standard for event infographics, research tasks, and current raid boss lists.",
+    url: "https://leekduck.com",
+  },
+  {
+    name: "Pokémon GO Calendar",
+    desc: "A constantly updated Google Calendar to track all ongoing and upcoming events.",
+    url: "https://pokemongolive.com",
+  },
+  {
+    name: "PvPoke",
+    desc: "The ultimate battle simulator and ranking database for all GO Battle League formats.",
+    url: "https://pvpoke.com",
+  },
+  {
+    name: "Campfire App",
+    desc: "Niantic's official social app to find local raid groups and communicate with players.",
+    url: "https://campfire.nianticlabs.com",
+  },
 ];
 </script>
 
@@ -23,7 +39,7 @@ const mockMoves = [
         Resources
       </h1>
       <p class="text-brand-accent text-lg max-w-2xl">
-        Hard data, calculators, and reference tables for advanced mechanics.
+        A curated directory of the best external tools and community resources.
       </p>
     </div>
 
@@ -46,77 +62,40 @@ const mockMoves = [
         </nav>
       </aside>
 
-      <!-- Main Content Area: Data Table Stub -->
-      <section
-        class="flex-1 bg-brand-surface/20 border border-brand-surface rounded-3xl p-6 md:p-8 overflow-hidden"
-      >
-        <div class="flex items-center justify-between mb-8">
-          <h2 class="text-2xl font-bold text-white">
-            PvP Fast Move Frame-Data
-          </h2>
-          <div class="relative">
-            <input
-              type="text"
-              placeholder="Filter moves..."
-              class="bg-brand-bg border border-brand-surface rounded-full py-1.5 px-4 text-sm text-white placeholder-brand-accent focus:border-mystic-blue focus:outline-none"
-            />
-          </div>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="border-b border-brand-surface">
-                <th
-                  class="py-3 px-4 text-xs font-bold uppercase tracking-wider text-brand-accent"
-                >
-                  Move
-                </th>
-                <th
-                  class="py-3 px-4 text-xs font-bold uppercase tracking-wider text-brand-accent"
-                >
-                  Type
-                </th>
-                <th
-                  class="py-3 px-4 text-xs font-bold uppercase tracking-wider text-brand-accent"
-                >
-                  Turns
-                </th>
-                <th
-                  class="py-3 px-4 text-xs font-bold uppercase tracking-wider text-brand-accent"
-                >
-                  EPT
-                </th>
-                <th
-                  class="py-3 px-4 text-xs font-bold uppercase tracking-wider text-brand-accent"
-                >
-                  DPT
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-brand-surface/50">
-              <tr
-                v-for="move in mockMoves"
-                :key="move.name"
-                class="hover:bg-brand-surface/30 transition-colors"
+      <!-- Main Content Area: Resource Directory -->
+      <section class="flex-1 space-y-6">
+        <a
+          v-for="resource in externalResources"
+          :key="resource.name"
+          :href="resource.url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group block bg-brand-surface/20 border border-brand-surface rounded-2xl p-6 hover:bg-brand-surface/40 hover:border-mystic-blue/50 transition-all duration-300"
+        >
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2
+                class="text-xl font-bold text-white mb-2 group-hover:text-mystic-blue transition-colors flex items-center gap-2"
               >
-                <td class="py-4 px-4 font-bold text-white">{{ move.name }}</td>
-                <td class="py-4 px-4 text-brand-accent">{{ move.type }}</td>
-                <td class="py-4 px-4 text-brand-accent">{{ move.turns }}</td>
-                <td
-                  class="py-4 px-4 text-brand-accent font-semibold text-mystic-blue"
+                {{ resource.name }}
+                <svg
+                  class="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  {{ move.ept }}
-                </td>
-                <td
-                  class="py-4 px-4 text-brand-accent font-semibold text-valor-red"
-                >
-                  {{ move.dpt }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </h2>
+              <p class="text-brand-accent">{{ resource.desc }}</p>
+            </div>
+          </div>
+        </a>
       </section>
     </div>
   </main>
