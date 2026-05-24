@@ -48,7 +48,10 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const turnstileValidation = await verifyTurnstileToken(turnstileToken);
+    const turnstileValidation = await verifyTurnstileToken(
+      turnstileToken,
+      event,
+    );
     if (!turnstileValidation.success) {
       throw createError({
         statusCode: 400,
