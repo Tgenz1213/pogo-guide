@@ -1,28 +1,31 @@
 <script setup lang="ts">
-const modules = [
+type ModuleIcon = "map" | "shield" | "fire";
+
+interface GuideModule {
+  title: string;
+  desc: string;
+  category: string;
+  icon: ModuleIcon;
+}
+
+const modules: GuideModule[] = [
   {
     title: "PokéStop Submission Guide",
     desc: "Understand how S2 cell divisions and the strict 20-meter proximity rule govern PokéStop and Gym eligibility.",
     category: "Map & Spatial Rules",
-    svg: `<svg class="w-6 h-6 text-brand-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8m-9-3.75h.008v.008H6V11.25zm.008 4.5H6v.008h.008V15.75zm0 2.25H6v.008h.008V18zm2.25-4.5h.008v.008H8.25V13.5zm.008 4.5h.008v.008H8.25V18zm2.25-9h.008v.008h-.008V9zm0 2.25h.008v.008h-.008V11.25zm0 2.25h.008v.008h-.008V13.5zm2.25-4.5h.008v.008h-.008V9zm0 2.25h.008v.008h-.008V11.25zm0 2.25h.008v.008h-.008V13.5zm2.25-4.5h.008v.008h-.008V9zm0 2.25h.008v.008h-.008V11.25zm0 2.25h.008v.008h-.008V13.5zm2.25-4.5h.008v.008h-.008V9zm0 2.25h.008v.008h-.008V11.25zm0 2.25h.008v.008h-.008V13.5zm2.25-4.5h.008v.008h-.008V9zm0 2.25h.008v.008h-.008V11.25z" />
-          </svg>`,
+    icon: "map",
   },
   {
     title: "PvP Fast Move Frame-Data",
     desc: "Complete frame charts outlining Fast Move turn counts, Energy-per-Turn (EPT), and Damage-per-Turn (DPT) meta-rankings.",
     category: "GBL Turn Combat",
-    svg: `<svg class="w-6 h-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-          </svg>`,
+    icon: "shield",
   },
   {
     title: "Mega Raid Damage Counters",
     desc: "Optimal attacker party layouts, dynamic DPS counters, damage coefficients, and weather multiplier sheets.",
     category: "Raid Counters",
-    svg: `<svg class="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.64 8.38m7.4 3.42a14.98 14.98 0 00-11.1-9c-1.78-.17-3.21 1.25-3.04 3.03a14.98 14.98 0 009.02 11.12m0 0a14.98 14.98 0 01-3.4 3.4" />
-          </svg>`,
+    icon: "fire",
   },
 ];
 </script>
@@ -209,8 +212,58 @@ const modules = [
           >
             <div
               class="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800/80 flex items-center justify-center mb-6 shadow-inner"
-              :innerHTML="mod.svg"
-            ></div>
+            >
+              <!-- Map icon: PokéStop Submission -->
+              <svg
+                v-if="mod.icon === 'map'"
+                class="w-6 h-6 text-brand-accent"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 6.75V15m6-6v8m-9-3.75h.008v.008H6V11.25zm.008 4.5H6v.008h.008V15.75zm0 2.25H6v.008h.008V18zm2.25-4.5h.008v.008H8.25V13.5zm.008 4.5h.008v.008H8.25V18zm2.25-9h.008v.008h-.008V9zm0 2.25h.008v.008h-.008V11.25zm0 2.25h.008v.008h-.008V13.5zm2.25-4.5h.008v.008h-.008V9zm0 2.25h.008v.008h-.008V11.25zm0 2.25h.008v.008h-.008V13.5zm2.25-4.5h.008v.008h-.008V9zm0 2.25h.008v.008h-.008V11.25zm0 2.25h.008v.008h-.008V13.5zm2.25-4.5h.008v.008h-.008V9zm0 2.25h.008v.008h-.008V11.25zm0 2.25h.008v.008h-.008V13.5zm2.25-4.5h.008v.008h-.008V9zm0 2.25h.008v.008h-.008V11.25z"
+                />
+              </svg>
+
+              <!-- Shield icon: PvP Frame-Data -->
+              <svg
+                v-else-if="mod.icon === 'shield'"
+                class="w-6 h-6 text-amber-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
+                />
+              </svg>
+
+              <!-- Fire icon: Mega Raid Counters -->
+              <svg
+                v-else-if="mod.icon === 'fire'"
+                class="w-6 h-6 text-emerald-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.64 8.38m7.4 3.42a14.98 14.98 0 00-11.1-9c-1.78-.17-3.21 1.25-3.04 3.03a14.98 14.98 0 009.02 11.12m0 0a14.98 14.98 0 01-3.4 3.4"
+                />
+              </svg>
+            </div>
 
             <div
               class="text-[10px] font-bold uppercase tracking-wider text-brand-accent mb-2"
