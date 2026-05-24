@@ -258,9 +258,15 @@ export type CategoriesQueryResult = Array<{
   slug: string | null;
   description: string | null;
 }>;
+
+// Source: app/pages/resources/index.vue
+// Variable: resourcesQuery
+// Query: *[_type == "resource"] {  _id,  name,  description,  url}
+export type ResourcesQueryResult = Array<never>;
 declare module "@sanity/client" {
   interface SanityQueries {
     '*[_type == "category" && slug.current == $slug][0] {\n  _id,\n  title,\n  description,\n  "guides": *[_type == "guide" && references(^._id)] {\n    _id,\n    title,\n    "slug": slug.current\n  }\n}': CategoryGuidesQueryResult;
     '*[_type == "category"] {\n  _id,\n  title,\n  "slug": slug.current,\n  description\n}': CategoriesQueryResult;
+    '*[_type == "resource"] {\n  _id,\n  name,\n  description,\n  url\n}': ResourcesQueryResult;
   }
 }
