@@ -15,7 +15,7 @@ const externalResources = [
   {
     name: "Pokémon GO Calendar",
     desc: "A constantly updated Google Calendar to track all ongoing and upcoming events.",
-    url: "https://pokemongolive.com",
+    url: "https://pogocalendar.com/",
   },
   {
     name: "PvPoke",
