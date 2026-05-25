@@ -1,4 +1,3 @@
-import { defineEventHandler, readBody, createError } from "h3";
 import { z } from "zod";
 import sanitizeHtml from "sanitize-html";
 
