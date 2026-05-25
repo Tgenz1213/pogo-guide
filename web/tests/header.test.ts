@@ -8,6 +8,10 @@ describe("SiteHeader", () => {
       value: "light",
       preference: "light",
     }));
+    vi.stubGlobal("useSanity", () => ({
+      fetch: vi.fn().mockResolvedValue([]),
+    }));
+    vi.stubGlobal("useRouter", () => ({ push: vi.fn() }));
   });
 
   const mountHeader = () =>
