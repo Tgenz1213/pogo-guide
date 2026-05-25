@@ -1,6 +1,6 @@
 {
+  "name": "pogo-guide",
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "web",
   "compatibility_date": "2026-05-25",
   "observability": {
     "enabled": true
