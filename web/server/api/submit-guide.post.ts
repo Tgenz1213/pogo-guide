@@ -1,9 +1,9 @@
-import { defineEventHandler, readBody, createError } from "h3";
+import { defineEventHandler, readBody, HTTPError } from "h3";
 import { z } from "zod";
 import sanitizeHtml from "sanitize-html";
 import { htmlToBlocks } from "@sanity/block-tools";
 import { Schema } from "@sanity/schema";
-import { JSDOM } from "jsdom";
+import { DOMParser } from "linkedom";
 
 // A basic portable text schema so block-tools knows how to parse the HTML
 const defaultSchema = Schema.compile({
@@ -22,9 +22,22 @@ const defaultSchema = Schema.compile({
     },
   ],
 });
-const blockContentType = defaultSchema
-  .get("guideContent")
-  .fields.find((field: { name: string }) => field.name === "content").type;
+const guideContent = defaultSchema.get("guideContent");
+if (!guideContent) {
+  throw new Error("Schema type 'guideContent' not found");
+}
+
+const contentField = guideContent.fields.find(
+  (field: { name: string }) => field.name === "content",
+);
+if (!contentField) {
+  throw new Error("Field 'content' not found in 'guideContent'");
+}
+
+const blockContentType = contentField.type;
+
+const parseHtml = (html: string) =>
+  new DOMParser().parseFromString(html, "text/html") as unknown as Document;
 
 const submitGuideSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -46,7 +59,7 @@ export default defineEventHandler(async (event) => {
 
   const validation = submitGuideSchema.safeParse(body);
   if (!validation.success) {
-    throw createError({
+    throw new HTTPError({
       statusCode: 400,
       statusMessage: "Bad Request",
       data: validation.error.format(),
@@ -67,7 +80,7 @@ export default defineEventHandler(async (event) => {
 
   // Validate category requirement based on sanity schema rules
   if (!categoryId && (!suggestedCategory || suggestedCategory.trim() === "")) {
-    throw createError({
+    throw new HTTPError({
       statusCode: 400,
       statusMessage:
         "Either an existing category or a suggested category must be provided.",
@@ -90,7 +103,7 @@ export default defineEventHandler(async (event) => {
   // 2. Turnstile Verification
   if (shouldVerifyTurnstile) {
     if (!turnstileToken) {
-      throw createError({
+      throw new HTTPError({
         statusCode: 400,
         statusMessage: "Invalid Turnstile token. Please try again.",
       });
@@ -101,7 +114,7 @@ export default defineEventHandler(async (event) => {
       event,
     );
     if (!turnstileValidation.success) {
-      throw createError({
+      throw new HTTPError({
         statusCode: 400,
         statusMessage: "Invalid Turnstile token. Please try again.",
       });
@@ -121,7 +134,7 @@ export default defineEventHandler(async (event) => {
 
   // 5. HTML to Portable Text Conversion
   const blocks = htmlToBlocks(cleanHtml, blockContentType, {
-    parseHtml: (html) => new JSDOM(html).window.document,
+    parseHtml,
   });
 
   // 6. Save to Sanity
@@ -130,7 +143,7 @@ export default defineEventHandler(async (event) => {
   const dataset = runtimeConfig.public.sanity?.dataset || "production";
 
   if (!projectId) {
-    throw createError({
+    throw new HTTPError({
       statusCode: 500,
       statusMessage: "Sanity Project ID is missing from configuration",
     });
@@ -149,7 +162,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (!writeToken) {
-    throw createError({
+    throw new HTTPError({
       statusCode: 502,
       statusMessage: "Sanity Write Token is not configured",
     });
@@ -225,7 +238,7 @@ export default defineEventHandler(async (event) => {
   } catch (error) {
     const err = error as Record<string, unknown>;
     console.error("Sanity Mutation Error:", err.data || err.message || error);
-    throw createError({
+    throw new HTTPError({
       statusCode: 500,
       statusMessage: "Failed to submit guide to database",
     });
