@@ -3,14 +3,18 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "compatibility_date": "2026-05-25",
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "main": "./.output/server/index.mjs",
   "assets": {
     "binding": "ASSETS",
-    "directory": "./.output/public/"
+    "directory": "./.output/public/",
   },
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [
+    {
+      "binding": "POGO_RATE_LIMIT",
+      "id": "b354aaa883f848af8ac07ceb7d74acb4",
+    },
+  ],
 }
