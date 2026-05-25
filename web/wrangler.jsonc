@@ -17,4 +17,7 @@
       "id": "b354aaa883f848af8ac07ceb7d74acb4",
     },
   ],
+  "vars": {
+    "NUXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAADVbfcTmxy5OfQ7i"
+  }
 }
