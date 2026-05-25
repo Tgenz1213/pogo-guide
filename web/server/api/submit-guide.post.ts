@@ -39,7 +39,12 @@ const decodeHtmlEntities = (value: string) =>
 const normalizeWhitespace = (value: string) => value.replace(/\s+/g, " ");
 
 const stripTags = (value: string) =>
-  decodeHtmlEntities(value.replace(/<[^>]+>/g, ""));
+  decodeHtmlEntities(
+    sanitizeHtml(value, {
+      allowedTags: [],
+      allowedAttributes: {},
+    }),
+  );
 
 const splitTopLevelBlocks = (cleanHtml: string) => {
   const blockPattern = /<(p|h2|h3|ul|ol)\b[^>]*>[\s\S]*?<\/\1>|<br\s*\/?\s*>/gi;
