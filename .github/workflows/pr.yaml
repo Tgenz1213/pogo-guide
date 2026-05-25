@@ -1,13 +1,14 @@
-name: CI Pipeline
+name: PR Checks
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
-  build-and-test:
+  checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231 # v6.0.2
@@ -29,5 +30,8 @@ jobs:
       - name: Run Knip
         run: pnpm run knip
 
-      - name: Lint and Format Checks
-        run: pnpm exec eslint .
+      - name: Run Lint
+        run: pnpm run lint
+
+      - name: Build Web
+        run: pnpm --filter web run build
