@@ -4,6 +4,7 @@ export const guide = defineType({
   name: 'guide',
   title: 'Guide',
   type: 'document',
+  fieldsets: [{name: 'admin', title: 'Admin Metadata'}],
   fields: [
     defineField({
       name: 'title',
@@ -52,10 +53,23 @@ export const guide = defineType({
       of: [{type: 'block'}],
     }),
     defineField({
+      name: 'isFeatured',
+      title: 'Is Featured',
+      type: 'boolean',
+      description: 'Marks this guide as featured on the home page.',
+      fieldset: 'admin',
+      initialValue: false,
+      readOnly: ({currentUser}) => {
+        const isAdmin = currentUser?.roles.some(role => role.name === 'administrator');
+        return !isAdmin;
+      }
+    }),
+    defineField({
       name: 'isUserSubmitted',
       title: 'Is User Submitted',
       type: 'boolean',
       description: 'Indicates if this guide was submitted by a user and is pending review.',
+      fieldset: 'admin',
       initialValue: false,
     }),
     defineField({
@@ -63,6 +77,7 @@ export const guide = defineType({
       title: 'Suggested Category',
       type: 'string',
       description: 'A new category suggested by the user.',
+      fieldset: 'admin',
       hidden: ({document}) => !document?.isUserSubmitted,
     }),
     defineField({
@@ -71,6 +86,7 @@ export const guide = defineType({
       type: 'array',
       of: [{type: 'string'}],
       description: 'New tags suggested by the user.',
+      fieldset: 'admin',
       hidden: ({document}) => !document?.isUserSubmitted,
     }),
   ],

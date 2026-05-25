@@ -11,8 +11,8 @@ interface GuideSummary {
   _updatedAt?: string;
 }
 
-// Fetch featured guides (tagged "featured")
-const featuredQuery = groq`*[_type == "guide" && tags[]->name match "featured"] | order(_updatedAt desc)[0...3] {
+// Fetch featured guides (using isFeatured boolean)
+const featuredQuery = groq`*[_type == "guide" && isFeatured == true] | order(_updatedAt desc)[0...3] {
   _id,
   title,
   "slug": slug.current,
