@@ -56,10 +56,16 @@ const submitSuggestion = async () => {
     } else {
       errorMessage.value = "Failed to submit suggestion. Please try again.";
     }
-  } catch (err) {
+  } catch (err: unknown) {
     if (err instanceof FetchError) {
+      const responseData = err.data as
+        | { statusMessage?: string; message?: string }
+        | undefined;
       errorMessage.value =
-        err.data?.statusMessage || "Failed to submit suggestion.";
+        responseData?.statusMessage ||
+        responseData?.message ||
+        err.message ||
+        "Failed to submit suggestion.";
     } else {
       errorMessage.value = "An unexpected error occurred.";
     }
