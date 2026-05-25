@@ -206,14 +206,34 @@ const submitForm = async () => {
     }
   } catch (err: unknown) {
     if (err instanceof FetchError) {
-      const responseData = err.data as
-        | { statusMessage?: string; message?: string }
-        | undefined;
-      errorMessage.value =
-        responseData?.statusMessage ||
+      type ZodFieldError = { _errors?: string[] };
+      type ApiErrorData = {
+        statusMessage?: string;
+        message?: string;
+        data?: { _errors?: string[]; [key: string]: unknown };
+      };
+
+      const responseData = err.data as ApiErrorData | undefined;
+
+      const zodFieldMessages = Object.values(responseData?.data || {})
+        .flatMap((value) => {
+          if (value && typeof value === "object") {
+            return ((value as ZodFieldError)._errors || []).filter(Boolean);
+          }
+          return [];
+        })
+        .filter(Boolean);
+
+      const preferredMessage =
+        zodFieldMessages[0] ||
         responseData?.message ||
-        err.message ||
-        "Failed to submit guide.";
+        (responseData?.statusMessage &&
+        responseData.statusMessage !== "Server Error"
+          ? responseData.statusMessage
+          : undefined) ||
+        err.message;
+
+      errorMessage.value = preferredMessage || "Failed to submit guide.";
     } else {
       errorMessage.value = "An unexpected error occurred.";
     }
