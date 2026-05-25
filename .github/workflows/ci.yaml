@@ -38,7 +38,6 @@ jobs:
         run: pnpm --filter web run build
 
   deploy:
-    if: github.event_name == 'workflow_dispatch'
     needs: preflight
     runs-on: ubuntu-latest
     environment: production
