@@ -122,7 +122,7 @@ const goToGuide = (guide: SearchResult) => {
   <div
     ref="containerRef"
     class="relative"
-    :class="variant === 'hero' ? 'w-full z-50' : 'hidden sm:block z-50'"
+    :class="variant === 'hero' ? 'w-full z-10' : 'hidden sm:block z-0'"
   >
     <svg
       v-if="variant === 'header'"
