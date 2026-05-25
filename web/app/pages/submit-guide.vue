@@ -206,7 +206,14 @@ const submitForm = async () => {
     }
   } catch (err: unknown) {
     if (err instanceof FetchError) {
-      errorMessage.value = err.data?.statusMessage || "Failed to submit guide.";
+      const responseData = err.data as
+        | { statusMessage?: string; message?: string }
+        | undefined;
+      errorMessage.value =
+        responseData?.statusMessage ||
+        responseData?.message ||
+        err.message ||
+        "Failed to submit guide.";
     } else {
       errorMessage.value = "An unexpected error occurred.";
     }

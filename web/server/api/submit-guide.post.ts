@@ -73,8 +73,8 @@ export default defineEventHandler(async (event) => {
   const validation = submitGuideSchema.safeParse(body);
   if (!validation.success) {
     throw createError({
-      status: 400,
-      message: "Bad Request",
+      statusCode: 400,
+      statusMessage: "Bad Request",
       data: validation.error.format(),
     });
   }
@@ -94,8 +94,8 @@ export default defineEventHandler(async (event) => {
   // Validate category requirement based on sanity schema rules
   if (!categoryId && (!suggestedCategory || suggestedCategory.trim() === "")) {
     throw createError({
-      status: 400,
-      message:
+      statusCode: 400,
+      statusMessage:
         "Either an existing category or a suggested category must be provided.",
     });
   }
@@ -108,17 +108,30 @@ export default defineEventHandler(async (event) => {
 
   const runtimeConfig = useRuntimeConfig();
   const isE2eMode = runtimeConfig.public.e2eMode;
-  const shouldVerifyTurnstile =
+  const hasTurnstileSecret = Boolean(runtimeConfig.turnstile?.secretKey);
+  const hasTurnstileSiteKey = Boolean(runtimeConfig.public.turnstileSiteKey);
+  const isProduction = process.env.NODE_ENV === "production";
+
+  if (
     !isE2eMode &&
-    process.env.NODE_ENV === "production" &&
-    Boolean(runtimeConfig.turnstile?.secretKey);
+    isProduction &&
+    hasTurnstileSecret !== hasTurnstileSiteKey
+  ) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Turnstile is misconfigured on the server.",
+    });
+  }
+
+  const shouldVerifyTurnstile =
+    !isE2eMode && isProduction && hasTurnstileSecret && hasTurnstileSiteKey;
 
   // 2. Turnstile Verification
   if (shouldVerifyTurnstile) {
     if (!turnstileToken) {
       throw createError({
-        status: 400,
-        message: "Invalid Turnstile token. Please try again.",
+        statusCode: 400,
+        statusMessage: "Invalid Turnstile token. Please try again.",
       });
     }
 
@@ -128,8 +141,11 @@ export default defineEventHandler(async (event) => {
     );
     if (!turnstileValidation.success) {
       throw createError({
-        status: 400,
-        message: "Invalid Turnstile token. Please try again.",
+        statusCode: 400,
+        statusMessage: "Invalid Turnstile token. Please try again.",
+        data: {
+          turnstile: turnstileValidation,
+        },
       });
     }
   }
@@ -147,6 +163,12 @@ export default defineEventHandler(async (event) => {
 
   // 5. HTML to Portable Text Conversion
   const blocks = htmlToPortableTextBlocks(cleanHtml);
+  if (blocks.length === 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Guide content is empty after sanitization.",
+    });
+  }
 
   // 6. Save to Sanity
   const writeToken = runtimeConfig.sanityWriteToken;
@@ -155,8 +177,8 @@ export default defineEventHandler(async (event) => {
 
   if (!projectId) {
     throw createError({
-      status: 500,
-      message: "Sanity Project ID is missing from configuration",
+      statusCode: 500,
+      statusMessage: "Sanity Project ID is missing from configuration",
     });
   }
 
@@ -174,8 +196,8 @@ export default defineEventHandler(async (event) => {
 
   if (!writeToken) {
     throw createError({
-      status: 502,
-      message: "Sanity Write Token is not configured",
+      statusCode: 502,
+      statusMessage: "Sanity Write Token is not configured",
     });
   }
 
@@ -250,8 +272,8 @@ export default defineEventHandler(async (event) => {
     const err = error as Record<string, unknown>;
     console.error("Sanity Mutation Error:", err.data || err.message || error);
     throw createError({
-      status: 500,
-      message: "Failed to submit guide to database",
+      statusCode: 500,
+      statusMessage: "Failed to submit guide to database",
     });
   }
 });
