@@ -46,7 +46,7 @@ const splitTopLevelBlocks = (cleanHtml: string) => {
   const matches = cleanHtml.match(blockPattern);
 
   if (!matches) {
-    return cleanHtml.trim() ? [`<p>${cleanHtml}</p>`] : [];
+    return cleanHtml.trim() ? ["<p>" + cleanHtml + "</p>"] : [];
   }
 
   return matches;
