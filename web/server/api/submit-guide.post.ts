@@ -1,4 +1,4 @@
-import { defineEventHandler, readBody, HTTPError } from "h3";
+import { defineEventHandler, readBody, createError } from "h3";
 import { z } from "zod";
 import sanitizeHtml from "sanitize-html";
 import { htmlToBlocks } from "@sanity/block-tools";
@@ -59,9 +59,9 @@ export default defineEventHandler(async (event) => {
 
   const validation = submitGuideSchema.safeParse(body);
   if (!validation.success) {
-    throw new HTTPError({
-      statusCode: 400,
-      statusMessage: "Bad Request",
+    throw createError({
+      status: 400,
+      message: "Bad Request",
       data: validation.error.format(),
     });
   }
@@ -80,9 +80,9 @@ export default defineEventHandler(async (event) => {
 
   // Validate category requirement based on sanity schema rules
   if (!categoryId && (!suggestedCategory || suggestedCategory.trim() === "")) {
-    throw new HTTPError({
-      statusCode: 400,
-      statusMessage:
+    throw createError({
+      status: 400,
+      message:
         "Either an existing category or a suggested category must be provided.",
     });
   }
@@ -103,9 +103,9 @@ export default defineEventHandler(async (event) => {
   // 2. Turnstile Verification
   if (shouldVerifyTurnstile) {
     if (!turnstileToken) {
-      throw new HTTPError({
-        statusCode: 400,
-        statusMessage: "Invalid Turnstile token. Please try again.",
+      throw createError({
+        status: 400,
+        message: "Invalid Turnstile token. Please try again.",
       });
     }
 
@@ -114,9 +114,9 @@ export default defineEventHandler(async (event) => {
       event,
     );
     if (!turnstileValidation.success) {
-      throw new HTTPError({
-        statusCode: 400,
-        statusMessage: "Invalid Turnstile token. Please try again.",
+      throw createError({
+        status: 400,
+        message: "Invalid Turnstile token. Please try again.",
       });
     }
   }
@@ -143,9 +143,9 @@ export default defineEventHandler(async (event) => {
   const dataset = runtimeConfig.public.sanity?.dataset || "production";
 
   if (!projectId) {
-    throw new HTTPError({
-      statusCode: 500,
-      statusMessage: "Sanity Project ID is missing from configuration",
+    throw createError({
+      status: 500,
+      message: "Sanity Project ID is missing from configuration",
     });
   }
 
@@ -162,9 +162,9 @@ export default defineEventHandler(async (event) => {
   }
 
   if (!writeToken) {
-    throw new HTTPError({
-      statusCode: 502,
-      statusMessage: "Sanity Write Token is not configured",
+    throw createError({
+      status: 502,
+      message: "Sanity Write Token is not configured",
     });
   }
 
@@ -238,9 +238,9 @@ export default defineEventHandler(async (event) => {
   } catch (error) {
     const err = error as Record<string, unknown>;
     console.error("Sanity Mutation Error:", err.data || err.message || error);
-    throw new HTTPError({
-      statusCode: 500,
-      statusMessage: "Failed to submit guide to database",
+    throw createError({
+      status: 500,
+      message: "Failed to submit guide to database",
     });
   }
 });
