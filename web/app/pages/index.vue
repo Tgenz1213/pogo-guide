@@ -1,25 +1,92 @@
 <script setup lang="ts">
-// index.vue
-const recentUpdates = [
+interface GuideSummary {
+  _id: string;
+  title: string;
+  slug: string;
+  description: string;
+  category: string;
+  _updatedAt?: string;
+}
+
+// Fetch featured guides (tagged "featured")
+const featuredQuery = groq`*[_type == "guide" && tags[]->name match "featured"] | order(_updatedAt desc)[0...3] {
+  _id,
+  title,
+  "slug": slug.current,
+  description,
+  "category": category->title
+}`;
+
+const { data: featuredGuidesData } =
+  await useSanityQuery<GuideSummary[]>(featuredQuery);
+const featuredGuides = computed(() => featuredGuidesData.value || []);
+
+// Fetch recent guides
+const recentQuery = groq`*[_type == "guide"] | order(_updatedAt desc)[0...3] {
+  _id,
+  title,
+  "slug": slug.current,
+  description,
+  "category": category->title,
+  _updatedAt
+}`;
+
+const { data: recentGuidesData } =
+  await useSanityQuery<GuideSummary[]>(recentQuery);
+const recentGuides = computed(() => recentGuidesData.value || []);
+
+// Dynamic theme mapping based on index to replicate original styling
+const themes = [
   {
-    title: "Understanding IVs & PvP Ranks",
-    date: "2 days ago",
-    category: "Mechanics",
-    desc: "A beginner's guide to how IVs work and why 0/15/15 is often the best spread for Great League.",
+    color: "text-mystic-blue",
+    border: "border-mystic-blue/30",
+    bg: "bg-mystic-blue/20",
+    hover: "hover:border-mystic-blue",
+    groupHover: "group-hover:text-mystic-blue",
+    iconText: "text-blue-700 dark:text-mystic-blue",
   },
   {
-    title: "How to Submit a 5-Star PokéStop",
-    date: "5 days ago",
-    category: "Wayfarer",
-    desc: "Tips on framing your photos, writing good descriptions, and avoiding common rejection reasons.",
+    color: "text-valor-red",
+    border: "border-valor-red/30",
+    bg: "bg-valor-red/20",
+    hover: "hover:border-valor-red",
+    groupHover: "group-hover:text-valor-red",
+    iconText: "text-red-700 dark:text-valor-red",
   },
   {
-    title: "Navigating the Campfire App",
-    date: "1 week ago",
-    category: "Community",
-    desc: "Learn how to find local communities, coordinate raids, and light flares using Campfire.",
+    color: "text-instinct-yellow",
+    border: "border-instinct-yellow/30",
+    bg: "bg-instinct-yellow/20",
+    hover: "hover:border-instinct-yellow",
+    groupHover: "group-hover:text-instinct-yellow",
+    iconText: "text-amber-700 dark:text-instinct-yellow",
   },
 ];
+
+const getTheme = (index: number) => {
+  return themes[index % themes.length]!;
+};
+
+const timeAgo = (dateString?: string) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours} hours ago`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) return `${diffInDays} days ago`;
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  if (diffInWeeks < 4) return `${diffInWeeks} weeks ago`;
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) return `${diffInMonths} months ago`;
+  const diffInYears = Math.floor(diffInDays / 365);
+  return `${diffInYears} years ago`;
+};
 </script>
 
 <template>
@@ -84,12 +151,20 @@ const recentUpdates = [
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Guide 1 -->
-          <div
-            class="p-6 rounded-2xl bg-slate-50 dark:bg-brand-bg border border-slate-200 dark:border-brand-surface flex items-start gap-4 shadow-lg group hover:border-mystic-blue transition-colors cursor-pointer"
+          <NuxtLink
+            v-for="(guide, idx) in featuredGuides"
+            :key="guide._id"
+            :to="`/guides/${guide.slug}`"
+            class="p-6 rounded-2xl bg-slate-50 dark:bg-brand-bg border border-slate-200 dark:border-brand-surface flex items-start gap-4 shadow-lg group transition-colors cursor-pointer"
+            :class="getTheme(idx).hover"
           >
             <div
-              class="w-12 h-12 rounded-full bg-mystic-blue/20 flex items-center justify-center shrink-0 border border-mystic-blue/30 text-mystic-blue"
+              class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 border"
+              :class="[
+                getTheme(idx).bg,
+                getTheme(idx).border,
+                getTheme(idx).color,
+              ]"
             >
               <svg
                 class="w-6 h-6"
@@ -107,102 +182,24 @@ const recentUpdates = [
             </div>
             <div>
               <div
-                class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-mystic-blue mb-1"
+                class="text-xs font-bold uppercase tracking-wider mb-1"
+                :class="getTheme(idx).iconText"
               >
-                Getting Started
+                {{ guide.category || "Guide" }}
               </div>
               <h3
-                class="text-lg font-black text-slate-900 dark:text-brand-text group-hover:text-mystic-blue transition-colors"
+                class="text-lg font-black text-slate-900 dark:text-brand-text transition-colors"
+                :class="getTheme(idx).groupHover"
               >
-                App Navigation
+                {{ guide.title }}
               </h3>
-              <p class="text-sm text-slate-500 dark:text-brand-accent mt-2">
-                Learn the UI basics, menus, and hidden features.
+              <p
+                class="text-sm text-slate-500 dark:text-brand-accent mt-2 line-clamp-2"
+              >
+                {{ guide.description }}
               </p>
             </div>
-          </div>
-
-          <!-- Guide 2 -->
-          <div
-            class="p-6 rounded-2xl bg-slate-50 dark:bg-brand-bg border border-slate-200 dark:border-brand-surface flex items-start gap-4 shadow-lg group hover:border-valor-red transition-colors cursor-pointer"
-          >
-            <div
-              class="w-12 h-12 rounded-full bg-valor-red/20 flex items-center justify-center shrink-0 border border-valor-red/30 text-valor-red"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-            </div>
-            <div>
-              <div
-                class="text-xs font-bold uppercase tracking-wider text-red-700 dark:text-valor-red mb-1"
-              >
-                Mechanics
-              </div>
-              <h3
-                class="text-lg font-black text-slate-900 dark:text-brand-text group-hover:text-valor-red transition-colors"
-              >
-                Evaluating Pokémon
-              </h3>
-              <p class="text-sm text-slate-500 dark:text-brand-accent mt-2">
-                Understand IVs, levels, and appraisals.
-              </p>
-            </div>
-          </div>
-
-          <!-- Guide 3 -->
-          <div
-            class="p-6 rounded-2xl bg-slate-50 dark:bg-brand-bg border border-slate-200 dark:border-brand-surface flex items-start gap-4 shadow-lg group hover:border-instinct-yellow transition-colors cursor-pointer"
-          >
-            <div
-              class="w-12 h-12 rounded-full bg-instinct-yellow/20 flex items-center justify-center shrink-0 border border-instinct-yellow/30 text-instinct-yellow"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-            </div>
-            <div>
-              <div
-                class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-instinct-yellow mb-1"
-              >
-                Wayfarer
-              </div>
-              <h3
-                class="text-lg font-black text-slate-900 dark:text-brand-text group-hover:text-instinct-yellow transition-colors"
-              >
-                PokéStop Submissions
-              </h3>
-              <p class="text-sm text-slate-500 dark:text-brand-accent mt-2">
-                Create great nominations that get approved.
-              </p>
-            </div>
-          </div>
+          </NuxtLink>
         </div>
       </div>
     </section>
@@ -214,35 +211,36 @@ const recentUpdates = [
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <article
-          v-for="(update, idx) in recentUpdates"
-          :key="idx"
+        <NuxtLink
+          v-for="guide in recentGuides"
+          :key="guide._id"
+          :to="`/guides/${guide.slug}`"
           class="group block p-6 rounded-3xl bg-white dark:bg-brand-surface/10 border border-slate-200 dark:border-brand-surface hover:border-mystic-blue/50 hover:bg-white dark:bg-brand-surface/30 transition-all duration-300 cursor-pointer"
         >
           <div class="flex items-center gap-3 mb-4">
             <span
               class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-slate-50 dark:bg-brand-bg border border-slate-200 dark:border-brand-surface text-slate-500 dark:text-brand-accent group-hover:border-mystic-blue/30 group-hover:text-mystic-blue transition-colors"
             >
-              {{ update.category }}
+              {{ guide.category || "Guide" }}
             </span>
             <span
               class="text-xs font-semibold text-slate-600 dark:text-brand-accent"
-              >{{ update.date }}</span
+              >{{ timeAgo(guide._updatedAt) }}</span
             >
           </div>
 
           <h3
             class="text-xl font-bold text-slate-900 dark:text-brand-text mb-3 group-hover:text-mystic-blue transition-colors"
           >
-            {{ update.title }}
+            {{ guide.title }}
           </h3>
 
           <p
-            class="text-sm text-slate-500 dark:text-brand-accent leading-relaxed"
+            class="text-sm text-slate-500 dark:text-brand-accent leading-relaxed line-clamp-3"
           >
-            {{ update.desc }}
+            {{ guide.description }}
           </p>
-        </article>
+        </NuxtLink>
       </div>
     </section>
   </main>
