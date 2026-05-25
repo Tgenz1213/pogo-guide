@@ -1,14 +1,4 @@
-import { z } from "zod";
-
-const suggestionSchema = z.object({
-  guidePath: z.string().min(1, "Guide path is required"),
-  content: z
-    .string()
-    .min(10, "Suggestion must be at least 10 characters")
-    .max(2000, "Suggestion must not exceed 2000 characters"),
-  websiteAddress: z.string().optional(),
-  turnstileToken: z.string().optional().default(""),
-});
+import { suggestionSchema } from "../../shared/utils/validation";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
