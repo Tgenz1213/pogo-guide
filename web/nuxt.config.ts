@@ -53,7 +53,7 @@ export default defineNuxtConfig({
     turnstile: {
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
     },
-    sanityWriteToken: process.env.SANITY_WRITE_TOKEN || "",
+    sanityWriteToken: "", // Will be overridden by NUXT_SANITY_WRITE_TOKEN
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://pogo.guide",
       testMode: process.env.TEST_MODE || "",
@@ -74,6 +74,7 @@ export default defineNuxtConfig({
     sourceMapsUploadOptions: {
       enabled: false, // Enable in production CI with SENTRY_AUTH_TOKEN env var
     },
+    enabled: true,
   },
   app: {
     head: {},

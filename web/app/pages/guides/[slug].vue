@@ -2,15 +2,14 @@
 import { useRoute } from "vue-router";
 import { useSanityQuery } from "#imports";
 import { PortableText } from "@portabletext/vue";
+import type { Guide } from "~~/types/sanity";
 
 const route = useRoute();
 
+const guideQuery = groq`*[_type == "guide" && slug.current == $slug][0]`;
+
 // Attempt to fetch from Sanity
-const { data: guide } = await useSanityQuery<{
-  title?: string;
-  description?: string;
-  content?: unknown[];
-}>(`*[_type == "guide" && slug.current == $slug][0]`, {
+const { data: guide } = await useSanityQuery<Guide>(guideQuery, {
   slug: route.params.slug,
 });
 

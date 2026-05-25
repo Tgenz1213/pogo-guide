@@ -18,6 +18,17 @@ import "@sanity/client";
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: ../studio/schema.json
+export type Resource = {
+  _id: string;
+  _type: "resource";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  description?: string;
+  url?: string;
+};
+
 export type Suggestion = {
   _id: string;
   _type: "suggestion";
@@ -51,6 +62,7 @@ export type Guide = {
   _rev: string;
   title?: string;
   slug?: Slug;
+  description?: string;
   category?: CategoryReference;
   tags?: Array<
     {
@@ -217,6 +229,7 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | Resource
   | Suggestion
   | CategoryReference
   | TagReference
@@ -234,6 +247,44 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint;
+
+// Source: app/pages/guides/[slug].vue
+// Variable: guideQuery
+// Query: *[_type == "guide" && slug.current == $slug][0]
+export type GuideQueryResult = {
+  _id: string;
+  _type: "guide";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  description?: string;
+  category?: CategoryReference;
+  tags?: Array<
+    {
+      _key: string;
+    } & TagReference
+  >;
+  content?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
+} | null;
 
 // Source: app/pages/guides/category/[slug].vue
 // Variable: categoryGuidesQuery
@@ -262,9 +313,15 @@ export type CategoriesQueryResult = Array<{
 // Source: app/pages/resources/index.vue
 // Variable: resourcesQuery
 // Query: *[_type == "resource"] {  _id,  name,  description,  url}
-export type ResourcesQueryResult = Array<never>;
+export type ResourcesQueryResult = Array<{
+  _id: string;
+  name: string | null;
+  description: string | null;
+  url: string | null;
+}>;
 declare module "@sanity/client" {
   interface SanityQueries {
+    '*[_type == "guide" && slug.current == $slug][0]': GuideQueryResult;
     '*[_type == "category" && slug.current == $slug][0] {\n  _id,\n  title,\n  description,\n  "guides": *[_type == "guide" && references(^._id)] {\n    _id,\n    title,\n    "slug": slug.current\n  }\n}': CategoryGuidesQueryResult;
     '*[_type == "category"] {\n  _id,\n  title,\n  "slug": slug.current,\n  description\n}': CategoriesQueryResult;
     '*[_type == "resource"] {\n  _id,\n  name,\n  description,\n  url\n}': ResourcesQueryResult;

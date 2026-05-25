@@ -19,6 +19,13 @@ export const guide = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 3,
+      validation: (Rule) => Rule.max(200),
+    }),
+    defineField({
       name: 'category',
       title: 'Category',
       type: 'reference',
