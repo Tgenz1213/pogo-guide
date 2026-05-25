@@ -1,4 +1,4 @@
-name: Main Preflight and Manual Deploy
+name: Main Preflight and Deploy
 
 on:
   push:
