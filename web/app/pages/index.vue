@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import SearchAutocomplete from "../components/SearchAutocomplete.vue";
+
 interface GuideSummary {
   _id: string;
   title: string;
@@ -111,25 +114,8 @@ const timeAgo = (dateString?: string) => {
         </p>
 
         <!-- Search CTA -->
-        <div class="relative max-w-xl mt-8">
-          <svg
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-brand-surface"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <input
-            type="search"
-            placeholder="Search for a guide or resource..."
-            class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-mystic-blue rounded-2xl py-4 pl-14 pr-6 text-brand-bg dark:text-brand-text placeholder-slate-500 dark:placeholder-brand-accent/80 font-semibold text-lg shadow-xl focus:outline-none transition-all"
-          />
+        <div class="max-w-xl mt-8">
+          <SearchAutocomplete variant="hero" />
         </div>
       </div>
     </section>
