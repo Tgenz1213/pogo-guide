@@ -1,43 +1,57 @@
 import { defineEventHandler, readBody, createError } from "h3";
 import { z } from "zod";
 import sanitizeHtml from "sanitize-html";
-import { htmlToBlocks } from "@sanity/block-tools";
-import { Schema } from "@sanity/schema";
-import { DOMParser } from "linkedom";
 
-// A basic portable text schema so block-tools knows how to parse the HTML
-const defaultSchema = Schema.compile({
-  name: "default",
-  types: [
-    {
-      type: "object",
-      name: "guideContent",
-      fields: [
-        {
-          name: "content",
-          type: "array",
-          of: [{ type: "block" }],
-        },
-      ],
-    },
-  ],
-});
-const guideContent = defaultSchema.get("guideContent");
-if (!guideContent) {
-  throw new Error("Schema type 'guideContent' not found");
+interface PortableTextSpan {
+  _type: "span";
+  _key: string;
+  text: string;
+  marks: string[];
 }
 
-const contentField = guideContent.fields.find(
-  (field: { name: string }) => field.name === "content",
-);
-if (!contentField) {
-  throw new Error("Field 'content' not found in 'guideContent'");
+interface PortableTextBlock {
+  _type: "block";
+  _key: string;
+  style: "normal";
+  markDefs: unknown[];
+  children: PortableTextSpan[];
 }
 
-const blockContentType = contentField.type;
+const htmlToPortableTextBlocks = (cleanHtml: string): PortableTextBlock[] => {
+  // Keep rough paragraph/list boundaries before stripping tags.
+  const normalized = cleanHtml
+    .replace(/<br\s*\/?\s*>/gi, "\n")
+    .replace(/<\/\s*(p|div|li|h[1-6])\s*>/gi, "\n");
 
-const parseHtml = (html: string) =>
-  new DOMParser().parseFromString(html, "text/html") as unknown as Document;
+  const plainText = sanitizeHtml(normalized, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
+
+  const paragraphs = plainText
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (paragraphs.length === 0) {
+    return [];
+  }
+
+  return paragraphs.map((text) => ({
+    _type: "block",
+    _key: crypto.randomUUID().replace(/-/g, "").slice(0, 12),
+    style: "normal",
+    markDefs: [],
+    children: [
+      {
+        _type: "span",
+        _key: crypto.randomUUID().replace(/-/g, "").slice(0, 12),
+        text,
+        marks: [],
+      },
+    ],
+  }));
+};
 
 const submitGuideSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -133,9 +147,7 @@ export default defineEventHandler(async (event) => {
   });
 
   // 5. HTML to Portable Text Conversion
-  const blocks = htmlToBlocks(cleanHtml, blockContentType, {
-    parseHtml,
-  });
+  const blocks = htmlToPortableTextBlocks(cleanHtml);
 
   // 6. Save to Sanity
   const writeToken = runtimeConfig.sanityWriteToken;
