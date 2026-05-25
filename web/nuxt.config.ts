@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   modules: [
+    "nitro-cloudflare-dev",
     "@nuxt/eslint",
     "@nuxtjs/tailwindcss",
     "@nuxt/image",
@@ -22,12 +23,19 @@ export default defineNuxtConfig({
   },
   css: ["~~/assets/css/tailwind.css"],
   nitro: {
-    preset: "cloudflare-pages",
+    preset: "cloudflare_module",
+
     output: {
       dir: ".cloudflare",
     },
+
     prerender: {
       autoSubfolderIndex: false,
+    },
+
+    cloudflare: {
+      deployConfig: true,
+      nodeCompat: true,
     },
   },
   robots: {

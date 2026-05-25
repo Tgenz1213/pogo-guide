@@ -74,9 +74,9 @@ bun run preview
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 
-## Cloudflare Pages Deployment
+## Cloudflare Worker Deployment
 
-This app is configured to build for Cloudflare Pages using Nitro's `cloudflare-pages` preset.
+This app is configured to build for Cloudflare Workers using Nitro's `cloudflare-module` preset.
 
 1. Build the Cloudflare output:
 
@@ -86,12 +86,12 @@ This app is configured to build for Cloudflare Pages using Nitro's `cloudflare-p
 
    pnpm preview:cloudflare
 
-3. Deploy to Cloudflare Pages:
+3. Deploy to Cloudflare Workers:
 
    pnpm deploy:cloudflare
 
 Notes:
 
 - The Cloudflare output is generated into `.cloudflare/`.
-- Deploy and preview scripts use `pnpm dlx wrangler`, so no local Wrangler install is required.
+- Deploy and preview run with `wrangler --cwd .cloudflare ...` to use Nitro-generated worker config.
 - You must be authenticated with Cloudflare (`wrangler login`) before deploy.

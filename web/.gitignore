@@ -27,3 +27,8 @@ logs
 # Test
 playwright-report
 test-results
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example

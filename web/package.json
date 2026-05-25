@@ -11,14 +11,16 @@
     "build": "nuxt build",
     "build:cloudflare": "nuxt build",
     "dev": "nuxt dev",
-    "deploy:cloudflare": "pnpm build:cloudflare && pnpm dlx wrangler pages deploy .cloudflare",
+    "deploy:cloudflare": "pnpm build:cloudflare && wrangler --cwd .cloudflare deploy",
     "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "preview:cloudflare": "pnpm dlx wrangler pages dev .cloudflare",
+    "preview": "pnpm run build && wrangler dev",
+    "preview:cloudflare": "pnpm run build:cloudflare && wrangler --cwd .cloudflare dev",
     "postinstall": "nuxt prepare",
     "typegen": "sanity typegen generate",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "deploy": "pnpm run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@nuxtjs/robots": "^6.0.8",
@@ -46,6 +48,8 @@
     "@vitest/ui": "^4.1.7",
     "@vue/test-utils": "^2.4.10",
     "jsdom": "^29.1.1",
-    "vitest": "^4.1.7"
+    "nitro-cloudflare-dev": "^0.2.2",
+    "vitest": "^4.1.7",
+    "wrangler": "^4.94.0"
   }
 }
