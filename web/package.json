@@ -9,9 +9,12 @@
   "packageManager": "pnpm@9.10.0",
   "scripts": {
     "build": "nuxt build",
+    "build:cloudflare": "nuxt build",
     "dev": "nuxt dev",
+    "deploy:cloudflare": "pnpm build:cloudflare && pnpm dlx wrangler pages deploy .cloudflare",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "preview:cloudflare": "pnpm dlx wrangler pages dev .cloudflare",
     "postinstall": "nuxt prepare",
     "typegen": "sanity typegen generate",
     "test": "vitest run",

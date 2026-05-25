@@ -1,6 +1,7 @@
 node_modules
 .nuxt
 .output
+.cloudflare
 .sanity
 dist
 .env

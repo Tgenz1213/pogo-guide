@@ -4,6 +4,7 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
+  workerd: true
 nodeVersion: "22.16.0"
 packages:
   - "web"

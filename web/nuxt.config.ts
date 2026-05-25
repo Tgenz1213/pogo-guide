@@ -23,9 +23,15 @@ export default defineNuxtConfig({
   css: ["~~/assets/css/tailwind.css"],
   nitro: {
     preset: "cloudflare-pages",
+    output: {
+      dir: ".cloudflare",
+    },
     prerender: {
       autoSubfolderIndex: false,
     },
+  },
+  robots: {
+    groups: [{ userAgent: "*" }],
   },
   image: {
     format: ["avif", "webp"],
@@ -62,9 +68,7 @@ export default defineNuxtConfig({
     },
   },
   app: {
-    head: {
-      link: [{ rel: "icon", type: "image/svg", href: "/favicon.svg" }],
-    },
+    head: {},
   },
   site: {
     url: process.env.NUXT_PUBLIC_SITE_URL || "https://pogo.guide",

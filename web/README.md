@@ -73,3 +73,25 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## Cloudflare Pages Deployment
+
+This app is configured to build for Cloudflare Pages using Nitro's `cloudflare-pages` preset.
+
+1. Build the Cloudflare output:
+
+   pnpm build:cloudflare
+
+2. Preview the Cloudflare build locally:
+
+   pnpm preview:cloudflare
+
+3. Deploy to Cloudflare Pages:
+
+   pnpm deploy:cloudflare
+
+Notes:
+
+- The Cloudflare output is generated into `.cloudflare/`.
+- Deploy and preview scripts use `pnpm dlx wrangler`, so no local Wrangler install is required.
+- You must be authenticated with Cloudflare (`wrangler login`) before deploy.
