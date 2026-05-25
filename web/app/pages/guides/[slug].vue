@@ -6,10 +6,23 @@ import type { Guide } from "~~/types/sanity";
 
 const route = useRoute();
 
-const guideQuery = groq`*[_type == "guide" && slug.current == $slug][0]`;
+const guideQuery = groq`*[_type == "guide" && slug.current == $slug][0]{
+  ...,
+  category->{
+    title,
+    "slug": slug.current
+  }
+}`;
+
+type ExtendedGuide = Guide & {
+  category?: {
+    title: string;
+    slug: string;
+  };
+};
 
 // Attempt to fetch from Sanity
-const { data: guide } = await useSanityQuery<Guide>(guideQuery, {
+const { data: guide } = await useSanityQuery<ExtendedGuide>(guideQuery, {
   slug: route.params.slug,
 });
 
@@ -18,6 +31,10 @@ const pageDescription =
   guide?.value?.description ||
   "In-depth guide covering Pokémon GO Wayfarer PokéStop and Gym nomination review criteria, tips, and best practices.";
 const guideContent = computed(() => guide?.value?.content || []);
+const categorySlug = computed(() => guide?.value?.category?.slug);
+const categoryTitle = computed(
+  () => guide?.value?.category?.title || "Category",
+);
 
 useSeo(pageTitle, pageDescription);
 </script>
@@ -25,6 +42,14 @@ useSeo(pageTitle, pageDescription);
 <template>
   <main class="max-w-4xl mx-auto px-6 py-16">
     <NuxtLink
+      v-if="categorySlug"
+      :to="`/guides/category/${categorySlug}`"
+      class="text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-mystic-blue transition-colors mb-8 inline-block"
+    >
+      &larr; Back to {{ categoryTitle }}
+    </NuxtLink>
+    <NuxtLink
+      v-else
       to="/guides"
       class="text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-mystic-blue transition-colors mb-8 inline-block"
     >
