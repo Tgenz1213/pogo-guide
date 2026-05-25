@@ -3,11 +3,11 @@ import type { KnipConfig } from "knip";
 const config: KnipConfig = {
   workspaces: {
     web: {
-      entry: ["sanity.cli.ts", "tailwind.config.ts", "nuxt.config.ts!"],
+      entry: ["sanity.cli.ts", "tailwind.config.ts"],
       project: ["**/*.{ts,vue}!"],
     },
     studio: {
-      entry: ["sanity.config.ts!", "schemaTypes/**/*.ts!"],
+      entry: ["schemaTypes/**/*.ts!"],
       project: ["**/*.{ts,js}!"],
     },
   },
