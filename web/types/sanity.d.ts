@@ -11,9 +11,18 @@
  * https://www.sanity.io/docs/sanity-typegen
  * ---------------------------------------------------------------------------------
  */
-
 // Query TypeMap
 import "@sanity/client";
+declare module "@sanity/client" {
+  interface SanityQueries {
+    '*[_type == "guide" && slug.current == $slug][0]': GuideQueryResult;
+    '*[_type == "category" && slug.current == $slug][0] {\n  _id,\n  title,\n  description,\n  "guides": *[_type == "guide" && references(^._id)] {\n    _id,\n    title,\n    "slug": slug.current\n  }\n}': CategoryGuidesQueryResult;
+    '*[_type == "category"] {\n  _id,\n  title,\n  "slug": slug.current,\n  description\n}': CategoriesQueryResult;
+    '*[_type == "guide" && tags[]->name match "featured"] | order(_updatedAt desc)[0...3] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  "category": category->title\n}': FeaturedQueryResult;
+    '*[_type == "guide"] | order(_updatedAt desc)[0...3] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  "category": category->title,\n  _updatedAt\n}': RecentQueryResult;
+    '*[_type == "resource"] {\n  _id,\n  name,\n  description,\n  url\n}': ResourcesQueryResult;
+  }
+}
 
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
@@ -310,6 +319,23 @@ export type CategoriesQueryResult = Array<{
   description: string | null;
 }>;
 
+// Source: app/pages/index.vue
+// Variable: featuredQuery
+// Query: *[_type == "guide" && tags[]->name match "featured"] | order(_updatedAt desc)[0...3] {  _id,  title,  "slug": slug.current,  description,  "category": category->title}
+export type FeaturedQueryResult = Array<never>;
+
+// Source: app/pages/index.vue
+// Variable: recentQuery
+// Query: *[_type == "guide"] | order(_updatedAt desc)[0...3] {  _id,  title,  "slug": slug.current,  description,  "category": category->title,  _updatedAt}
+export type RecentQueryResult = Array<{
+  _id: string;
+  title: string | null;
+  slug: string | null;
+  description: string | null;
+  category: string | null;
+  _updatedAt: string;
+}>;
+
 // Source: app/pages/resources/index.vue
 // Variable: resourcesQuery
 // Query: *[_type == "resource"] {  _id,  name,  description,  url}
@@ -319,11 +345,3 @@ export type ResourcesQueryResult = Array<{
   description: string | null;
   url: string | null;
 }>;
-declare module "@sanity/client" {
-  interface SanityQueries {
-    '*[_type == "guide" && slug.current == $slug][0]': GuideQueryResult;
-    '*[_type == "category" && slug.current == $slug][0] {\n  _id,\n  title,\n  description,\n  "guides": *[_type == "guide" && references(^._id)] {\n    _id,\n    title,\n    "slug": slug.current\n  }\n}': CategoryGuidesQueryResult;
-    '*[_type == "category"] {\n  _id,\n  title,\n  "slug": slug.current,\n  description\n}': CategoriesQueryResult;
-    '*[_type == "resource"] {\n  _id,\n  name,\n  description,\n  url\n}': ResourcesQueryResult;
-  }
-}

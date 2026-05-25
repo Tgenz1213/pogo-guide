@@ -85,6 +85,25 @@ const closeMenu = () => {
         >
           Resources
         </NuxtLink>
+        <NuxtLink
+          to="/submit-guide"
+          class="hover:text-green-500 transition-colors duration-200 flex items-center gap-1"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Submit Guide
+        </NuxtLink>
       </nav>
 
       <!-- Utility / Search -->
@@ -163,6 +182,13 @@ const closeMenu = () => {
             @click="closeMenu"
           >
             Resources
+          </NuxtLink>
+          <NuxtLink
+            to="/submit-guide"
+            class="hover:text-green-500 transition-colors duration-200 block py-2 border-b border-slate-200 dark:border-brand-surface"
+            @click="closeMenu"
+          >
+            Submit Guide
           </NuxtLink>
         </nav>
         <div class="pt-2">
