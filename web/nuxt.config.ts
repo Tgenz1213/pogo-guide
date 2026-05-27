@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     "@sentry/nuxt/module",
     "@nuxtjs/sitemap",
     "@nuxtjs/robots",
+    "nuxt-auth-utils",
   ],
   colorMode: {
     classSuffix: "",
