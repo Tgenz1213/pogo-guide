@@ -23,7 +23,6 @@ export default defineEventHandler(async (event) => {
     suggestedTags,
     htmlContent,
     websiteAddress,
-    turnstileToken,
   } = validation.data;
 
   // Validate category requirement based on sanity schema rules
@@ -42,48 +41,6 @@ export default defineEventHandler(async (event) => {
   }
 
   const runtimeConfig = useRuntimeConfig();
-  const isE2eMode = runtimeConfig.public.e2eMode;
-  const hasTurnstileSecret = Boolean(runtimeConfig.turnstile?.secretKey);
-  const hasTurnstileSiteKey = Boolean(runtimeConfig.public.turnstileSiteKey);
-  const isProduction = process.env.NODE_ENV === "production";
-
-  if (
-    !isE2eMode &&
-    isProduction &&
-    hasTurnstileSecret !== hasTurnstileSiteKey
-  ) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Turnstile is misconfigured on the server.",
-    });
-  }
-
-  const shouldVerifyTurnstile =
-    !isE2eMode && isProduction && hasTurnstileSecret && hasTurnstileSiteKey;
-
-  // 2. Turnstile Verification
-  if (shouldVerifyTurnstile) {
-    if (!turnstileToken) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: "Invalid Turnstile token. Please try again.",
-      });
-    }
-
-    const turnstileValidation = await verifyTurnstileToken(
-      turnstileToken,
-      event,
-    );
-    if (!turnstileValidation.success) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: "Invalid Turnstile token. Please try again.",
-        data: {
-          turnstile: turnstileValidation,
-        },
-      });
-    }
-  }
 
   // 3. Rate Limiting (Basic memory-based for duplicate prevention in session, or rely on CF if configured)
   // For now, we will rely on CF rate limits and UI duplicate submission prevention.

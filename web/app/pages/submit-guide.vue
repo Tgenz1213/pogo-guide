@@ -5,16 +5,9 @@ import StarterKit from "@tiptap/starter-kit";
 import { z } from "zod";
 import { FetchError } from "ofetch";
 
-const config = useRuntimeConfig();
-
 definePageMeta({
   middleware: ["auth"],
 });
-
-const isE2eMode = computed(() => config.public.e2eMode);
-const hasTurnstileSiteKey = computed(() =>
-  Boolean(config.public.turnstileSiteKey),
-);
 
 // Data Fetching
 interface SanityReferenceItem {
@@ -36,7 +29,6 @@ const suggestedCategory = ref("");
 const tagIds = ref<string[]>([]);
 const suggestedTagsInput = ref("");
 const websiteAddress = ref(""); // Honeypot
-const turnstileToken = ref("");
 
 // UI State
 const isHydrated = ref(false);
@@ -166,11 +158,6 @@ const submitForm = async () => {
     return;
   }
 
-  if (!turnstileToken.value && !isE2eMode.value && hasTurnstileSiteKey.value) {
-    errorMessage.value = "Please complete the security check.";
-    return;
-  }
-
   const suggestedTags = suggestedTagsInput.value
     .split(",")
     .map((t) => t.trim())
@@ -192,7 +179,6 @@ const submitForm = async () => {
         suggestedTags: suggestedTags,
         htmlContent: htmlContent,
         websiteAddress: websiteAddress.value,
-        turnstileToken: turnstileToken.value,
       },
     });
 
@@ -458,22 +444,13 @@ const submitForm = async () => {
         {{ errorMessage }}
       </div>
 
-      <!-- Turnstile -->
-      <div v-if="hasTurnstileSiteKey && !isE2eMode" class="mt-4">
-        <NuxtTurnstile v-model="turnstileToken" />
-      </div>
-
       <!-- Submit Button -->
       <div
         class="flex justify-end pt-4 border-t border-slate-200 dark:border-brand-surface"
       >
         <button
           type="submit"
-          :disabled="
-            !isHydrated ||
-            isSubmitting ||
-            (!turnstileToken && !isE2eMode && hasTurnstileSiteKey)
-          "
+          :disabled="!isHydrated || isSubmitting"
           class="px-6 py-3 bg-mystic-blue hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-lg shadow-md transition-all"
         >
           {{ isSubmitting ? "Submitting..." : "Submit Guide" }}

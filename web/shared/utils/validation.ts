@@ -24,7 +24,6 @@ export const submitGuideSchema = z.object({
     .min(10, "Content must be at least 10 characters")
     .max(50000),
   websiteAddress: z.string().optional(), // Honeypot
-  turnstileToken: z.string().optional().default(""),
 });
 
 export type SubmitGuidePayload = z.infer<typeof submitGuideSchema>;
