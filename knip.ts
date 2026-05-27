@@ -7,7 +7,7 @@ const config: KnipConfig = {
       project: ["**/*.{ts,vue}!"],
     },
     studio: {
-      entry: ["schemaTypes/**/*.ts!"],
+      entry: ["schemaTypes/**/*.ts!", "actions/**/*.ts!"],
       project: ["**/*.{ts,js}!"],
     },
   },
@@ -16,9 +16,6 @@ const config: KnipConfig = {
     "lint-staged",
     "vue-tsc",
     "prettier",
-    "nuxt-auth-utils",
-    "@cloudflare/vitest-pool-workers",
-    "drizzle-kit",
     "h3",
     "cloudflare",
   ],
