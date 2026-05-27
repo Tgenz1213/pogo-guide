@@ -31,7 +31,7 @@
     "web/**/*.{js,ts,vue,mjs}": [
       "prettier --write",
       "eslint --fix",
-      "pnpm --filter web run test"
+      "pnpm --filter web run test --"
     ],
     "studio/**/*.{js,ts,mjs}": [
       "prettier --write",
