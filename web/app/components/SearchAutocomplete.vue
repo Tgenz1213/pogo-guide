@@ -62,7 +62,7 @@ watch(query, (newVal) => {
   timeoutId = setTimeout(async () => {
     const requestId = ++currentRequestId;
     try {
-      const groqQuery = `*[_type == "guide" && title match $searchTerm + "*"][0...5] {
+      const groqQuery = `*[_type == "guide" && isHiddenByModeration != true && title match $searchTerm + "*"][0...5] {
         _id, title, "slug": slug.current, "category": category->title
       }`;
       const data = await sanity.fetch(groqQuery, { searchTerm: newVal.trim() });

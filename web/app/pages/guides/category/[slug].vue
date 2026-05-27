@@ -9,7 +9,7 @@ const categoryGuidesQuery = groq`*[_type == "category" && slug.current == $slug]
   _id,
   title,
   description,
-  "guides": *[_type == "guide" && references(^._id)] {
+  "guides": *[_type == "guide" && isHiddenByModeration != true && references(^._id)] {
     _id,
     title,
     "slug": slug.current

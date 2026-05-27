@@ -6,7 +6,7 @@ import type { Guide } from "~~/types/sanity";
 
 const route = useRoute();
 
-const guideQuery = groq`*[_type == "guide" && slug.current == $slug][0]{
+const guideQuery = groq`*[_type == "guide" && isHiddenByModeration != true && slug.current == $slug][0]{
   ...,
   category->{
     title,

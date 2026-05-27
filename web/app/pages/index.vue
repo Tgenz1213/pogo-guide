@@ -12,7 +12,7 @@ interface GuideSummary {
 }
 
 // Fetch featured guides (using isFeatured boolean)
-const featuredQuery = groq`*[_type == "guide" && isFeatured == true] | order(_updatedAt desc)[0...3] {
+const featuredQuery = groq`*[_type == "guide" && isHiddenByModeration != true && isFeatured == true] | order(_updatedAt desc)[0...3] {
   _id,
   title,
   "slug": slug.current,
@@ -25,7 +25,7 @@ const { data: featuredGuidesData } =
 const featuredGuides = computed(() => featuredGuidesData.value || []);
 
 // Fetch recent guides
-const recentQuery = groq`*[_type == "guide"] | order(_updatedAt desc)[0...3] {
+const recentQuery = groq`*[_type == "guide" && isHiddenByModeration != true] | order(_updatedAt desc)[0...3] {
   _id,
   title,
   "slug": slug.current,
