@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { users, banned_identities } from "../../db/schema";
 import { useDB } from "../../utils/db";
+import { isEmailAdmin } from "../../utils/admin";
 
 async function sha256(message: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(message);
@@ -32,13 +33,27 @@ export default defineOAuthGoogleEventHandler({
       .from(users)
       .where(eq(users.id, providerAccountId));
 
+    const email = user.email || "";
+    const isInitialAdmin = isEmailAdmin(email);
+    let isAdmin = isInitialAdmin;
+
     if (currentUser.length === 0) {
       await db.insert(users).values({
         id: providerAccountId,
         username: user.name || user.email,
         status: "active",
         createdAt: new Date(),
+        isAdmin,
       });
+    } else {
+      isAdmin = currentUser[0]?.isAdmin ?? false;
+      if (isInitialAdmin && !isAdmin) {
+        isAdmin = true;
+        await db
+          .update(users)
+          .set({ isAdmin: true })
+          .where(eq(users.id, providerAccountId));
+      }
     }
 
     await setUserSession(event, {
@@ -46,6 +61,7 @@ export default defineOAuthGoogleEventHandler({
         id: providerAccountId,
         username: user.name || user.email,
         provider: "google",
+        isAdmin,
       },
     });
 

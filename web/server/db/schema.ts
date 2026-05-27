@@ -7,6 +7,7 @@ export const users = sqliteTable("users", {
     .notNull()
     .default("active"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
 });
 
 export const infractions = sqliteTable("infractions", {
@@ -34,3 +35,17 @@ export const banned_identities = sqliteTable("banned_identities", {
   banned_at: integer("banned_at", { mode: "timestamp" }).notNull(),
   reason: text("reason"),
 });
+
+export const accountDeletionRequests = sqliteTable(
+  "account_deletion_requests",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    status: text("status", { enum: ["pending", "approved", "rejected"] })
+      .notNull()
+      .default("pending"),
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  },
+);
