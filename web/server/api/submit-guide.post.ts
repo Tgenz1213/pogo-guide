@@ -108,8 +108,8 @@ export default defineEventHandler(async (event) => {
 
   const mutationUrl = `https://${projectId}.api.sanity.io/v2024-03-01/data/mutate/${dataset}`;
 
-  // Generate a random ID for the draft
-  const draftId = `drafts.user-guide-${crypto.randomUUID()}`;
+  // Generate a stable published document ID (no drafts. prefix)
+  const guideId = `user-guide-${crypto.randomUUID()}`;
 
   // Build the guide payload
   interface GuideDocument {
@@ -127,7 +127,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const guideDoc: GuideDocument = {
-    _id: draftId,
+    _id: guideId,
     _type: "guide",
     title,
     slug: {

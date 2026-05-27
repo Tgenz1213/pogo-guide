@@ -184,7 +184,7 @@ const submitForm = async () => {
 
     if (data.success) {
       successMessage.value =
-        "Thank you! Your guide has been submitted for review.";
+        "Thank you! Your guide has been submitted and published.";
       // Reset form
       title.value = "";
       description.value = "";
@@ -241,8 +241,7 @@ const submitForm = async () => {
     </h1>
     <p class="text-slate-600 dark:text-slate-300 mb-8">
       Share your knowledge with the community! Use the form below to draft a new
-      guide. Your submission will be saved as a draft and reviewed by moderators
-      before publishing.
+      guide. Your submission is published automatically.
     </p>
 
     <div

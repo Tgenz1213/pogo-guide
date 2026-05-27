@@ -9,11 +9,7 @@ export default defineEventHandler(async (event) => {
     const db = useDB(event);
 
     // Determine D1 status based on Sanity state
-    const newStatus = body.isHiddenByModeration
-      ? "rejected"
-      : body.isUserSubmitted
-        ? "pending"
-        : "published";
+    const newStatus = body.isHiddenByModeration ? "rejected" : "published";
 
     await db
       .update(guideSubmissions)
