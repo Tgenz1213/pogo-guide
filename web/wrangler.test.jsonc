@@ -1,0 +1,34 @@
+{
+  "name": "pogo-guide-test",
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2026-05-25",
+  "observability": {
+    "enabled": true
+  },
+  "main": "./.cloudflare/server/index.mjs",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./.cloudflare/public/"
+  },
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [
+    {
+      "binding": "POGO_RATE_LIMIT",
+      "id": "b354aaa883f848af8ac07ceb7d74acb4"
+    }
+  ],
+  "vars": {
+    "NUXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAADVbfcTmxy5OfQ7i",
+    "NUXT_OAUTH_GOOGLE_CLIENT_ID": "453047639463-5tcg1tnbr12prhvepeb254l2vtlopfoa.apps.googleusercontent.com",
+    "NUXT_OAUTH_DISCORD_CLIENT_ID": "1509199470464733266"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pogo-guide-preview",
+      "database_id": "31b5f470-52dc-4de5-99bd-ba4dd03cbff2",
+      "preview_database_id": "31b5f470-52dc-4de5-99bd-ba4dd03cbff2",
+      "migrations_dir": "./server/db/migrations"
+    }
+  ]
+}
