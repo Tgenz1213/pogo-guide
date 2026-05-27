@@ -31,7 +31,9 @@
     "@sentry/nuxt": "^10.53.1",
     "@tiptap/starter-kit": "^3.23.6",
     "@tiptap/vue-3": "^3.23.6",
+    "drizzle-orm": "^0.45.2",
     "nuxt": "^4.4.6",
+    "nuxt-auth-utils": "^0.5.29",
     "ofetch": "^1.5.1",
     "sanitize-html": "^2.17.4",
     "vue": "^3.5.34",
@@ -39,6 +41,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.16.9",
     "@nuxt/a11y": "1.0.0-alpha.1",
     "@nuxt/image": "^2.0.0",
     "@nuxtjs/color-mode": "^4.0.0",
@@ -51,6 +54,7 @@
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/ui": "^4.1.7",
     "@vue/test-utils": "^2.4.10",
+    "drizzle-kit": "^0.31.10",
     "nitro-cloudflare-dev": "^0.2.2",
     "vitest": "^4.1.7",
     "wrangler": "^4.94.0"
