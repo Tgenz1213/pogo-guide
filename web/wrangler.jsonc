@@ -18,6 +18,18 @@
     },
   ],
   "vars": {
-    "NUXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAADVbfcTmxy5OfQ7i"
-  }
+    "NUXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAADVbfcTmxy5OfQ7i",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pogo-guide",
+      "database_id": "24600c01-73aa-4ecc-bedb-784c40477119",
+    },
+    {
+      "binding": "PREVIEW_DB",
+      "database_name": "pogo-guide-preview",
+      "database_id": "31b5f470-52dc-4de5-99bd-ba4dd03cbff2",
+    },
+  ],
 }
