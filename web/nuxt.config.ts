@@ -49,6 +49,21 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: ["@portabletext/vue", "@sanity/client"],
     },
+    build: {
+      rollupOptions: {
+        onwarn(warning, warn) {
+          // VueUse ships #__PURE__ annotations in positions Rollup can't interpret — safe to ignore
+          if (
+            warning.code === "INVALID_ANNOTATION" &&
+            warning.id?.includes("@vueuse/core")
+          )
+            return;
+          // nuxt:module-preload-polyfill doesn't emit sourcemaps — safe to ignore
+          if (warning.message?.includes("nuxt:module-preload-polyfill")) return;
+          warn(warning);
+        },
+      },
+    },
   },
   runtimeConfig: {
     turnstile: {

@@ -11,54 +11,69 @@ async function sha256(message: string): Promise<string> {
 
 export default defineOAuthDiscordEventHandler({
   async onSuccess(event, { user }) {
-    const db = useDB(event);
+    try {
+      const db = useDB(event);
+      const config = useRuntimeConfig(event);
+      if (!config.session?.password) {
+        throw new Error("Missing NUXT_SESSION_PASSWORD runtime config");
+      }
 
-    const providerAccountId = `discord:${user.id}`;
-    const pepper = process.env.NUXT_HASH_PEPPER || "fallback_pepper";
-    const identityHash = await sha256(providerAccountId + pepper);
+      const providerAccountId = `discord:${user.id}`;
+      const pepper = process.env.NUXT_HASH_PEPPER || "fallback_pepper";
+      const identityHash = await sha256(providerAccountId + pepper);
 
-    const banned = await db
-      .select()
-      .from(banned_identities)
-      .where(eq(banned_identities.hashed_identity, identityHash));
+      const banned = await db
+        .select()
+        .from(banned_identities)
+        .where(eq(banned_identities.hashed_identity, identityHash));
 
-    if (banned.length > 0) {
-      return sendRedirect(event, "/login?error=banned");
-    }
+      if (banned.length > 0) {
+        return sendRedirect(event, "/login?error=banned");
+      }
 
-    const currentUser = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, providerAccountId));
+      const currentUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, providerAccountId));
 
-    let isAdmin = false;
+      const username =
+        user.username ||
+        user.global_name ||
+        user.email ||
+        `discord-user-${String(user.id || "unknown")}`;
 
-    if (currentUser.length === 0) {
-      const adminEmails = process.env.INITIAL_ADMIN_EMAILS?.split(",") || [];
-      const userEmail = user.email;
-      isAdmin = !!userEmail && adminEmails.includes(userEmail);
+      let isAdmin = false;
 
-      await db.insert(users).values({
-        id: providerAccountId,
-        username: user.username,
-        status: "active",
-        createdAt: new Date(),
-        isAdmin,
+      if (currentUser.length === 0) {
+        const adminEmails = process.env.INITIAL_ADMIN_EMAILS?.split(",") || [];
+        const userEmail = user.email;
+        isAdmin = !!userEmail && adminEmails.includes(userEmail);
+
+        await db.insert(users).values({
+          id: providerAccountId,
+          username,
+          status: "active",
+          createdAt: new Date(),
+          isAdmin,
+        });
+      } else {
+        isAdmin = currentUser[0]!.isAdmin;
+      }
+
+      await setUserSession(event, {
+        user: {
+          id: providerAccountId,
+          username,
+          provider: "discord",
+          isAdmin,
+        },
       });
-    } else {
-      isAdmin = currentUser[0]!.isAdmin;
+
+      return sendRedirect(event, "/submit-guide");
+    } catch (error) {
+      console.error("Discord OAuth post-login failure:", error);
+      return sendRedirect(event, "/login?error=oauth_callback_failed");
     }
-
-    await setUserSession(event, {
-      user: {
-        id: providerAccountId,
-        username: user.username,
-        provider: "discord",
-        isAdmin,
-      },
-    });
-
-    return sendRedirect(event, "/submit-guide");
   },
   onError(event, error) {
     console.error("Discord OAuth Error:", error);
