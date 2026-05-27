@@ -1,8 +1,3 @@
-import {
-  defineOAuthDiscordEventHandler,
-  setUserSession,
-  sendRedirect,
-} from "#imports";
 import { eq } from "drizzle-orm";
 import { users, banned_identities } from "../../db/schema";
 import { useDB } from "../../utils/db";
@@ -25,7 +20,7 @@ export default defineOAuthDiscordEventHandler({
     const banned = await db
       .select()
       .from(banned_identities)
-      .where(eq(banned_identities.identityHash, identityHash));
+      .where(eq(banned_identities.hashed_identity, identityHash));
 
     if (banned.length > 0) {
       return sendRedirect(event, "/login?error=banned");
