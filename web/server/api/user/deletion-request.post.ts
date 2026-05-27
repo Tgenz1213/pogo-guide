@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
   await db.insert(accountDeletionRequests).values({
     id: newId,
-    userId: session.id,
+    userId: session.user.id,
     status: "pending",
     createdAt: new Date(),
   });

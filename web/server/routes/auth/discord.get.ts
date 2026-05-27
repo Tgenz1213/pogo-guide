@@ -31,13 +31,22 @@ export default defineOAuthDiscordEventHandler({
       .from(users)
       .where(eq(users.id, providerAccountId));
 
+    let isAdmin = false;
+
     if (currentUser.length === 0) {
+      const adminEmails = process.env.INITIAL_ADMIN_EMAILS?.split(",") || [];
+      const userEmail = user.email;
+      isAdmin = !!userEmail && adminEmails.includes(userEmail);
+
       await db.insert(users).values({
         id: providerAccountId,
         username: user.username,
         status: "active",
         createdAt: new Date(),
+        isAdmin,
       });
+    } else {
+      isAdmin = currentUser[0]!.isAdmin;
     }
 
     await setUserSession(event, {
@@ -45,6 +54,7 @@ export default defineOAuthDiscordEventHandler({
         id: providerAccountId,
         username: user.username,
         provider: "discord",
+        isAdmin,
       },
     });
 
