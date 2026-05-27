@@ -1,4 +1,9 @@
-import { setUserSession, useRuntimeConfig } from "#imports";
+import { z } from "zod";
+
+const bodySchema = z.object({
+  id: z.string().optional().default("e2e:testuser"),
+  username: z.string().optional().default("TestUser"),
+});
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event);
@@ -11,12 +16,12 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const body = await readBody(event);
+  const { id, username } = await readValidatedBody(event, bodySchema.parse);
 
   await setUserSession(event, {
     user: {
-      id: body.id || "e2e:testuser",
-      username: body.username || "TestUser",
+      id,
+      username,
       provider: "e2e",
     },
   });
