@@ -6,6 +6,11 @@ import { z } from "zod";
 import { FetchError } from "ofetch";
 
 const config = useRuntimeConfig();
+
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const isE2eMode = computed(() => config.public.e2eMode);
 const hasTurnstileSiteKey = computed(() =>
   Boolean(config.public.turnstileSiteKey),

@@ -4,6 +4,12 @@ import SearchAutocomplete from "./SearchAutocomplete.vue";
 
 const isMenuOpen = ref(false);
 const colorMode = useColorMode();
+const { loggedIn, clear } = useUserSession();
+
+const handleLogout = async () => {
+  await clear();
+  navigateTo("/");
+};
 
 const toggleDarkMode = () => {
   colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
@@ -104,6 +110,13 @@ const closeMenu = () => {
           </svg>
           Submit Guide
         </NuxtLink>
+        <button
+          v-if="loggedIn"
+          class="hover:text-red-500 transition-colors duration-200 flex items-center gap-1"
+          @click="handleLogout"
+        >
+          Logout
+        </button>
       </nav>
 
       <!-- Utility / Search -->
@@ -190,6 +203,13 @@ const closeMenu = () => {
           >
             Submit Guide
           </NuxtLink>
+          <button
+            v-if="loggedIn"
+            class="text-left hover:text-red-500 transition-colors duration-200 block py-2 border-b border-slate-200 dark:border-brand-surface"
+            @click="handleLogout"
+          >
+            Logout
+          </button>
         </nav>
         <div class="pt-2">
           <button

@@ -4,9 +4,10 @@ import vue from "@vitejs/plugin-vue";
 export default defineConfig({
   plugins: [vue()],
   test: {
-    pool: "@cloudflare/vitest-pool-workers",
-    poolOptions: { workers: { wrangler: { configPath: "./wrangler.jsonc" } } },
+    name: "ui",
+    environment: "jsdom",
     globals: true,
-    exclude: ["tests/e2e/**", "node_modules/**"],
+    include: ["tests/**/*.test.ts"],
+    exclude: ["tests/e2e/**", "node_modules/**", "tests/server/**"],
   },
 });
