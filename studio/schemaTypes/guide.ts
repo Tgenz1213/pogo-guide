@@ -89,5 +89,26 @@ export const guide = defineType({
       fieldset: 'admin',
       hidden: ({document}) => !document?.isUserSubmitted,
     }),
+    defineField({
+      name: 'submitterId',
+      title: 'Submitter ID',
+      type: 'string',
+      description: 'The D1 User ID of the person who submitted this guide.',
+      fieldset: 'admin',
+      readOnly: true,
+      hidden: ({document}) => !document?.isUserSubmitted,
+    }),
+    defineField({
+      name: 'isHiddenByModeration',
+      title: 'Hidden By Moderation',
+      type: 'boolean',
+      description: 'Soft-delete flag for moderation. Checked by edge proxy to hide guides.',
+      fieldset: 'admin',
+      initialValue: false,
+      readOnly: ({currentUser}) => {
+        const isAdmin = currentUser?.roles.some(role => role.name === 'administrator');
+        return !isAdmin;
+      }
+    }),
   ],
 })
