@@ -3,8 +3,13 @@ import { ref, computed } from "vue";
 import SearchAutocomplete from "./SearchAutocomplete.vue";
 
 const isMenuOpen = ref(false);
+const isProfileMenuOpen = ref(false);
+
+const closeProfileMenu = () => {
+  isProfileMenuOpen.value = false;
+};
 const colorMode = useColorMode();
-const { loggedIn, clear } = useUserSession();
+const { loggedIn, clear, user } = useUserSession();
 
 const handleLogout = async () => {
   await clear();
@@ -110,13 +115,68 @@ const closeMenu = () => {
           </svg>
           Submit Guide
         </NuxtLink>
-        <button
-          v-if="loggedIn"
-          class="hover:text-red-500 transition-colors duration-200 flex items-center gap-1"
-          @click="handleLogout"
-        >
-          Logout
-        </button>
+        <div v-if="loggedIn" class="relative">
+          <div
+            v-if="isProfileMenuOpen"
+            class="fixed inset-0 z-40"
+            @click="closeProfileMenu"
+          ></div>
+          <button
+            class="hover:text-blue-500 transition-colors duration-200 flex items-center gap-1 relative z-50"
+            @click="isProfileMenuOpen = !isProfileMenuOpen"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+            Profile
+          </button>
+
+          <div
+            v-if="isProfileMenuOpen"
+            class="absolute right-0 mt-2 w-48 bg-white dark:bg-brand-bg rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none z-50 border border-slate-200 dark:border-brand-surface"
+            @click="closeProfileMenu"
+          >
+            <NuxtLink
+              to="/profile/my-forms"
+              class="block px-4 py-2 text-sm font-semibold text-slate-700 dark:text-brand-text hover:bg-slate-100 dark:hover:bg-brand-surface transition-colors"
+            >
+              My Forms
+            </NuxtLink>
+            <NuxtLink
+              to="/profile/settings"
+              class="block px-4 py-2 text-sm font-semibold text-slate-700 dark:text-brand-text hover:bg-slate-100 dark:hover:bg-brand-surface transition-colors"
+            >
+              Settings
+            </NuxtLink>
+            <NuxtLink
+              v-if="user?.isAdmin"
+              to="/admin/users"
+              class="block px-4 py-2 text-sm font-semibold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/30 transition-colors"
+            >
+              Admin Dashboard
+            </NuxtLink>
+            <div
+              class="border-t border-slate-100 dark:border-brand-surface my-1"
+            ></div>
+            <button
+              class="w-full text-left block px-4 py-2 text-sm font-semibold text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+              @click="handleLogout"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
       </nav>
 
       <!-- Utility / Search -->
@@ -203,13 +263,43 @@ const closeMenu = () => {
           >
             Submit Guide
           </NuxtLink>
-          <button
+          <div
             v-if="loggedIn"
-            class="text-left hover:text-red-500 transition-colors duration-200 block py-2 border-b border-slate-200 dark:border-brand-surface"
-            @click="handleLogout"
+            class="border-b border-slate-200 dark:border-brand-surface pb-2"
           >
-            Logout
-          </button>
+            <span
+              class="block py-2 text-slate-900 dark:text-brand-text uppercase text-xs tracking-wider"
+              >Profile</span
+            >
+            <NuxtLink
+              to="/profile/my-forms"
+              class="hover:text-blue-500 transition-colors duration-200 block py-2 pl-4"
+              @click="closeMenu"
+            >
+              My Forms
+            </NuxtLink>
+            <NuxtLink
+              to="/profile/settings"
+              class="hover:text-blue-500 transition-colors duration-200 block py-2 pl-4"
+              @click="closeMenu"
+            >
+              Settings
+            </NuxtLink>
+            <NuxtLink
+              v-if="user?.isAdmin"
+              to="/admin/users"
+              class="hover:text-purple-500 transition-colors duration-200 block py-2 pl-4"
+              @click="closeMenu"
+            >
+              Admin Dashboard
+            </NuxtLink>
+            <button
+              class="w-full text-left text-red-500 hover:text-red-600 transition-colors duration-200 block py-2 pl-4 mt-1"
+              @click="handleLogout"
+            >
+              Logout
+            </button>
+          </div>
         </nav>
         <div class="pt-2">
           <button

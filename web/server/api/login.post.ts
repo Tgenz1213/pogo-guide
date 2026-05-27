@@ -3,6 +3,7 @@ import { z } from "zod";
 const bodySchema = z.object({
   id: z.string().optional().default("e2e:testuser"),
   username: z.string().optional().default("TestUser"),
+  isAdmin: z.boolean().optional().default(false),
 });
 
 export default defineEventHandler(async (event) => {
@@ -16,13 +17,17 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { id, username } = await readValidatedBody(event, bodySchema.parse);
+  const { id, username, isAdmin } = await readValidatedBody(
+    event,
+    bodySchema.parse,
+  );
 
   await setUserSession(event, {
     user: {
       id,
       username,
       provider: "e2e",
+      isAdmin,
     },
   });
 
