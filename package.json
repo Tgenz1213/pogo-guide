@@ -25,13 +25,17 @@
   },
   "lint-staged": {
     "*.{js,ts,mjs}": [
+      "prettier --write",
       "eslint --fix --ignore-pattern studio/** --no-warn-ignored",
       "pnpm --filter web run test"
     ],
     "web/**/*.{js,ts,vue,mjs}": [
-      "eslint --fix"
+      "prettier --write",
+      "eslint --fix",
+      "pnpm --filter web run test"
     ],
     "studio/**/*.{js,ts,mjs}": [
+      "prettier --write",
       "pnpm --dir studio exec eslint --fix"
     ],
     "*.{json,md,css}": [
