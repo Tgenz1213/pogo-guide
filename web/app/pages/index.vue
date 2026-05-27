@@ -93,7 +93,7 @@ const timeAgo = (dateString?: string) => {
 </script>
 
 <template>
-  <main class="w-full">
+  <div class="w-full">
     <!-- Hero Section -->
     <section
       class="max-w-7xl mx-auto px-6 min-h-[calc(100vh-4rem)] flex flex-col justify-center py-16 md:py-24 space-y-10"
@@ -229,5 +229,5 @@ const timeAgo = (dateString?: string) => {
         </NuxtLink>
       </div>
     </section>
-  </main>
+  </div>
 </template>
