@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import type { CategoryGuidesQueryResult } from "~~/types/sanity";
+import type { CategoryGuidesQueryResult } from "~~/shared/types/sanity";
 
 // guides/category/[slug].vue
 const route = useRoute();

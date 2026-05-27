@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CategoriesQueryResult } from "~~/types/sanity";
+import type { CategoriesQueryResult } from "~~/shared/types/sanity";
 
 // guides/index.vue
 const categoriesQuery = groq`*[_type == "category"] {

@@ -2,7 +2,7 @@
 import { useRoute } from "vue-router";
 import { useSanityQuery } from "#imports";
 import { PortableText } from "@portabletext/vue";
-import type { Guide } from "~~/types/sanity";
+import type { Guide } from "~~/shared/types/sanity";
 
 const route = useRoute();
 

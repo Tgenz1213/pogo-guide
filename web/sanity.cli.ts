@@ -8,6 +8,6 @@ export default defineCliConfig({
   typegen: {
     path: "./**/*.{vue,ts}",
     schema: "../studio/schema.json",
-    generates: "./types/sanity.d.ts",
+    generates: "./shared/types/sanity.d.ts",
   },
 });

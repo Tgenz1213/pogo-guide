@@ -23,7 +23,8 @@ const config: KnipConfig = {
     "web/sanity.cli.ts": ["unlisted"],
     "web/server/api/submit-suggestion.post.ts": ["unlisted"],
     "web/tailwind.config.ts": ["unlisted"],
-    "web/types/sanity.d.ts": ["exports", "types"],
+    "web/shared/types/sanity.d.ts": ["exports", "types"],
+    "web/shared/types/auth.d.ts": ["files"],
     "web/server/db/schema.ts": ["exports"],
   },
 };
