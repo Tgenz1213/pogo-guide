@@ -1,4 +1,3 @@
-import { defineEventHandler, readBody, createError } from "h3";
 import { setUserSession, useRuntimeConfig } from "#imports";
 
 export default defineEventHandler(async (event) => {

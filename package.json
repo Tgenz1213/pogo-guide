@@ -25,7 +25,8 @@
   },
   "lint-staged": {
     "*.{js,ts,mjs}": [
-      "eslint --fix --ignore-pattern studio/** --no-warn-ignored"
+      "eslint --fix --ignore-pattern studio/** --no-warn-ignored",
+      "pnpm --filter web run test"
     ],
     "web/**/*.{js,ts,vue,mjs}": [
       "eslint --fix"

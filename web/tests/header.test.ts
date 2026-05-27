@@ -12,6 +12,11 @@ describe("SiteHeader", () => {
       fetch: vi.fn().mockResolvedValue([]),
     }));
     vi.stubGlobal("useRouter", () => ({ push: vi.fn() }));
+    vi.stubGlobal("useUserSession", () => ({
+      loggedIn: { value: false },
+      user: { value: null },
+      clear: vi.fn(),
+    }));
   });
 
   const mountHeader = () =>
