@@ -47,6 +47,7 @@
     "@nuxtjs/color-mode": "^4.0.0",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@playwright/test": "^1.60.0",
+    "@portabletext/types": "^4.0.2",
     "@sanity/cli": "^6.6.0",
     "@sanity/client": "^7.22.0",
     "@types/node": "^25.9.1",
