@@ -34,6 +34,9 @@ jobs:
       - name: Run Lint
         run: pnpm run lint
 
+      - name: Run Vitest (Edge Tests)
+        run: pnpm --filter web run test
+
       - name: Build Web
         run: pnpm --filter web run build
 
