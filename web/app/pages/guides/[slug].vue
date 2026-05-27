@@ -2,6 +2,7 @@
 import { useRoute } from "vue-router";
 import { useSanityQuery } from "#imports";
 import { PortableText } from "@portabletext/vue";
+import type { PortableTextBlock } from "@portabletext/types";
 import type { Guide } from "~~/shared/types/sanity";
 
 const route = useRoute();
@@ -73,7 +74,10 @@ useSeo(pageTitle, pageDescription);
     </div>
 
     <div class="guide-content max-w-none text-slate-600 dark:text-slate-300">
-      <PortableText v-if="guideContent.length" :value="guideContent as any" />
+      <PortableText
+        v-if="guideContent.length"
+        :value="guideContent as unknown as PortableTextBlock[]"
+      />
       <p v-else>This guide has no published body content yet.</p>
     </div>
 
