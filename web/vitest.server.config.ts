@@ -13,6 +13,7 @@ export default defineConfig({
     include: [
       "tests/server/admin.test.ts",
       "tests/server/deletion-request.test.ts",
+      "tests/server/guide-reports.test.ts",
     ],
     exclude: ["tests/e2e/**", "node_modules/**"],
   },

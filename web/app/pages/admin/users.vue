@@ -1,14 +1,9 @@
 <template>
   <div class="max-w-6xl mx-auto p-6">
-    <div class="flex justify-between items-center mb-6">
+    <div class="mb-6">
       <h1 class="text-3xl font-bold text-slate-900 dark:text-white">
         User Administration
       </h1>
-      <NuxtLink
-        to="/admin/deletion-requests"
-        class="text-blue-600 hover:underline"
-        >View Deletion Requests &rarr;</NuxtLink
-      >
     </div>
 
     <div class="mb-6 flex gap-4">
@@ -192,7 +187,8 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
 definePageMeta({
-  middleware: ["auth"], // Additional admin check happens in API, but middleware ensures login
+  layout: "admin",
+  middleware: ["auth"],
 });
 
 const page = ref(1);

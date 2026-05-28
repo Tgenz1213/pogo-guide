@@ -38,6 +38,31 @@ const categoryTitle = computed(
 );
 
 useSeo(pageTitle, pageDescription);
+
+// ── Reporting ──────────────────────────────────────────────────────────────
+const { loggedIn } = useUserSession();
+const sanityDocId = computed(() => guide?.value?._id ?? "");
+
+const showReportModal = ref(false);
+const hasReported = ref(false);
+
+// Check if the logged-in user has already reported this guide
+watchEffect(async () => {
+  if (!loggedIn.value || !sanityDocId.value) return;
+  try {
+    const result = await $fetch<{ hasReported: boolean }>(
+      `/api/guide-reports/${sanityDocId.value}`,
+    );
+    hasReported.value = result.hasReported;
+  } catch {
+    // Not critical — silently ignore
+  }
+});
+
+function onReportSubmitted() {
+  showReportModal.value = false;
+  hasReported.value = true;
+}
 </script>
 
 <template>
@@ -80,6 +105,37 @@ useSeo(pageTitle, pageDescription);
       />
       <p v-else>This guide has no published body content yet.</p>
     </div>
+
+    <!-- Report button + modal -->
+    <div v-if="loggedIn" class="mt-10 flex justify-end">
+      <button
+        class="report-btn"
+        :class="{ reported: hasReported }"
+        :disabled="hasReported"
+        @click="showReportModal = true"
+      >
+        <svg
+          class="report-btn-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+          <line x1="4" y1="22" x2="4" y2="15" />
+        </svg>
+        <span>{{ hasReported ? "Reported ✓" : "Report" }}</span>
+      </button>
+    </div>
+
+    <GuideReportModal
+      v-if="showReportModal && sanityDocId"
+      :sanity-doc-id="sanityDocId"
+      @submitted="onReportSubmitted"
+      @cancelled="showReportModal = false"
+    />
 
     <!-- The suggestion form -->
     <div class="mt-16 border-t border-slate-200 dark:border-slate-800 pt-8">
@@ -138,5 +194,60 @@ useSeo(pageTitle, pageDescription);
 
 .dark .guide-content :deep(h3) {
   color: rgb(248 250 252);
+}
+
+/* ── Report button ─────────────────────────────── */
+.report-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.report-btn:hover:not(:disabled) {
+  color: #ef4444;
+  border-color: #fca5a5;
+  background: #fff1f2;
+}
+
+.report-btn.reported,
+.report-btn:disabled {
+  color: #22c55e;
+  border-color: #86efac;
+  background: #f0fdf4;
+  cursor: default;
+}
+
+.dark .report-btn {
+  border-color: #334155;
+  color: #475569;
+}
+
+.dark .report-btn:hover:not(:disabled) {
+  color: #f87171;
+  border-color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.dark .report-btn.reported {
+  color: #4ade80;
+  border-color: #4ade80;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.report-btn-icon {
+  width: 0.875rem;
+  height: 0.875rem;
 }
 </style>

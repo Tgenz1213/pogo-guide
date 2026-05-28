@@ -1,4 +1,9 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import {
+  sqliteTable,
+  text,
+  integer,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(), // Format: `${provider}:${providerAccountId}`
@@ -48,4 +53,31 @@ export const accountDeletionRequests = sqliteTable(
       .default("pending"),
     createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   },
+);
+
+export const guideReports = sqliteTable(
+  "guide_reports",
+  {
+    id: text("id").primaryKey(),
+    reporterId: text("reporter_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    sanityDocId: text("sanity_doc_id").notNull(),
+    reason: text("reason", {
+      enum: ["inaccurate", "spam", "copyright", "inappropriate", "other"],
+    }).notNull(),
+    details: text("details"),
+    status: text("status", {
+      enum: ["pending", "reviewed", "dismissed"],
+    })
+      .notNull()
+      .default("pending"),
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  },
+  (table) => [
+    uniqueIndex("guide_reports_reporter_guide_idx").on(
+      table.reporterId,
+      table.sanityDocId,
+    ),
+  ],
 );

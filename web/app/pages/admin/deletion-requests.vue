@@ -1,12 +1,9 @@
 <template>
   <div class="max-w-6xl mx-auto p-6">
-    <div class="flex justify-between items-center mb-6">
+    <div class="mb-6">
       <h1 class="text-3xl font-bold text-slate-900 dark:text-white">
         Account Deletion Requests
       </h1>
-      <NuxtLink to="/admin/users" class="text-blue-600 hover:underline"
-        >&larr; Back to Users</NuxtLink
-      >
     </div>
 
     <div v-if="pending" class="text-slate-500">Loading requests...</div>
@@ -101,6 +98,7 @@
 
 <script setup lang="ts">
 definePageMeta({
+  layout: "admin",
   middleware: ["auth"],
 });
 
