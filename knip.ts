@@ -3,7 +3,7 @@ import type { KnipConfig } from "knip";
 const config: KnipConfig = {
   workspaces: {
     web: {
-      entry: ["sanity.cli.ts", "tailwind.config.ts"],
+      entry: ["sanity.cli.ts"],
       project: ["**/*.{ts,vue}!"],
     },
     studio: {
@@ -16,7 +16,6 @@ const config: KnipConfig = {
     "lint-staged",
     "vue-tsc",
     "prettier",
-    "h3",
     "cloudflare",
   ],
   ignoreIssues: {
@@ -25,6 +24,8 @@ const config: KnipConfig = {
     "web/tailwind.config.ts": ["unlisted"],
     "web/shared/types/sanity.d.ts": ["exports", "types"],
     "web/shared/types/auth.d.ts": ["files"],
+    "web/tests/nuxt-test-globals.d.ts": ["files"],
+    "web/worker-configuration.d.ts": ["files"],
     "web/server/db/schema.ts": ["exports"],
   },
 };
