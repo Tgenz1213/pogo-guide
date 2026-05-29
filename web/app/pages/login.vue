@@ -2,10 +2,27 @@
 const route = useRoute();
 const error = computed(() => route.query.error);
 
+// Save the intended redirect URL in a cookie for OAuth flow
+const redirectCookie = useCookie("auth_redirect", {
+  maxAge: 300, // 5 minutes
+  path: "/",
+  sameSite: "lax",
+  secure:
+    process.env.NODE_ENV === "production" ||
+    useRequestURL().protocol === "https:",
+});
+const rawRedirect = route.query.redirect as string | undefined;
+if (!rawRedirect) {
+  redirectCookie.value = null; // Clear any stale cookie if no redirect is requested
+} else {
+  redirectCookie.value = sanitizeRedirectPath(rawRedirect);
+}
+
 // Optional: redirect if already logged in
 const { loggedIn } = useUserSession();
 if (loggedIn.value) {
-  navigateTo("/submit-guide");
+  const fallback = sanitizeRedirectPath(redirectCookie.value);
+  navigateTo(fallback);
 }
 </script>
 

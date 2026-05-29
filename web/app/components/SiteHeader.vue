@@ -143,7 +143,7 @@ const closeMenu = () => {
         </NuxtLink>
         <NuxtLink
           v-if="!loggedIn"
-          to="/login"
+          :to="{ path: '/login', query: { redirect: $route.fullPath } }"
           class="hover:text-blue-500 transition-colors duration-200 flex items-center gap-1"
         >
           <svg
@@ -351,7 +351,7 @@ const closeMenu = () => {
           </NuxtLink>
           <NuxtLink
             v-if="!loggedIn"
-            to="/login"
+            :to="{ path: '/login', query: { redirect: $route.fullPath } }"
             class="hover:text-blue-500 transition-colors duration-200 flex items-center gap-2 py-2 border-b border-slate-200 dark:border-brand-surface"
             @click="closeMenu"
           >

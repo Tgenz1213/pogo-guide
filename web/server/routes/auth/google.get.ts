@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { users, banned_identities } from "../../db/schema";
 import { useDB } from "../../utils/db";
 import { isEmailAdmin } from "../../utils/admin";
+import { sanitizeRedirectPath } from "~~/shared/utils/auth";
 
 async function sha256(message: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(message);
@@ -75,7 +76,12 @@ export default defineOAuthGoogleEventHandler({
         },
       });
 
-      return sendRedirect(event, "/submit-guide");
+      const rawRedirectUrl = getCookie(event, "auth_redirect");
+      deleteCookie(event, "auth_redirect", { path: "/" });
+
+      const redirectUrl = sanitizeRedirectPath(rawRedirectUrl);
+
+      return sendRedirect(event, redirectUrl);
     } catch (error) {
       console.error("Google OAuth post-login failure:", error);
       return sendRedirect(event, "/login?error=oauth_callback_failed");
