@@ -115,7 +115,28 @@ const closeMenu = () => {
           </svg>
           Submit Guide
         </NuxtLink>
-        <div v-if="loggedIn" class="relative">
+        <NuxtLink
+          v-if="!loggedIn"
+          to="/login"
+          class="hover:text-blue-500 transition-colors duration-200 flex items-center gap-1"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+            />
+          </svg>
+          Login
+        </NuxtLink>
+        <div v-else class="relative">
           <div
             v-if="isProfileMenuOpen"
             class="fixed inset-0 z-40"
@@ -263,8 +284,16 @@ const closeMenu = () => {
           >
             Submit Guide
           </NuxtLink>
+          <NuxtLink
+            v-if="!loggedIn"
+            to="/login"
+            class="hover:text-blue-500 transition-colors duration-200 block py-2 border-b border-slate-200 dark:border-brand-surface"
+            @click="closeMenu"
+          >
+            Login
+          </NuxtLink>
           <div
-            v-if="loggedIn"
+            v-else
             class="border-b border-slate-200 dark:border-brand-surface pb-2"
           >
             <span
