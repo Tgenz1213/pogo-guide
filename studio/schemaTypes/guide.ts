@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import {isAdministrator} from './auth'
 
 export const guide = defineType({
   name: 'guide',
@@ -31,14 +32,7 @@ export const guide = defineType({
       title: 'Category',
       type: 'reference',
       to: [{type: 'category'}],
-      validation: (Rule) =>
-        Rule.custom((value, context) => {
-          const document = context.document
-          if (!value && !document?.suggestedCategory) {
-            return 'Category is required if no suggested category is provided.'
-          }
-          return true
-        }),
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'tags',
@@ -59,10 +53,7 @@ export const guide = defineType({
       description: 'Marks this guide as featured on the home page.',
       fieldset: 'admin',
       initialValue: false,
-      readOnly: ({currentUser}) => {
-        const isAdmin = currentUser?.roles.some(role => role.name === 'administrator');
-        return !isAdmin;
-      }
+      readOnly: ({currentUser}) => !isAdministrator(currentUser ?? undefined),
     }),
     defineField({
       name: 'isUserSubmitted',
@@ -71,23 +62,6 @@ export const guide = defineType({
       description: 'Indicates if this guide was submitted by a user and is pending review.',
       fieldset: 'admin',
       initialValue: false,
-    }),
-    defineField({
-      name: 'suggestedCategory',
-      title: 'Suggested Category',
-      type: 'string',
-      description: 'A new category suggested by the user.',
-      fieldset: 'admin',
-      hidden: ({document}) => !document?.isUserSubmitted,
-    }),
-    defineField({
-      name: 'suggestedTags',
-      title: 'Suggested Tags',
-      type: 'array',
-      of: [{type: 'string'}],
-      description: 'New tags suggested by the user.',
-      fieldset: 'admin',
-      hidden: ({document}) => !document?.isUserSubmitted,
     }),
     defineField({
       name: 'submitterId',
@@ -105,10 +79,7 @@ export const guide = defineType({
       description: 'Soft-delete flag for moderation. Checked by edge proxy to hide guides.',
       fieldset: 'admin',
       initialValue: false,
-      readOnly: ({currentUser}) => {
-        const isAdmin = currentUser?.roles.some(role => role.name === 'administrator');
-        return !isAdmin;
-      }
+      readOnly: ({currentUser}) => !isAdministrator(currentUser ?? undefined),
     }),
   ],
 })
