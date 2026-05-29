@@ -23,5 +23,18 @@ export const suggestion = defineType({
       type: 'datetime',
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'status',
+      title: 'Status',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Pending', value: 'pending'},
+          {title: 'Reviewed', value: 'reviewed'},
+          {title: 'Dismissed', value: 'dismissed'},
+        ],
+      },
+      initialValue: 'pending',
+    }),
   ],
 })
