@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
-import { z } from "zod";
+import { submitGuideSchema } from "~~/shared/utils/validation";
 import { FetchError } from "ofetch";
 
 definePageMeta({
@@ -108,45 +108,58 @@ watch(
   { deep: true },
 );
 
-// Zod Schema
-const submitGuideSchema = z
-  .object({
-    title: z
-      .string()
-      .min(3, "Title must be at least 3 characters")
-      .max(100, "Title is too long"),
-    description: z.string().max(200, "Description is too long").optional(),
-    categoryId: z.string().optional(),
-    suggestedCategory: z
-      .string()
-      .max(50, "Suggested category is too long")
-      .optional(),
-    htmlContent: z
-      .string()
-      .min(10, "Guide content is too short. Please add more details.")
-      .max(50000, "Guide content is too long."),
-  })
-  .refine(
-    (data) =>
-      data.categoryId ||
-      (data.suggestedCategory && data.suggestedCategory.trim() !== ""),
-    {
-      message: "Please select a category or suggest a new one.",
-      path: ["categoryId"],
-    },
-  );
-
 // Form Submission
+interface ValidationError {
+  code: string;
+  path?: (string | number)[];
+  message?: string;
+}
+
+const getUserFriendlyMessage = (error: ValidationError): string => {
+  // Map schema-oriented messages to user-friendly copy
+  const code = error.code;
+  const path = error.path?.[0];
+  const message = error.message?.trim();
+
+  // Special-case categoryId refine errors about category selection
+  if (code === "custom" && (path === "categoryId" || path === undefined)) {
+    if (message?.includes("category")) {
+      return "Please select an existing category or suggest a new one.";
+    }
+  }
+
+  // Prefer specific schema messages when available.
+  if (message) {
+    return message;
+  }
+
+  // Map other validation errors
+  const messageMap: Record<string, string> = {
+    too_small: "This field is too short.",
+    too_big: "This field is too long.",
+    invalid_string: "This field contains invalid characters.",
+  };
+
+  return messageMap[code] || "Validation failed";
+};
+
 const submitForm = async () => {
   if (!editor.value) return;
 
   const htmlContent = editor.value.getHTML();
+
+  const suggestedTags = suggestedTagsInput.value
+    .split(",")
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0);
 
   const formData = {
     title: title.value,
     description: description.value,
     categoryId: categoryId.value,
     suggestedCategory: suggestedCategory.value,
+    tagIds: tagIds.value,
+    suggestedTags,
     htmlContent: htmlContent,
   };
 
@@ -154,14 +167,11 @@ const submitForm = async () => {
   const validation = submitGuideSchema.safeParse(formData);
   if (!validation.success) {
     const firstError = validation.error.issues[0];
-    errorMessage.value = firstError?.message || "Validation failed";
+    errorMessage.value =
+      (firstError && getUserFriendlyMessage(firstError as ValidationError)) ||
+      "Validation failed";
     return;
   }
-
-  const suggestedTags = suggestedTagsInput.value
-    .split(",")
-    .map((t) => t.trim())
-    .filter((t) => t.length > 0);
 
   isSubmitting.value = true;
   errorMessage.value = "";
@@ -309,39 +319,46 @@ const submitForm = async () => {
       </div>
 
       <!-- Category -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label
-            for="categoryId"
-            class="block text-sm font-semibold text-slate-900 dark:text-brand-text mb-1"
-            >Category <span class="text-red-500">*</span></label
-          >
-          <select
-            id="categoryId"
-            v-model="categoryId"
-            class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-none"
-          >
-            <option value="">-- Select a Category --</option>
-            <option v-for="cat in categories" :key="cat._id" :value="cat._id">
-              {{ cat.title }}
-            </option>
-          </select>
+      <fieldset>
+        <legend
+          class="block text-sm font-semibold text-slate-900 dark:text-brand-text mb-2"
+        >
+          Category <span class="text-red-500">*</span>
+        </legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label
+              for="categoryId"
+              class="block text-sm text-slate-600 dark:text-slate-400 mb-1"
+              >Select an existing category</label
+            >
+            <select
+              id="categoryId"
+              v-model="categoryId"
+              class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-none"
+            >
+              <option value="">-- Select a Category --</option>
+              <option v-for="cat in categories" :key="cat._id" :value="cat._id">
+                {{ cat.title }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="suggestedCategory"
+              class="block text-sm text-slate-600 dark:text-slate-400 mb-1"
+              >Or suggest a new one</label
+            >
+            <input
+              id="suggestedCategory"
+              v-model="suggestedCategory"
+              type="text"
+              class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-none"
+              placeholder="Or suggest a new category"
+            />
+          </div>
         </div>
-        <div>
-          <label
-            for="suggestedCategory"
-            class="block text-sm font-semibold text-slate-900 dark:text-brand-text mb-1"
-            >Or Suggest New Category</label
-          >
-          <input
-            id="suggestedCategory"
-            v-model="suggestedCategory"
-            type="text"
-            class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-none"
-            placeholder="If category not found"
-          />
-        </div>
-      </div>
+      </fieldset>
 
       <!-- Tags -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
