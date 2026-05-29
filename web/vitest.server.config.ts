@@ -12,5 +12,13 @@ export default defineConfig({
     globals: true,
     include: ["tests/server/**/*.test.ts"],
     exclude: ["tests/e2e/**", "node_modules/**"],
+    deps: {
+      optimizer: {
+        ssr: {
+          enabled: true,
+          include: ["sanitize-html"],
+        },
+      },
+    },
   },
 });
