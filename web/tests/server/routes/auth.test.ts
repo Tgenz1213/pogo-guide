@@ -1,8 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeAll,
+  afterAll,
+  beforeEach,
+} from "vitest";
 import type { H3Event } from "h3";
-
-import googleHandler from "../../../server/routes/auth/google.get";
-import discordHandler from "../../../server/routes/auth/discord.get";
 
 // Mocks
 const mockGetCookie = vi.fn();
@@ -22,8 +27,6 @@ vi.mock("h3", async (importOriginal) => {
 vi.mock("#imports", () => ({
   setUserSession: vi.fn().mockResolvedValue(true),
   useRuntimeConfig: () => ({ session: { password: "test-password" } }),
-  defineOAuthGoogleEventHandler: (config: unknown) => config,
-  defineOAuthDiscordEventHandler: (config: unknown) => config,
 }));
 
 vi.mock("../../../server/utils/db", () => ({
@@ -37,6 +40,35 @@ vi.mock("../../../server/utils/db", () => ({
     set: vi.fn().mockReturnThis(),
   }),
 }));
+
+let googleHandler: unknown;
+let discordHandler: unknown;
+
+beforeAll(async () => {
+  vi.stubGlobal("defineOAuthGoogleEventHandler", (config: unknown) => config);
+  vi.stubGlobal("defineOAuthDiscordEventHandler", (config: unknown) => config);
+  vi.stubGlobal("getCookie", (...args: unknown[]) => mockGetCookie(...args));
+  vi.stubGlobal("deleteCookie", (...args: unknown[]) =>
+    mockDeleteCookie(...args),
+  );
+  vi.stubGlobal("sendRedirect", (...args: unknown[]) =>
+    mockSendRedirect(...args),
+  );
+  vi.stubGlobal("setUserSession", vi.fn().mockResolvedValue(true));
+  vi.stubGlobal("useRuntimeConfig", () => ({
+    session: { password: "test-password" },
+  }));
+
+  googleHandler = (await import("../../../server/routes/auth/google.get"))
+    .default;
+  discordHandler = (await import("../../../server/routes/auth/discord.get"))
+    .default;
+});
+
+afterAll(() => {
+  vi.unstubAllGlobals();
+  vi.resetModules();
+});
 
 describe("OAuth Callback Redirect Logic (Google)", () => {
   beforeEach(() => {

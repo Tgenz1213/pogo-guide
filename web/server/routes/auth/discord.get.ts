@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { users, banned_identities } from "../../db/schema";
 import { useDB } from "../../utils/db";
-import { sanitizeRedirectPath } from "~~/shared/utils/auth";
+import { sanitizeRedirectPath } from "../../../shared/utils/auth";
 
 async function sha256(message: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(message);
