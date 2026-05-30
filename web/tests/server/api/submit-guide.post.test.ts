@@ -1,51 +1,70 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import _submitGuideHandler from "../../../server/api/submit-guide.post";
 import type { H3Event, EventHandler } from "h3";
 
-const submitGuideHandler = _submitGuideHandler as EventHandler;
 interface ZodValidationErrorData {
   statusCode: number;
   statusMessage: string;
   data: Record<string, unknown>;
 }
 
-vi.mock("h3", async (importOriginal) => {
-  const actual = (await importOriginal()) as typeof import("h3");
-  return {
-    ...actual,
-    defineEventHandler: <T>(handler: T) => handler,
-    readBody: async (event: { _body: unknown }) => event._body,
-    createError: (err: {
-      statusCode: number;
-      statusMessage: string;
-      data?: unknown;
-    }) => {
-      const error = new Error(err.statusMessage);
-      Object.assign(error, err);
-      return error;
-    },
-    setResponseStatus: vi.fn(),
-  };
-});
-
 describe("Submit Guide API (Producer)", () => {
+  let submitGuideHandler: EventHandler;
   let mockQueueSend: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.stubGlobal("defineEventHandler", (handler: unknown) => handler);
+    vi.stubGlobal("readBody", async (event: { _body: unknown }) => event._body);
+    vi.stubGlobal(
+      "createError",
+      (err: { statusCode: number; statusMessage: string; data?: unknown }) => {
+        const error = new Error(err.statusMessage);
+        Object.assign(error, err);
+        return error;
+      },
+    );
+    vi.stubGlobal("setResponseStatus", vi.fn());
+    vi.stubGlobal(
+      "getHeader",
+      (
+        event: {
+          context?: {
+            cloudflare?: { req?: { headers?: Map<string, string> } };
+          };
+        },
+        name: string,
+      ) => event.context?.cloudflare?.req?.headers?.get(name),
+    );
+
     mockQueueSend = vi.fn().mockResolvedValue(undefined);
+  });
+
+  beforeEach(async () => {
+    submitGuideHandler = (await import("../../../server/api/submit-guide.post"))
+      .default as EventHandler;
   });
 
   const createEvent = (
     body: unknown,
     env: Record<string, unknown> = {},
     isProduction = true,
+    withCfRay = true,
+    host?: string,
   ) => {
     // Override NODE_ENV for mock tests
     if (isProduction) {
       process.env.NODE_ENV = "production";
     } else {
       process.env.NODE_ENV = "development";
+    }
+
+    const headers = new Map<string, string>();
+    if (withCfRay) {
+      headers.set("cf-ray", "test-cf-ray");
+    }
+    if (host) {
+      headers.set("host", host);
     }
 
     return {
@@ -59,7 +78,7 @@ describe("Submit Guide API (Producer)", () => {
             ...env,
           },
           req: {
-            headers: new Map([["cf-ray", "test-cf-ray"]]),
+            headers,
           },
         },
       },
@@ -163,5 +182,61 @@ describe("Submit Guide API (Producer)", () => {
 
     expect(result).toEqual({ success: true });
     expect(mockQueueSend).not.toHaveBeenCalled();
+  });
+
+  it("7. throws 500 in local runtime when consumer mirror fails", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      text: vi.fn().mockResolvedValue("Missing SANITY_WRITE_TOKEN"),
+    });
+
+    vi.stubGlobal("fetch", mockFetch);
+
+    const event = createEvent(validBody, {}, true, false);
+
+    try {
+      await submitGuideHandler(event);
+      expect.unreachable("Should have thrown");
+    } catch (err) {
+      const error = err as {
+        statusCode: number;
+        statusMessage: string;
+        data?: { mirrorStatus?: number; details?: string };
+      };
+      expect(error.statusCode).toBe(500);
+      expect(error.statusMessage).toBe(
+        "Local queue consumer failed to process submission",
+      );
+      expect(error.data?.mirrorStatus).toBe(500);
+      expect(error.data?.details).toContain("Missing SANITY_WRITE_TOKEN");
+    }
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("8. treats localhost host as local runtime even when cf-ray exists", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      text: vi.fn().mockResolvedValue("Missing SANITY_WRITE_TOKEN"),
+    });
+
+    vi.stubGlobal("fetch", mockFetch);
+
+    const event = createEvent(validBody, {}, true, true, "127.0.0.1:8788");
+
+    try {
+      await submitGuideHandler(event);
+      expect.unreachable("Should have thrown");
+    } catch (err) {
+      const error = err as { statusCode: number; statusMessage: string };
+      expect(error.statusCode).toBe(500);
+      expect(error.statusMessage).toBe(
+        "Local queue consumer failed to process submission",
+      );
+    }
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 });
