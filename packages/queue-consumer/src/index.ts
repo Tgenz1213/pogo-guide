@@ -1,3 +1,4 @@
+import type { ExecutionContext, MessageBatch } from "@cloudflare/workers-types";
 import type { SubmitGuidePayload, SuggestionPayload } from "@pogo/shared-utils";
 import {
   queueMessageSchema,
@@ -125,7 +126,102 @@ function generateSuggestionMutations(
   ];
 }
 
+type ParsedEnvelope = ReturnType<typeof queueMessageSchema.parse>;
+
+async function processEnvelope(
+  envelope: ParsedEnvelope,
+  env: Env,
+  traceCtx: Record<string, unknown>,
+): Promise<void> {
+  let mutations: Record<string, unknown>[];
+  if (envelope.type === "guide") {
+    mutations = generateGuideMutations(envelope.idempotencyKey, envelope.data);
+  } else if (envelope.type === "suggestion") {
+    mutations = generateSuggestionMutations(
+      envelope.idempotencyKey,
+      envelope.data,
+    );
+  } else {
+    throw new PermanentMessageError(`Unknown message type`);
+  }
+
+  await mutateSanity(env, mutations);
+
+  console.log(
+    JSON.stringify({
+      event: "message_processed_successfully",
+      ...traceCtx,
+    }),
+  );
+}
+
 export default {
+  async fetch(
+    request: Request,
+    env: Env,
+    _ctx: ExecutionContext,
+  ): Promise<Response> {
+    if (
+      request.method === "POST" &&
+      new URL(request.url).pathname === "/__debug/process"
+    ) {
+      const envPresence = {
+        SANITY_PROJECT_ID: Boolean(env.SANITY_PROJECT_ID),
+        SANITY_DATASET: Boolean(env.SANITY_DATASET),
+        SANITY_WRITE_TOKEN: Boolean(env.SANITY_WRITE_TOKEN),
+        SANITY_API_WRITE_TOKEN: Boolean(env.SANITY_API_WRITE_TOKEN),
+        NUXT_SANITY_PROJECT_ID: Boolean(env.NUXT_SANITY_PROJECT_ID),
+        NUXT_SANITY_DATASET: Boolean(env.NUXT_SANITY_DATASET),
+        NUXT_SANITY_WRITE_TOKEN: Boolean(env.NUXT_SANITY_WRITE_TOKEN),
+        NUXT_SANITY_API_WRITE_TOKEN: Boolean(env.NUXT_SANITY_API_WRITE_TOKEN),
+      };
+
+      try {
+        validateEnv(env);
+        const body = await request.json();
+        const parseResult = queueMessageSchema.safeParse(body);
+        if (!parseResult.success) {
+          return new Response(
+            JSON.stringify({
+              error: "Schema validation failed",
+              details: parseResult.error.format(),
+              envPresence,
+            }),
+            { status: 400 },
+          );
+        }
+
+        const envelope = parseResult.data;
+        const traceCtx = {
+          messageId: "debug-http",
+          queue: "debug-http",
+          logicalMessageId: envelope.messageId,
+          type: envelope.type,
+          idempotencyKey: envelope.idempotencyKey,
+        };
+
+        await processEnvelope(envelope, env, traceCtx);
+        return new Response(JSON.stringify({ success: true, envPresence }), {
+          status: 200,
+        });
+      } catch (err) {
+        if (err instanceof DuplicateMessageError) {
+          return new Response(
+            JSON.stringify({ success: true, duplicate: true, envPresence }),
+            { status: 200 },
+          );
+        }
+
+        return new Response(
+          JSON.stringify({ error: (err as Error).message, envPresence }),
+          { status: 500 },
+        );
+      }
+    }
+
+    return new Response("Queue Consumer is running", { status: 200 });
+  },
+
   async queue(
     batch: MessageBatch<unknown>,
     env: Env,
@@ -163,30 +259,7 @@ export default {
           idempotencyKey: envelope.idempotencyKey,
         });
 
-        let mutations: Record<string, unknown>[];
-        if (envelope.type === "guide") {
-          mutations = generateGuideMutations(
-            envelope.idempotencyKey,
-            envelope.data,
-          );
-        } else if (envelope.type === "suggestion") {
-          mutations = generateSuggestionMutations(
-            envelope.idempotencyKey,
-            envelope.data,
-          );
-        } else {
-          // Should be unreachable due to Zod validation
-          throw new PermanentMessageError(`Unknown message type`);
-        }
-
-        await mutateSanity(env, mutations);
-
-        console.log(
-          JSON.stringify({
-            event: "message_processed_successfully",
-            ...traceCtx,
-          }),
-        );
+        await processEnvelope(envelope, env, traceCtx);
         message.ack();
       } catch (err) {
         if (err instanceof DuplicateMessageError) {

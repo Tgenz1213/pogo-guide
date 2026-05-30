@@ -7,31 +7,58 @@ import {
 } from "./errors";
 
 export interface Env {
-  SANITY_PROJECT_ID: string;
-  SANITY_DATASET: string;
-  SANITY_WRITE_TOKEN: string;
+  SANITY_PROJECT_ID?: string;
+  SANITY_DATASET?: string;
+  SANITY_WRITE_TOKEN?: string;
+  SANITY_API_WRITE_TOKEN?: string;
+  NUXT_SANITY_PROJECT_ID?: string;
+  NUXT_SANITY_DATASET?: string;
+  NUXT_SANITY_WRITE_TOKEN?: string;
+  NUXT_SANITY_API_WRITE_TOKEN?: string;
+}
+
+interface ResolvedSanityEnv {
+  projectId: string;
+  dataset: string;
+  writeToken: string;
+}
+
+function resolveSanityEnv(env: Env): ResolvedSanityEnv {
+  const projectId = env.SANITY_PROJECT_ID || env.NUXT_SANITY_PROJECT_ID;
+  const dataset = env.SANITY_DATASET || env.NUXT_SANITY_DATASET || "production";
+  const writeToken =
+    env.SANITY_WRITE_TOKEN ||
+    env.NUXT_SANITY_WRITE_TOKEN ||
+    env.SANITY_API_WRITE_TOKEN ||
+    env.NUXT_SANITY_API_WRITE_TOKEN;
+
+  if (!projectId) throw new ConfigurationError("Missing SANITY_PROJECT_ID");
+  if (!dataset) throw new ConfigurationError("Missing SANITY_DATASET");
+  if (!writeToken) {
+    throw new ConfigurationError(
+      "Missing SANITY write token. Set one of: SANITY_WRITE_TOKEN, NUXT_SANITY_WRITE_TOKEN, SANITY_API_WRITE_TOKEN, NUXT_SANITY_API_WRITE_TOKEN",
+    );
+  }
+
+  return { projectId, dataset, writeToken };
 }
 
 export function validateEnv(env: Env): void {
-  if (!env.SANITY_PROJECT_ID)
-    throw new ConfigurationError("Missing SANITY_PROJECT_ID");
-  if (!env.SANITY_DATASET)
-    throw new ConfigurationError("Missing SANITY_DATASET");
-  if (!env.SANITY_WRITE_TOKEN)
-    throw new ConfigurationError("Missing SANITY_WRITE_TOKEN");
+  resolveSanityEnv(env);
 }
 
 export async function mutateSanity(
   env: Env,
   mutations: Record<string, unknown>[],
 ): Promise<void> {
-  const url = `https://${env.SANITY_PROJECT_ID}.api.sanity.io/v2023-08-01/data/mutate/${env.SANITY_DATASET}`;
+  const resolved = resolveSanityEnv(env);
+  const url = `https://${resolved.projectId}.api.sanity.io/v2023-08-01/data/mutate/${resolved.dataset}`;
 
   const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${env.SANITY_WRITE_TOKEN}`,
+      Authorization: `Bearer ${resolved.writeToken}`,
     },
     body: JSON.stringify({ mutations }),
   });

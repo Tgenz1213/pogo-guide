@@ -5,8 +5,10 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "dev": "wrangler dev --env-file ../../web/.dev.vars --persist-to ../../.wrangler/state/v3 --port 8787",
+    "dev:env:dev": "wrangler dev --env dev --env-file ../../web/.dev.vars --persist-to ../../.wrangler/state/v3 --port 8787",
+    "deploy": "wrangler deploy --env production",
+    "deploy:preview": "wrangler deploy --env preview",
     "test": "vitest run",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"

@@ -2,6 +2,19 @@
   "name": "pogo-queue-consumer",
   "main": "src/index.ts",
   "compatibility_date": "2024-05-12",
+  "vars": {
+    "SANITY_PROJECT_ID": "84tfhiiz",
+    "SANITY_DATASET": "production"
+  },
+  "queues": {
+    "consumers": [
+      {
+        "queue": "pogo-production",
+        "max_retries": 3,
+        "dead_letter_queue": "pogo-production-dlq"
+      }
+    ]
+  },
   "env": {
     "dev": {
       "queues": {
