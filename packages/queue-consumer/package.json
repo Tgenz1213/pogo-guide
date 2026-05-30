@@ -10,6 +10,7 @@
     "deploy:preview": "wrangler deploy --env preview",
     "test": "vitest run",
     "test:integration": "vitest run tests/sanity-preview.integration.test.ts",
+    "test:e2e:queue": "vitest run tests/preview-queue.e2e.integration.test.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
