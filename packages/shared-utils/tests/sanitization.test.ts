@@ -24,4 +24,14 @@ describe("Sanitization", () => {
 
     expect(clean).toBe('<a href="https://example.com">Link</a>');
   });
+
+  it("repairs malformed pseudo-tags missing opening brackets", () => {
+    const malformed =
+      "p>Search String 101</p>ul><li>p>shiny &amp; 4*</p></li></ul>";
+
+    const clean = sanitizeGuideHtml(malformed);
+
+    expect(clean).toContain("<p>Search String 101</p>");
+    expect(clean).toContain("<ul><li><p>shiny &amp; 4*</p></li></ul>");
+  });
 });
