@@ -93,6 +93,9 @@ export default defineEventHandler(async (event) => {
   };
 
   if (isMockMode) {
+    console.warn(
+      "[pogo-guide] POGO_QUEUE binding not found in event context. Triggering mock mode for local dev.",
+    );
     return {
       success: true,
       mocked: true,
