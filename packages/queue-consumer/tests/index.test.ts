@@ -6,6 +6,16 @@ import type { Env } from "../src/sanity";
 const mockFetch = vi.fn();
 globalThis.fetch = mockFetch as unknown as typeof fetch;
 
+type SanityMutation = {
+  createIfNotExists?: {
+    _id?: string;
+    _type?: string;
+    title?: string;
+    category?: { _ref?: string };
+    tags?: { _ref?: string }[];
+  };
+};
+
 describe("Queue Consumer Worker", () => {
   const env: Env = {
     SANITY_PROJECT_ID: "test-project",
@@ -30,6 +40,7 @@ describe("Queue Consumer Worker", () => {
     messages: messages as unknown as MessageBatch<unknown>["messages"],
     retryAll: vi.fn(),
     ackAll: vi.fn(),
+    metadata: undefined as unknown as MessageBatch<unknown>["metadata"],
   });
 
   const validGuidePayload = {
@@ -67,7 +78,7 @@ describe("Queue Consumer Worker", () => {
   });
 
   it("2. calls message.retry() for PermanentMessageError (Schema validation fails)", async () => {
-    const invalidMessage = createMessage({ version: 2, type: "guide" }); // Missing data, wrong version
+    const invalidMessage = createMessage({ version: 2, type: "guide" });
     const batch = createBatch([invalidMessage]);
 
     await worker.queue(batch, env, emptyCtx);
@@ -163,7 +174,6 @@ describe("Queue Consumer Worker", () => {
     const message = createMessage(validGuidePayload);
     const batch = createBatch([message]);
 
-    // Auth errors throw instead of retrying to halt processing
     await expect(worker.queue(batch, env, emptyCtx)).rejects.toThrow(
       "Sanity Auth/Config Error (401)",
     );
@@ -202,10 +212,7 @@ describe("Queue Consumer Worker", () => {
     await worker.queue(batch, env, emptyCtx);
 
     const fetchCallBody = JSON.parse(mockFetch.mock.calls[0][1].body);
-    const mutations = fetchCallBody.mutations as Record<
-      string,
-      Record<string, Record<string, string>>
-    >[];
+    const mutations = fetchCallBody.mutations as SanityMutation[];
     const guideMutation = mutations.find(
       (m) => m.createIfNotExists?._type === "guide",
     );
@@ -226,10 +233,7 @@ describe("Queue Consumer Worker", () => {
     await worker.queue(batch, env, emptyCtx);
 
     const fetchCallBody = JSON.parse(mockFetch.mock.calls[0][1].body);
-    const mutations = fetchCallBody.mutations as Record<
-      string,
-      Record<string, string>
-    >[];
+    const mutations = fetchCallBody.mutations as SanityMutation[];
 
     const catMutation = mutations.find(
       (m) => m.createIfNotExists?._type === "category",
@@ -243,7 +247,7 @@ describe("Queue Consumer Worker", () => {
   it("13. dedupes suggested tags colliding with existing tagIds", async () => {
     const payload = JSON.parse(JSON.stringify(validGuidePayload));
     payload.data.tagIds = ["existing-tag-1", "tag-suggested-foo"];
-    payload.data.suggestedTags = ["Foo", "Bar", "bar"]; // Bar is duplicated and foo is already in tagIds
+    payload.data.suggestedTags = ["Foo", "Bar", "bar"];
 
     const message = createMessage(payload);
     const batch = createBatch([message]);
@@ -251,10 +255,7 @@ describe("Queue Consumer Worker", () => {
     await worker.queue(batch, env, emptyCtx);
 
     const fetchCallBody = JSON.parse(mockFetch.mock.calls[0][1].body);
-    const mutations = fetchCallBody.mutations as Record<
-      string,
-      Record<string, Record<string, string>[] | string>
-    >[];
+    const mutations = fetchCallBody.mutations as SanityMutation[];
 
     const tagMutations = mutations.filter(
       (m) => m.createIfNotExists?._type === "tag",
@@ -264,11 +265,10 @@ describe("Queue Consumer Worker", () => {
     const guideMutation = mutations.find(
       (m) => m.createIfNotExists?._type === "guide",
     );
-    const tagRefs = (
-      guideMutation?.createIfNotExists?.tags as Record<string, string>[]
-    ).map((t) => t._ref);
+    const tagRefs = (guideMutation?.createIfNotExists?.tags ?? []).map(
+      (t) => t._ref,
+    );
 
-    // Foo is skipped because it's already in tagIds as tag-suggested-foo
     expect(tagRefs).toContain("existing-tag-1");
     expect(tagRefs).toContain("tag-suggested-foo");
     expect(tagRefs).toContain("tag-suggested-bar");
