@@ -1,4 +1,13 @@
-import { suggestionSchema } from "@pogo/shared-utils";
+import {
+  suggestionSchema,
+  generateSuggestionIdempotencyKey,
+} from "@pogo/shared-utils";
+
+interface CloudflareEnv {
+  POGO_QUEUE?: {
+    send: (msg: unknown) => Promise<void>;
+  };
+}
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -12,11 +21,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { guidePath, content, websiteAddress, turnstileToken } =
-    validation.data;
+  const data = validation.data;
 
-  // 1. Honeypot check: If the hidden field is filled, silently reject the bot.
-  if (websiteAddress && websiteAddress.trim() !== "") {
+  // 1. Honeypot check
+  if (data.websiteAddress && data.websiteAddress.trim() !== "") {
     console.warn("Honeypot triggered, ignoring request.");
     return { success: true, mocked: true };
   }
@@ -43,7 +51,7 @@ export default defineEventHandler(async (event) => {
 
   // 2. Turnstile Verification
   if (shouldVerifyTurnstile) {
-    if (!turnstileToken) {
+    if (!data.turnstileToken) {
       throw createError({
         statusCode: 400,
         statusMessage: "Invalid Turnstile token. Please try again.",
@@ -51,7 +59,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const turnstileValidation = await verifyTurnstileToken(
-      turnstileToken,
+      data.turnstileToken,
       event,
     );
     if (!turnstileValidation.success) {
@@ -65,69 +73,49 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const writeToken = runtimeConfig.sanityWriteToken;
-  const projectId = runtimeConfig.public.sanity?.projectId;
-  const dataset = runtimeConfig.public.sanity?.dataset || "production";
+  const env = (event.context.cloudflare?.env || {}) as CloudflareEnv;
+  const { POGO_QUEUE } = env;
+  const isMockMode = !isProduction && !POGO_QUEUE;
 
-  if (!projectId) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Sanity Project ID is missing from configuration",
-    });
-  }
+  const requestId = getHeader(event, "cf-ray") || `req-${Date.now()}`;
+  const messageId = globalThis.crypto.randomUUID();
+  const ip = getRequestIP(event, { xForwardedFor: true }) || "unknown";
+  const idempotencyKey = await generateSuggestionIdempotencyKey(data, ip);
 
-  // Stub Mode to prevent API limit exhaustion on routine PR pipelines when no write token is provided
-  const isMockMode = !writeToken && process.env.NODE_ENV !== "production";
+  const payload = {
+    version: 1,
+    type: "suggestion",
+    messageId,
+    idempotencyKey,
+    submittedAt: new Date().toISOString(),
+    requestId,
+    data,
+  };
+
   if (isMockMode) {
     return {
       success: true,
       mocked: true,
-      response: {
-        transactionId: `mock-tx-${Date.now()}`,
-        results: [{ id: `mock-doc-${Date.now()}`, operation: "create" }],
-      },
+      messageId,
     };
   }
 
-  if (!writeToken) {
+  if (!POGO_QUEUE) {
     throw createError({
-      statusCode: 502,
-      statusMessage: "Sanity Write Token is not configured",
+      statusCode: 500,
+      statusMessage: "Queue configuration missing",
     });
   }
 
-  const mutationUrl = `https://${projectId}.api.sanity.io/v2024-03-01/data/mutate/${dataset}`;
-
-  const mutationPayload = {
-    mutations: [
-      {
-        create: {
-          _type: "suggestion",
-          guidePath,
-          content,
-          submittedAt: new Date().toISOString(),
-        },
-      },
-    ],
-  };
-
   try {
-    const response = await $fetch(mutationUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${writeToken}`,
-      },
-      body: mutationPayload,
-    });
-
-    return { success: true, response };
+    await POGO_QUEUE.send(payload);
+    setResponseStatus(event, 202);
+    return { success: true, messageId };
   } catch (error) {
-    const err = error as Record<string, unknown>;
-    console.error("Sanity Mutation Error:", err.data || err.message || error);
+    console.error("Queue Dispatch Error:", error);
     throw createError({
       statusCode: 500,
-      statusMessage: "Failed to submit suggestion to database",
+      statusMessage: "Failed to queue suggestion",
     });
   }
 });

@@ -29,6 +29,26 @@
       "database_id": "24600c01-73aa-4ecc-bedb-784c40477119",
       "preview_database_id": "31b5f470-52dc-4de5-99bd-ba4dd03cbff2",
       "migrations_dir": "./server/db/migrations"
-    },
+    }
   ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "POGO_QUEUE",
+        "queue": "pogo-production"
+      }
+    ]
+  },
+  "env": {
+    "preview": {
+      "queues": {
+        "producers": [
+          {
+            "binding": "POGO_QUEUE",
+            "queue": "pogo-preview"
+          }
+        ]
+      }
+    }
+  }
 }

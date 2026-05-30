@@ -30,5 +30,13 @@
       "preview_database_id": "31b5f470-52dc-4de5-99bd-ba4dd03cbff2",
       "migrations_dir": "./server/db/migrations"
     }
-  ]
+  ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "POGO_QUEUE",
+        "queue": "pogo-preview"
+      }
+    ]
+  }
 }

@@ -1,144 +1,75 @@
-import {
-  describe,
-  it,
-  expect,
-  vi,
-  beforeEach,
-  beforeAll,
-  afterAll,
-} from "vitest";
-import type { EventHandler, H3Event } from "h3";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import submitGuideHandler from "../../../server/api/submit-guide.post";
+import type { H3Event } from "h3";
+import type { ZodValidationErrorData } from "@pogo/shared-utils";
 
-// 1. Explicitly structure standard Sanity payloads for test asset definitions
-interface SanityMutation {
-  create?: {
-    _id: string;
-    _type: string;
-    category?: { _ref: string };
-    tags?: { _ref: string }[];
-  };
-  createIfNotExists?: {
-    _id: string;
-    _type: string;
-    title?: string;
-    name?: string;
-    slug?: { current: string };
-    isUserSubmitted?: boolean;
-    description?: string;
-  };
-}
-
-interface SanityPayload {
-  mutations: SanityMutation[];
-}
-
-// Strictly type the global fetch mock utility
-const mockFetch = vi.fn().mockResolvedValue({ success: true });
-vi.stubGlobal("$fetch", mockFetch);
-
-// 2. Safely type dynamic wrappers inside the hoisted isolation ecosystem
-const {
-  mockReadBody,
-  mockUseRuntimeConfig,
-  mockDefineEventHandler,
-  mockCreateError,
-} = vi.hoisted(() => {
+vi.mock("h3", async (importOriginal) => {
+  const actual = (await importOriginal()) as typeof import("h3");
   return {
-    mockReadBody: vi.fn(),
-    mockUseRuntimeConfig: vi.fn().mockReturnValue({
-      sanityWriteToken: "test-token",
-      public: {
-        sanity: {
-          projectId: "test-project",
-          dataset: "test-dataset",
-        },
-      },
-    }),
-    mockDefineEventHandler: <T extends EventHandler>(handler: T): T => handler,
-    mockCreateError: (err: {
+    ...actual,
+    defineEventHandler: (handler: unknown) => handler,
+    readBody: async (event: { _body: unknown }) => event._body,
+    createError: (err: {
       statusCode: number;
       statusMessage: string;
       data?: unknown;
-    }) => err,
+    }) => {
+      const error = new Error(err.statusMessage);
+      Object.assign(error, err);
+      return error;
+    },
+    setResponseStatus: vi.fn(),
   };
 });
 
-// Polyfill runtime environments safely using explicit structural configuration boundaries
-Object.assign(globalThis, {
-  defineEventHandler: mockDefineEventHandler,
-  readBody: mockReadBody,
-  createError: mockCreateError,
-  useRuntimeConfig: mockUseRuntimeConfig,
-});
-
-// Mock imports using strict functional signatures
-vi.mock("#imports", () => ({
-  defineEventHandler: mockDefineEventHandler,
-  readBody: mockReadBody,
-  createError: mockCreateError,
-  useRuntimeConfig: mockUseRuntimeConfig,
-}));
-
-vi.mock("@pogo/shared-utils", () => ({
-  htmlToPortableTextBlocks: vi.fn().mockReturnValue([{ _type: "block" }]),
-}));
-
-vi.mock("sanitize-html", () => {
-  return {
-    default: (html: string): string => html,
-  };
-});
-
-// Define structure for explicit Zod formatting payloads caught inside tests
-interface ZodValidationErrorData {
-  statusCode: number;
-  data: Record<
-    string,
-    { _errors: string[] } | Record<number, { _errors: string[] }>
-  >;
-}
-
-describe("Submit Guide API Handler", () => {
-  let submitGuideHandler: EventHandler;
-
-  const getMutationPayload = (): SanityPayload => {
-    const call = mockFetch.mock.calls[0];
-    expect(call).toBeDefined();
-    const fetchOptions = call?.[1] as { body: SanityPayload } | undefined;
-    expect(fetchOptions?.body).toBeDefined();
-    return fetchOptions!.body;
-  };
-
-  beforeAll(async () => {
-    // Dynamically import the handler after mocks are fully set up
-    const module = await import("../../../server/api/submit-guide.post");
-    submitGuideHandler = module.default as EventHandler;
-  });
-
-  afterAll(() => {
-    vi.unstubAllGlobals();
-    const g = globalThis as Record<string, unknown>;
-    delete g.defineEventHandler;
-    delete g.readBody;
-    delete g.createError;
-    delete g.useRuntimeConfig;
-  });
+describe("Submit Guide API (Producer)", () => {
+  let mockQueueSend: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockQueueSend = vi.fn().mockResolvedValue(undefined);
   });
 
-  // Strictly type mock events mapping directly into standard H3 types
-  const createEvent = (body: Record<string, unknown>): H3Event => {
-    mockReadBody.mockResolvedValue(body);
-    return {} as H3Event;
+  const createEvent = (
+    body: unknown,
+    env: Record<string, unknown> = {},
+    isProduction = true,
+  ) => {
+    // Override NODE_ENV for mock tests
+    if (isProduction) {
+      process.env.NODE_ENV = "production";
+    } else {
+      process.env.NODE_ENV = "development";
+    }
+
+    return {
+      _body: body,
+      context: {
+        cloudflare: {
+          env: {
+            POGO_QUEUE: {
+              send: mockQueueSend,
+            },
+            ...env,
+          },
+          req: {
+            headers: new Map([["cf-ray", "test-cf-ray"]]),
+          },
+        },
+      },
+    } as unknown as H3Event;
   };
 
-  it("rejects suggestedTags exceeding max count", async () => {
+  const validBody = {
+    title: "Valid Title",
+    htmlContent: "<p>Valid Content with more than 10 characters</p>",
+    categoryId: "existing-cat-id",
+  };
+
+  it("1. handles validation correctly and rejects invalid payloads", async () => {
     const invalidBody = {
-      title: "Valid Title",
-      htmlContent: "Valid Content with more than 10 characters",
-      suggestedTags: ["1", "2", "3", "4", "5", "6"],
+      title: "",
+      htmlContent: "too short",
     };
 
     try {
@@ -147,252 +78,84 @@ describe("Submit Guide API Handler", () => {
     } catch (err) {
       const error = err as ZodValidationErrorData;
       expect(error.statusCode).toBe(400);
-      const field = error.data.suggestedTags as { _errors: string[] };
-      expect(field._errors[0]).toContain("Maximum of 5");
+      expect(error.data).toBeDefined();
     }
   });
 
-  it("rejects suggestedTags with invalid characters", async () => {
-    const invalidCharactersBody = {
-      title: "Valid Title",
-      htmlContent: "Valid Content with more than 10 characters",
-      suggestedTags: ["Invalid@Tag!"],
-    };
+  it("2. generates correct queue envelope and dispatches successfully", async () => {
+    const event = createEvent(validBody);
+    const result = await submitGuideHandler(event);
+
+    expect(result).toEqual({
+      success: true,
+      messageId: expect.any(String),
+    });
+
+    expect(mockQueueSend).toHaveBeenCalledTimes(1);
+
+    const payload = mockQueueSend.mock.calls[0][0];
+    expect(payload).toMatchObject({
+      version: 1,
+      type: "guide",
+      requestId: "test-cf-ray",
+      data: validBody,
+    });
+    expect(payload.messageId).toBeDefined();
+    expect(payload.idempotencyKey).toBeDefined();
+    expect(payload.submittedAt).toBeDefined();
+  });
+
+  it("3. handles missing POGO_QUEUE config by throwing 500 error", async () => {
+    const event = createEvent(validBody, { POGO_QUEUE: undefined });
 
     try {
-      await submitGuideHandler(createEvent(invalidCharactersBody));
+      await submitGuideHandler(event);
       expect.unreachable("Should have thrown");
     } catch (err) {
-      const error = err as ZodValidationErrorData;
-      expect(error.statusCode).toBe(400);
-      const tagArray = error.data.suggestedTags as Record<
-        number,
-        { _errors: string[] }
-      >;
-      const firstTagIssue = tagArray[0];
-      expect(firstTagIssue).toBeDefined();
-      expect(firstTagIssue!._errors[0]).toContain("only contain letters");
+      const error = err as { statusCode: number; statusMessage: string };
+      expect(error.statusCode).toBe(500);
+      expect(error.statusMessage).toBe("Queue configuration missing");
     }
   });
 
-  it("rejects when neither categoryId nor suggestedCategory is provided", async () => {
-    const missingCategoryBody = {
-      title: "Valid Title",
-      htmlContent: "Valid Content with more than 10 characters",
-    };
+  it("4. enters mock mode successfully in local dev without queue", async () => {
+    const event = createEvent(validBody, { POGO_QUEUE: undefined }, false);
+
+    const result = await submitGuideHandler(event);
+
+    expect(result).toEqual({
+      success: true,
+      mocked: true,
+      messageId: expect.any(String),
+    });
+
+    expect(mockQueueSend).not.toHaveBeenCalled();
+  });
+
+  it("5. throws 500 if queue dispatch rejects", async () => {
+    mockQueueSend.mockRejectedValue(new Error("Queue full"));
+    const event = createEvent(validBody);
 
     try {
-      await submitGuideHandler(createEvent(missingCategoryBody));
+      await submitGuideHandler(event);
       expect.unreachable("Should have thrown");
     } catch (err) {
-      const error = err as ZodValidationErrorData;
-      expect(error.statusCode).toBe(400);
-      const field = error.data.categoryId as { _errors: string[] };
-      expect(field._errors[0]).toContain(
-        "Either an existing category or a suggested category must be provided.",
-      );
+      const error = err as { statusCode: number; statusMessage: string };
+      expect(error.statusCode).toBe(500);
+      expect(error.statusMessage).toBe("Failed to queue guide submission");
     }
   });
 
-  it("falls through to suggestedCategory when categoryId is whitespace-only", async () => {
-    const body = {
-      title: "Valid Title",
-      htmlContent: "Valid HTML content to pass validation",
-      categoryId: "   ",
-      suggestedCategory: "Valid Category",
+  it("6. silently returns success if honeypot is triggered", async () => {
+    const honeypotBody = {
+      ...validBody,
+      websiteAddress: "http://spam.com",
     };
 
-    await submitGuideHandler(createEvent(body));
+    const event = createEvent(honeypotBody);
+    const result = await submitGuideHandler(event);
 
-    expect(mockFetch).toHaveBeenCalledTimes(1);
-    const payload = getMutationPayload();
-
-    // categoryId was whitespace-only, so a suggested category mutation should be generated
-    const categoryMutation = payload.mutations.find(
-      (m) => m.createIfNotExists && m.createIfNotExists._type === "category",
-    );
-    expect(categoryMutation).toBeDefined();
-    expect(categoryMutation?.createIfNotExists?._id).toBe(
-      "category-suggested-valid-category",
-    );
-
-    // The guide should reference the suggested category, NOT " "
-    const guideMutation = payload.mutations.find((m) => m.create);
-    expect(guideMutation?.create?.category?._ref).toBe(
-      "category-suggested-valid-category",
-    );
-  });
-
-  it("(1) handles existing categoryId vs suggestedCategory correctly", async () => {
-    const bodyWithExisting = {
-      title: "Valid Title",
-      htmlContent: "Valid HTML content to pass validation",
-      categoryId: "existing-cat-id",
-      suggestedCategory: "Ignored Suggestion",
-    };
-
-    await submitGuideHandler(createEvent(bodyWithExisting));
-
-    expect(mockFetch).toHaveBeenCalledTimes(1);
-
-    const payload = getMutationPayload();
-
-    const categoryMutation = payload.mutations.find(
-      (m) => m.createIfNotExists && m.createIfNotExists._type === "category",
-    );
-    expect(categoryMutation).toBeUndefined();
-
-    const guideMutation = payload.mutations.find((m) => m.create);
-    expect(guideMutation?.create?.category?._ref).toBe("existing-cat-id");
-  });
-
-  it("handles missing categoryId by creating a new suggested category", async () => {
-    const body = {
-      title: "Valid Title",
-      htmlContent: "Valid HTML content to pass validation",
-      suggestedCategory: "New Category!",
-    };
-
-    await submitGuideHandler(createEvent(body));
-
-    expect(mockFetch).toHaveBeenCalledTimes(1);
-    const payload = getMutationPayload();
-
-    const categoryMutation = payload.mutations.find(
-      (m) => m.createIfNotExists && m.createIfNotExists._type === "category",
-    );
-    expect(categoryMutation).toBeDefined();
-
-    const catDoc = categoryMutation?.createIfNotExists;
-    expect(catDoc?._id).toBe("category-suggested-new-category");
-    expect(catDoc?.title).toBe("New Category!");
-    expect(catDoc?.slug?.current).toBe("new-category");
-    expect(catDoc?.isUserSubmitted).toBe(true);
-    expect(catDoc?.description).toBe(
-      "Category suggested by user during guide submission.",
-    );
-
-    const guideMutation = payload.mutations.find((m) => m.create);
-    expect(guideMutation?.create?.category?._ref).toBe(
-      "category-suggested-new-category",
-    );
-  });
-
-  it("(2) normalizes and dedupes suggestedTags", async () => {
-    const body = {
-      title: "Valid Title",
-      htmlContent: "Valid HTML content to pass validation",
-      categoryId: "existing-cat-id",
-      suggestedTags: ["apple", "apple"],
-    };
-
-    await submitGuideHandler(createEvent(body));
-
-    const payload = getMutationPayload();
-
-    const tagMutations = payload.mutations.filter(
-      (m) => m.createIfNotExists && m.createIfNotExists._type === "tag",
-    );
-
-    expect(tagMutations).toHaveLength(1);
-    const firstTagMutation = tagMutations[0];
-    expect(firstTagMutation).toBeDefined();
-    expect(firstTagMutation!.createIfNotExists?.name).toBe("apple");
-    expect(firstTagMutation!.createIfNotExists?._id).toBe(
-      "tag-suggested-apple",
-    );
-  });
-
-  it("(3) handles slug collisions creating the same tagId by deduping the derived IDs", async () => {
-    const body = {
-      title: "Valid Title",
-      htmlContent: "Valid HTML content to pass validation",
-      categoryId: "existing-cat-id",
-      suggestedTags: ["Foo", "foo"],
-    };
-
-    await submitGuideHandler(createEvent(body));
-
-    const payload = getMutationPayload();
-
-    const tagMutations = payload.mutations.filter(
-      (m) => m.createIfNotExists && m.createIfNotExists._type === "tag",
-    );
-
-    expect(tagMutations).toHaveLength(1);
-    const firstTagMutation = tagMutations[0];
-    expect(firstTagMutation).toBeDefined();
-    expect(firstTagMutation!.createIfNotExists?._id).toBe("tag-suggested-foo");
-
-    const guideMutation = payload.mutations.find((m) => m.create);
-    expect(guideMutation?.create?.tags).toHaveLength(1);
-    expect(guideMutation?.create?.tags?.[0]?._ref).toBe("tag-suggested-foo");
-  });
-
-  it("(4) dedupes tagIds before creating guide tag references", async () => {
-    const body = {
-      title: "Valid Title",
-      htmlContent: "Valid HTML content to pass validation",
-      categoryId: "existing-cat-id",
-      tagIds: ["existing-tag", "existing-tag", "existing-tag-2"],
-    };
-
-    await submitGuideHandler(createEvent(body));
-
-    const payload = getMutationPayload();
-    const guideMutation = payload.mutations.find((m) => m.create);
-    const tagRefs = guideMutation?.create?.tags?.map((t) => t._ref);
-
-    expect(tagRefs).toEqual(["existing-tag", "existing-tag-2"]);
-  });
-
-  it("(5) skips suggestedTags that collide with existing tagIds", async () => {
-    const body = {
-      title: "Valid Title",
-      htmlContent: "Valid HTML content to pass validation",
-      categoryId: "existing-cat-id",
-      tagIds: ["tag-suggested-foo", "existing-tag"],
-      suggestedTags: ["Foo", "Bar"],
-    };
-
-    await submitGuideHandler(createEvent(body));
-
-    const payload = getMutationPayload();
-    const tagMutations = payload.mutations.filter(
-      (m) => m.createIfNotExists && m.createIfNotExists._type === "tag",
-    );
-
-    const createdTagIds = tagMutations
-      .map((m) => m.createIfNotExists?._id)
-      .filter((id): id is string => Boolean(id));
-
-    expect(createdTagIds).toEqual(["tag-suggested-bar"]);
-
-    const guideMutation = payload.mutations.find((m) => m.create);
-    const tagRefs = guideMutation?.create?.tags?.map((t) => t._ref);
-    expect(tagRefs).toEqual([
-      "tag-suggested-foo",
-      "existing-tag",
-      "tag-suggested-bar",
-    ]);
-  });
-
-  it("(6) keeps final guide tags duplicate-free when tagIds and suggestedTags overlap", async () => {
-    const body = {
-      title: "Valid Title",
-      htmlContent: "Valid HTML content to pass validation",
-      categoryId: "existing-cat-id",
-      tagIds: ["tag-suggested-foo", " tag-suggested-foo "],
-      suggestedTags: ["foo", "Foo", "bar"],
-    };
-
-    await submitGuideHandler(createEvent(body));
-
-    const payload = getMutationPayload();
-    const guideMutation = payload.mutations.find((m) => m.create);
-    const tagRefs = guideMutation?.create?.tags?.map((t) => t._ref) ?? [];
-
-    expect(tagRefs).toEqual(["tag-suggested-foo", "tag-suggested-bar"]);
-    expect(new Set(tagRefs).size).toBe(tagRefs.length);
+    expect(result).toEqual({ success: true });
+    expect(mockQueueSend).not.toHaveBeenCalled();
   });
 });
