@@ -25,6 +25,7 @@ const runtimeEnv =
   ).process?.env ?? {};
 
 const previewBaseUrl = runtimeEnv.PREVIEW_WEB_BASE_URL || "";
+const previewFallbackBaseUrl = runtimeEnv.PREVIEW_WEB_FALLBACK_BASE_URL || "";
 const projectId = runtimeEnv.SANITY_PROJECT_ID || "";
 const writeToken = runtimeEnv.SANITY_WRITE_TOKEN || "";
 const dataset = runtimeEnv.SANITY_DATASET || "preview";
@@ -34,6 +35,14 @@ const sanityApiVersion = "2023-08-01";
 const fetchTimeoutMs = 20000;
 
 const sanitizeLine = (value: string) => value.replace(/\s+/g, " ").trim();
+
+const buildSubmitTargets = (): string[] => {
+  const targets = [previewBaseUrl, previewFallbackBaseUrl]
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  return Array.from(new Set(targets));
+};
 
 const flattenPortableText = (content: SanityBlock[] | undefined): string => {
   if (!content || content.length === 0) {
@@ -118,6 +127,8 @@ describe.skipIf(!hasQueueE2eEnv)(
   "Preview queue E2E: producer to consumer",
   () => {
     it("submits through preview web API and preserves normalized content", async () => {
+      const submitTargets = buildSubmitTargets();
+
       const runId = globalThis.crypto.randomUUID().slice(0, 8);
       const suggestedCategory = `Queue E2E Category ${runId}`;
 
@@ -151,19 +162,40 @@ describe.skipIf(!hasQueueE2eEnv)(
       ].join("\n");
 
       try {
-        const submitResponse = await fetch(
-          new URL("/api/submit-guide", previewBaseUrl),
-          {
+        let submitResponse: Response | null = null;
+        let submitTarget = "";
+
+        for (const target of submitTargets) {
+          submitTarget = target;
+          submitResponse = await fetch(new URL("/api/submit-guide", target), {
             signal: AbortSignal.timeout(fetchTimeoutMs),
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(payload),
-          },
-        );
+          });
 
-        expect(submitResponse.status).toBe(202);
+          if (submitResponse.status === 202) {
+            break;
+          }
+
+          if (submitResponse.status !== 403) {
+            break;
+          }
+        }
+
+        if (!submitResponse) {
+          throw new Error("No preview submit target configured for queue E2E");
+        }
+
+        if (submitResponse.status !== 202) {
+          const responseBody = await submitResponse.text();
+          const contentType = submitResponse.headers.get("content-type") ?? "";
+          throw new Error(
+            `Submit failed with status ${submitResponse.status} via ${submitTarget}. Content-Type: ${contentType}. Body: ${responseBody}`,
+          );
+        }
 
         const savedGuide = await waitForGuideById(guideId);
         const persistedText = flattenPortableText(savedGuide.content);
