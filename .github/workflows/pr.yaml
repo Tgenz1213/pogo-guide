@@ -163,7 +163,7 @@ jobs:
   queue-consumer-sanity-preview-integration:
     runs-on: ubuntu-latest
     needs: [queue-e2e-changes]
-    if: needs.queue-e2e-changes.outputs.queue_e2e == 'true'
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && needs.queue-e2e-changes.outputs.queue_e2e == 'true' }}
     env:
       SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
       SANITY_DATASET: preview
