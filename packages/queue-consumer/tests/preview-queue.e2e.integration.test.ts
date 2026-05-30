@@ -61,7 +61,7 @@ const flattenPortableText = (content: SanityBlock[] | undefined): string => {
 
 async function sanityFetch<T>(
   query: string,
-  params?: Record<string, string>,
+  params?: Record<string, unknown>,
 ): Promise<T | null> {
   const url = new URL(
     `https://${projectId}.api.sanity.io/v${sanityApiVersion}/data/query/${dataset}`,
@@ -70,7 +70,7 @@ async function sanityFetch<T>(
 
   if (params && Object.keys(params).length > 0) {
     for (const [key, value] of Object.entries(params)) {
-      url.searchParams.set(`$${key}`, value);
+      url.searchParams.set(`$${key}`, JSON.stringify(value));
     }
   }
 
