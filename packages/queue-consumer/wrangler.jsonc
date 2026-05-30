@@ -1,0 +1,49 @@
+{
+  "name": "pogo-queue-consumer",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-05-12",
+  "env": {
+    "dev": {
+      "queues": {
+        "consumers": [
+          {
+            "queue": "pogo-dev",
+            "max_retries": 3,
+            "dead_letter_queue": "pogo-dev-dlq"
+          }
+        ]
+      },
+      "vars": {
+        "SANITY_DATASET": "development"
+      }
+    },
+    "preview": {
+      "queues": {
+        "consumers": [
+          {
+            "queue": "pogo-preview",
+            "max_retries": 3,
+            "dead_letter_queue": "pogo-preview-dlq"
+          }
+        ]
+      },
+      "vars": {
+        "SANITY_DATASET": "preview"
+      }
+    },
+    "production": {
+      "queues": {
+        "consumers": [
+          {
+            "queue": "pogo-production",
+            "max_retries": 3,
+            "dead_letter_queue": "pogo-production-dlq"
+          }
+        ]
+      },
+      "vars": {
+        "SANITY_DATASET": "production"
+      }
+    }
+  }
+}
