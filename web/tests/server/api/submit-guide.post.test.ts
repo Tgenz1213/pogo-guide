@@ -184,59 +184,35 @@ describe("Submit Guide API (Producer)", () => {
     expect(mockQueueSend).not.toHaveBeenCalled();
   });
 
-  it("7. throws 500 in local runtime when consumer mirror fails", async () => {
-    const mockFetch = vi.fn().mockResolvedValue({
-      ok: false,
-      status: 500,
-      text: vi.fn().mockResolvedValue("Missing SANITY_WRITE_TOKEN"),
+  it("7. uses generated requestId when cf-ray header is missing", async () => {
+    const event = createEvent(validBody, {}, true, false);
+    const result = await submitGuideHandler(event);
+
+    expect(result).toEqual({
+      success: true,
+      messageId: expect.any(String),
     });
 
-    vi.stubGlobal("fetch", mockFetch);
-
-    const event = createEvent(validBody, {}, true, false);
-
-    try {
-      await submitGuideHandler(event);
-      expect.unreachable("Should have thrown");
-    } catch (err) {
-      const error = err as {
-        statusCode: number;
-        statusMessage: string;
-        data?: { mirrorStatus?: number; details?: string };
-      };
-      expect(error.statusCode).toBe(500);
-      expect(error.statusMessage).toBe(
-        "Local queue consumer failed to process submission",
-      );
-      expect(error.data?.mirrorStatus).toBe(500);
-      expect(error.data?.details).toContain("Missing SANITY_WRITE_TOKEN");
-    }
-
-    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockQueueSend).toHaveBeenCalledTimes(1);
+    const payload = mockQueueSend.mock.calls[0][0] as {
+      requestId?: string;
+    };
+    expect(payload.requestId).toMatch(/^req-\d+$/);
   });
 
-  it("8. treats localhost host as local runtime even when cf-ray exists", async () => {
-    const mockFetch = vi.fn().mockResolvedValue({
-      ok: false,
-      status: 500,
-      text: vi.fn().mockResolvedValue("Missing SANITY_WRITE_TOKEN"),
+  it("8. ignores localhost host value when cf-ray header exists", async () => {
+    const event = createEvent(validBody, {}, true, true, "127.0.0.1:8788");
+    const result = await submitGuideHandler(event);
+
+    expect(result).toEqual({
+      success: true,
+      messageId: expect.any(String),
     });
 
-    vi.stubGlobal("fetch", mockFetch);
-
-    const event = createEvent(validBody, {}, true, true, "127.0.0.1:8788");
-
-    try {
-      await submitGuideHandler(event);
-      expect.unreachable("Should have thrown");
-    } catch (err) {
-      const error = err as { statusCode: number; statusMessage: string };
-      expect(error.statusCode).toBe(500);
-      expect(error.statusMessage).toBe(
-        "Local queue consumer failed to process submission",
-      );
-    }
-
-    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockQueueSend).toHaveBeenCalledTimes(1);
+    const payload = mockQueueSend.mock.calls[0][0] as {
+      requestId?: string;
+    };
+    expect(payload.requestId).toBe("test-cf-ray");
   });
 });
