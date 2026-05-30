@@ -80,6 +80,10 @@ async function sanityDeleteById(id: string): Promise<void> {
   );
 
   if (!response.ok) {
+    if (response.status === 404 || response.status === 409) {
+      return;
+    }
+
     throw new Error(`Sanity delete failed (${response.status})`);
   }
 }
@@ -167,10 +171,23 @@ describe.skipIf(!hasIntegrationEnv)(
         const persistedText = flattenPortableText(savedGuide.content);
         expect(persistedText).toBe(expectedText);
       } finally {
-        await Promise.all([
+        const cleanupResults = await Promise.allSettled([
           sanityDeleteById(guideId),
           sanityDeleteById(categoryId),
         ]);
+
+        const cleanupFailures = cleanupResults.filter(
+          (result): result is PromiseRejectedResult =>
+            result.status === "rejected",
+        );
+
+        if (cleanupFailures.length > 0) {
+          console.warn(
+            `[sanity-preview-integration] cleanup encountered ${cleanupFailures.length} non-fatal error(s): ${cleanupFailures
+              .map((failure) => String(failure.reason))
+              .join(" | ")}`,
+          );
+        }
       }
     });
   },
