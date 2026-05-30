@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   htmlToPortableTextBlocks,
   decodeHtmlEntities,
-} from "../../../server/utils/portableText";
+} from "@pogo/shared-utils";
 
 describe("Portable Text Parser", () => {
   describe("decodeHtmlEntities", () => {

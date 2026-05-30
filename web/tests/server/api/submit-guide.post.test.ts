@@ -79,7 +79,7 @@ vi.mock("#imports", () => ({
   useRuntimeConfig: mockUseRuntimeConfig,
 }));
 
-vi.mock("../../../server/utils/portableText", () => ({
+vi.mock("@pogo/shared-utils", () => ({
   htmlToPortableTextBlocks: vi.fn().mockReturnValue([{ _type: "block" }]),
 }));
 

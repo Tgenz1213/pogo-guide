@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  submitGuideSchema,
-  suggestionSchema,
-} from "../../../shared/utils/validation";
+import { submitGuideSchema, suggestionSchema } from "@pogo/shared-utils";
 
 describe("Validation Schemas", () => {
   describe("suggestionSchema", () => {

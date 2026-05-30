@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
-import { submitGuideSchema } from "~~/shared/utils/validation";
+import { submitGuideSchema } from "@pogo/shared-utils";
 import { FetchError } from "ofetch";
 
 definePageMeta({

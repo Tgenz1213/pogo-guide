@@ -1,4 +1,4 @@
-import { suggestionSchema } from "../../shared/utils/validation";
+import { suggestionSchema } from "@pogo/shared-utils";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);

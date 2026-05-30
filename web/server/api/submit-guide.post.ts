@@ -1,6 +1,8 @@
 import sanitizeHtml from "sanitize-html";
-import { submitGuideSchema } from "../../shared/utils/validation";
-import { htmlToPortableTextBlocks } from "../utils/portableText";
+import {
+  submitGuideSchema,
+  htmlToPortableTextBlocks,
+} from "@pogo/shared-utils";
 
 // Use a runtime-agnostic UUID generator to ensure compatibility across Node, Edge, and Cloudflare Workers
 async function resolveRuntimeCrypto() {
