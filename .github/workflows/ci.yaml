@@ -106,9 +106,31 @@ jobs:
         run: pnpm --filter web exec playwright install --with-deps chromium
       - name: Run E2E smoke tests
         run: pnpm --filter web run test:e2e:smoke
+
+  queue-consumer-sanity-preview-integration:
+    runs-on: ubuntu-latest
+    env:
+      SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
+      SANITY_DATASET: preview
+      SANITY_WRITE_TOKEN: ${{ secrets.SANITY_WRITE_TOKEN }}
+    steps:
+      - uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231 # v6.0.2
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 9
+      - name: Use Node.js
+        uses: actions/setup-node@670825a89dc0abd596e7a3abd0f5e3f6e5faf37c # v6.4.0
+        with:
+          node-version: 22
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run queue consumer preview integration test
+        run: pnpm --filter queue-consumer run test:integration
   deploy:
     runs-on: ubuntu-latest
-    needs: [quality, web-ui-tests, web-server-integration, web-e2e-smoke]
+    needs: [quality, web-ui-tests, web-server-integration, web-e2e-smoke, queue-consumer-sanity-preview-integration]
     environment: production
     steps:
       - uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231 # v6.0.2

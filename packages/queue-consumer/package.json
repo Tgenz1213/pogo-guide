@@ -9,6 +9,7 @@
     "deploy": "wrangler deploy --env production",
     "deploy:preview": "wrangler deploy --env preview",
     "test": "vitest run",
+    "test:integration": "vitest run tests/sanity-preview.integration.test.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
