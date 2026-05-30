@@ -30,6 +30,9 @@ jobs:
       - name: Run Knip
         run: pnpm run knip
 
+      - name: Run Typecheck
+        run: pnpm run typecheck
+
       - name: Run Lint
         run: pnpm run lint
 

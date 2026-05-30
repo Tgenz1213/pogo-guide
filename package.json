@@ -20,6 +20,7 @@
   "scripts": {
     "prepare": "husky",
     "knip": "knip",
+    "typecheck": "pnpm -r run typecheck",
     "lint": "eslint . && pnpm --dir studio lint",
     "lint:fix": "eslint . --fix && pnpm --dir studio lint:fix"
   },
