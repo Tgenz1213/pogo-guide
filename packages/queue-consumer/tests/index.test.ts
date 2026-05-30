@@ -11,6 +11,7 @@ type SanityMutation = {
     _id?: string;
     _type?: string;
     title?: string;
+    slug?: { current?: string };
     category?: { _ref?: string };
     tags?: { _ref?: string }[];
   };
@@ -273,5 +274,25 @@ describe("Queue Consumer Worker", () => {
     expect(tagRefs).toContain("tag-suggested-foo");
     expect(tagRefs).toContain("tag-suggested-bar");
     expect(tagRefs).toHaveLength(3);
+  });
+
+  it("14. includes slug on created guide mutation", async () => {
+    const payload = JSON.parse(JSON.stringify(validGuidePayload));
+    payload.data.title = "Raid Counters: Mewtwo & Friends";
+
+    const message = createMessage(payload);
+    const batch = createBatch([message]);
+
+    await worker.queue(batch, env, emptyCtx);
+
+    const fetchCallBody = JSON.parse(mockFetch.mock.calls[0][1].body);
+    const mutations = fetchCallBody.mutations as SanityMutation[];
+    const guideMutation = mutations.find(
+      (m) => m.createIfNotExists?._type === "guide",
+    );
+
+    expect(guideMutation?.createIfNotExists?.slug?.current).toBe(
+      "raid-counters-mewtwo-friends",
+    );
   });
 });

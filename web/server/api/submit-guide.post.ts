@@ -9,50 +9,6 @@ interface CloudflareEnv {
   };
 }
 
-interface LocalMirrorResult {
-  ok: boolean;
-  status?: number;
-  body?: string;
-  error?: unknown;
-}
-
-async function mirrorToLocalConsumer(
-  payload: unknown,
-): Promise<LocalMirrorResult> {
-  const endpoint =
-    process.env.LOCAL_QUEUE_CONSUMER_URL ||
-    "http://127.0.0.1:8787/__debug/process";
-
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      return {
-        ok: false,
-        status: response.status,
-        body: text,
-      };
-    }
-
-    return {
-      ok: true,
-      status: response.status,
-    };
-  } catch (error) {
-    return {
-      ok: false,
-      error,
-    };
-  }
-}
-
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
@@ -78,10 +34,7 @@ export default defineEventHandler(async (event) => {
   const isMockMode = process.env.NODE_ENV !== "production" && !POGO_QUEUE;
 
   const cfRay = getHeader(event, "cf-ray");
-  const host = getHeader(event, "host") || "";
-  const isLocalHost = /^localhost(:\d+)?$|^127\.0\.0\.1(:\d+)?$/.test(host);
   const requestId = cfRay || `req-${Date.now()}`;
-  const isLocalRuntime = !cfRay || isLocalHost;
   const messageId = globalThis.crypto.randomUUID();
   const idempotencyKey = await generateGuideIdempotencyKey(data);
 
@@ -115,28 +68,6 @@ export default defineEventHandler(async (event) => {
 
   try {
     await POGO_QUEUE.send(payload);
-
-    // In local development, mirror dispatch to the consumer worker over HTTP.
-    // This keeps the full processing logic testable even when local Queue
-    // delivery between two wrangler dev processes is not active.
-    if (isLocalRuntime) {
-      const mirrorResult = await mirrorToLocalConsumer(payload);
-
-      if (!mirrorResult.ok) {
-        const details =
-          mirrorResult.body || String(mirrorResult.error || "Unknown error");
-        console.error("[pogo-guide] Local consumer mirror failed:", details);
-
-        throw createError({
-          statusCode: 500,
-          statusMessage: "Local queue consumer failed to process submission",
-          data: {
-            mirrorStatus: mirrorResult.status,
-            details,
-          },
-        });
-      }
-    }
 
     setResponseStatus(event, 202);
     return { success: true, messageId };

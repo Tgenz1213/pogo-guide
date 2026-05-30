@@ -15,6 +15,21 @@ import {
   PermanentMessageError,
 } from "./errors";
 
+function toSanitySlug(value: string, fallback = "untitled") {
+  const normalized = value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 96);
+
+  return normalized || fallback;
+}
+
 function generateGuideMutations(
   idempotencyKey: string,
   payload: SubmitGuidePayload,
@@ -27,7 +42,7 @@ function generateGuideMutations(
 
   if (!finalCategoryId && payload.suggestedCategory) {
     // Generate a deterministic ID for the suggested category
-    const slug = payload.suggestedCategory.toLowerCase().replace(/\s+/g, "-");
+    const slug = toSanitySlug(payload.suggestedCategory, "suggested-category");
     finalCategoryId = `category-suggested-${slug}`;
     mutations.push({
       createIfNotExists: {
@@ -58,7 +73,7 @@ function generateGuideMutations(
       new Set(payload.suggestedTags.map((t) => t.toLowerCase())),
     );
     for (const tagStr of dedupedSuggestions) {
-      const slug = tagStr.replace(/\s+/g, "-");
+      const slug = toSanitySlug(tagStr, "tag");
       const suggestedTagId = `tag-suggested-${slug}`;
 
       mutations.push({
@@ -83,12 +98,17 @@ function generateGuideMutations(
 
   const cleanHtml = sanitizeGuideHtml(payload.htmlContent);
   const blocks = htmlToPortableTextBlocks(cleanHtml);
+  const guideSlug = toSanitySlug(
+    payload.title,
+    `guide-${idempotencyKey.slice(0, 8)}`,
+  );
 
   mutations.push({
     createIfNotExists: {
       _id: guideId,
       _type: "guide",
       title: payload.title,
+      slug: { _type: "slug", current: guideSlug },
       description: payload.description,
       content: blocks,
       category: finalCategoryId
