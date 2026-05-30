@@ -69,7 +69,9 @@ async function sanityFetch<T>(
   url.searchParams.set("query", query);
 
   if (params && Object.keys(params).length > 0) {
-    url.searchParams.set("$", JSON.stringify(params));
+    for (const [key, value] of Object.entries(params)) {
+      url.searchParams.set(`$${key}`, value);
+    }
   }
 
   const response = await fetch(url, {
@@ -80,7 +82,10 @@ async function sanityFetch<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`Sanity query failed (${response.status})`);
+    const responseBody = await response.text();
+    throw new Error(
+      `Sanity query failed (${response.status}): ${responseBody}`,
+    );
   }
 
   const json = (await response.json()) as { result?: T | null };
