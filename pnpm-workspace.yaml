@@ -9,3 +9,4 @@ nodeVersion: "22.16.0"
 packages:
   - "web"
   - "studio"
+  - "packages/*"

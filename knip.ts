@@ -2,6 +2,14 @@ import type { KnipConfig } from "knip";
 
 const config: KnipConfig = {
   workspaces: {
+    "packages/shared-utils": {
+      entry: ["src/index.ts!"],
+      project: ["**/*.{ts,js}!"],
+    },
+    "packages/queue-consumer": {
+      entry: ["src/index.ts!"],
+      project: ["**/*.{ts,js}!"],
+    },
     web: {
       entry: ["sanity.cli.ts"],
       project: ["**/*.{ts,vue}!"],

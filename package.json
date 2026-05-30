@@ -37,6 +37,16 @@
       "prettier --write",
       "pnpm --dir studio exec eslint --fix"
     ],
+    "packages/shared-utils/**/*.{js,ts}": [
+      "prettier --write",
+      "eslint --fix",
+      "pnpm --filter @pogo/shared-utils run test --"
+    ],
+    "packages/queue-consumer/**/*.{js,ts}": [
+      "prettier --write",
+      "eslint --fix",
+      "pnpm --filter queue-consumer run test --"
+    ],
     "*.{json,md,css}": [
       "prettier --write"
     ]
