@@ -4,32 +4,18 @@
   "compatibility_date": "2024-05-12",
   "vars": {
     "SANITY_PROJECT_ID": "84tfhiiz",
-    "SANITY_DATASET": "production"
+    "SANITY_DATASET": "preview"
   },
   "queues": {
     "consumers": [
       {
-        "queue": "pogo-production",
+        "queue": "pogo-preview",
         "max_retries": 3,
-        "dead_letter_queue": "pogo-production-dlq"
+        "dead_letter_queue": "pogo-preview-dlq"
       }
     ]
   },
   "env": {
-    "dev": {
-      "queues": {
-        "consumers": [
-          {
-            "queue": "pogo-dev",
-            "max_retries": 3,
-            "dead_letter_queue": "pogo-dev-dlq"
-          }
-        ]
-      },
-      "vars": {
-        "SANITY_DATASET": "development"
-      }
-    },
     "preview": {
       "queues": {
         "consumers": [
@@ -41,6 +27,7 @@
         ]
       },
       "vars": {
+        "SANITY_PROJECT_ID": "84tfhiiz",
         "SANITY_DATASET": "preview"
       }
     },
@@ -55,6 +42,7 @@
         ]
       },
       "vars": {
+        "SANITY_PROJECT_ID": "84tfhiiz",
         "SANITY_DATASET": "production"
       }
     }
