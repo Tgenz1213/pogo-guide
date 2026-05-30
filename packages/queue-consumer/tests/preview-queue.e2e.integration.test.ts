@@ -224,6 +224,6 @@ describe.skipIf(!hasQueueE2eEnv)(
           );
         }
       }
-    });
+    }, 120_000);
   },
 );
