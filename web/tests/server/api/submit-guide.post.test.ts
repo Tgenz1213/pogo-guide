@@ -1,13 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import submitGuideHandler from "../../../server/api/submit-guide.post";
-import type { H3Event } from "h3";
-import type { ZodValidationErrorData } from "@pogo/shared-utils";
+import _submitGuideHandler from "../../../server/api/submit-guide.post";
+import type { H3Event, EventHandler } from "h3";
+
+const submitGuideHandler = _submitGuideHandler as EventHandler;
+interface ZodValidationErrorData {
+  statusCode: number;
+  statusMessage: string;
+  data: Record<string, unknown>;
+}
 
 vi.mock("h3", async (importOriginal) => {
   const actual = (await importOriginal()) as typeof import("h3");
   return {
     ...actual,
-    defineEventHandler: (handler: unknown) => handler,
+    defineEventHandler: <T>(handler: T) => handler,
     readBody: async (event: { _body: unknown }) => event._body,
     createError: (err: {
       statusCode: number;
