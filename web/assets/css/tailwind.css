@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
-@source "../app";
+@source "../../app";
 
 @theme {
   --font-sans: Poppins, Montserrat, Inter, sans-serif;
