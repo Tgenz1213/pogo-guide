@@ -10,7 +10,7 @@
     >
       <div class="modal-panel flex flex-col max-h-[90vh]">
         <!-- Header -->
-        <div class="modal-header flex-shrink-0">
+        <div class="modal-header shrink-0">
           <div>
             <h2 id="report-detail-title" class="modal-title">Report Details</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -37,7 +37,7 @@
         >
           <!-- Report Info Section -->
           <section
-            class="bg-slate-800 rounded-lg shadow-sm border border-slate-700 p-5"
+            class="bg-slate-800 rounded-lg shadow-xs border border-slate-700 p-5"
           >
             <h3 class="text-lg font-semibold text-white mb-4">
               Report Information
@@ -74,7 +74,7 @@
               <div class="md:col-span-2">
                 <dt class="font-medium text-slate-400">Additional Details</dt>
                 <dd
-                  class="mt-1 text-slate-300 bg-slate-900 p-3 rounded-md border border-slate-800 whitespace-pre-wrap break-words"
+                  class="mt-1 text-slate-300 bg-slate-900 p-3 rounded-md border border-slate-800 whitespace-pre-wrap wrap-break-word"
                 >
                   {{ report.details || "No additional details provided." }}
                 </dd>
@@ -84,7 +84,7 @@
 
           <!-- Guide Content Section -->
           <section
-            class="bg-slate-800 rounded-lg shadow-sm border border-slate-700 p-5"
+            class="bg-slate-800 rounded-lg shadow-xs border border-slate-700 p-5"
           >
             <h3
               class="text-lg font-semibold text-white mb-4 border-b border-slate-700 pb-3"
@@ -120,7 +120,7 @@
         </div>
 
         <!-- Footer Actions -->
-        <div class="modal-footer flex-shrink-0">
+        <div class="modal-footer shrink-0">
           <div class="flex justify-end gap-3">
             <button
               class="px-4 py-2 border border-slate-600 rounded-md text-slate-300 hover:bg-slate-800 transition-colors"

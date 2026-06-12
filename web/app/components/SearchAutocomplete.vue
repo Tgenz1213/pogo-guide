@@ -163,8 +163,8 @@ const goToGuide = (guide: SearchResult) => {
       "
       :class="
         variant === 'header'
-          ? 'w-72 bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-surface/50 rounded-full py-2 pl-10 pr-4 text-xs text-slate-900 dark:text-brand-text placeholder-brand-accent/50 focus:outline-none focus:ring-2 focus:ring-mystic-blue transition-all'
-          : 'w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-mystic-blue rounded-2xl py-4 pl-14 pr-6 text-brand-bg dark:text-brand-text placeholder-slate-500 dark:placeholder-brand-accent/80 font-semibold text-lg shadow-xl focus:outline-none transition-all'
+          ? 'w-72 bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-surface/50 rounded-full py-2 pl-10 pr-4 text-xs text-slate-900 dark:text-brand-text placeholder-brand-accent/50 focus:outline-hidden focus:ring-2 focus:ring-mystic-blue transition-all'
+          : 'w-full bg-slate-50 dark:bg-slate-800 border-2 border-transparent focus:border-mystic-blue rounded-2xl py-4 pl-14 pr-6 text-brand-bg dark:text-brand-text placeholder-slate-500 dark:placeholder-brand-accent/80 font-semibold text-lg shadow-xl focus:outline-hidden transition-all'
       "
       @keydown.down.prevent="onKeyDown"
       @keydown.up.prevent="onKeyUp"

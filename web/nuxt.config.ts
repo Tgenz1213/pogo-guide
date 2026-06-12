@@ -1,3 +1,5 @@
+import tailwindcss from "@tailwindcss/vite";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
@@ -5,7 +7,6 @@ export default defineNuxtConfig({
   modules: [
     "nitro-cloudflare-dev",
     "@nuxt/eslint",
-    "@nuxtjs/tailwindcss",
     "@nuxt/image",
     "@nuxtjs/sanity",
     "@nuxtjs/turnstile",
@@ -46,6 +47,7 @@ export default defineNuxtConfig({
     format: ["avif", "webp"],
   },
   vite: {
+    plugins: [tailwindcss()],
     optimizeDeps: {
       include: ["@portabletext/vue", "@sanity/client"],
     },

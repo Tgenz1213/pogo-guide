@@ -110,7 +110,7 @@ const submitSuggestion = async () => {
           v-model="content"
           rows="3"
           placeholder="I think you should add..."
-          class="w-full bg-slate-50 dark:bg-brand-bg/5 border border-white/10 rounded-lg p-3 text-slate-900 dark:text-brand-text placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 transition-shadow resize-none"
+          class="w-full bg-slate-50 dark:bg-brand-bg/5 border border-white/10 rounded-lg p-3 text-slate-900 dark:text-brand-text placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-green-500 transition-shadow resize-none"
           :disabled="isSubmitting"
         />
       </div>

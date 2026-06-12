@@ -39,7 +39,7 @@ const externalResources = computed(() => data.value || []);
         :href="resource.url"
         target="_blank"
         rel="noopener noreferrer"
-        class="group block bg-white dark:bg-brand-surface/20 border border-slate-200 dark:border-brand-surface rounded-2xl p-6 hover:bg-white dark:bg-brand-surface/40 hover:border-mystic-blue/50 transition-all duration-300"
+        class="group block bg-white dark:bg-brand-surface/20 border border-slate-200 dark:border-brand-surface rounded-2xl p-6 hover:bg-white hover:border-mystic-blue/50 transition-all duration-300"
       >
         <div class="flex items-start justify-between gap-4">
           <div>

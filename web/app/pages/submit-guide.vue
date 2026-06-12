@@ -43,7 +43,7 @@ const editor = useEditor({
   editorProps: {
     attributes: {
       class:
-        "tiptap-editor max-w-none focus:outline-none min-h-[200px] p-4 border border-slate-200 dark:border-brand-surface rounded-lg bg-white dark:bg-brand-bg",
+        "tiptap-editor max-w-none focus:outline-hidden min-h-[200px] p-4 border border-slate-200 dark:border-brand-surface rounded-lg bg-white dark:bg-brand-bg",
     },
   },
   onUpdate: () => {
@@ -297,7 +297,7 @@ const submitForm = async () => {
           v-model="title"
           type="text"
           required
-          class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-none"
+          class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-hidden"
           placeholder="e.g. How to defeat Giovanni"
         />
       </div>
@@ -313,7 +313,7 @@ const submitForm = async () => {
           id="description"
           v-model="description"
           rows="2"
-          class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-none"
+          class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-hidden"
           placeholder="A brief summary of this guide"
         ></textarea>
       </div>
@@ -335,7 +335,7 @@ const submitForm = async () => {
             <select
               id="categoryId"
               v-model="categoryId"
-              class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-none"
+              class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-hidden"
             >
               <option value="">-- Select a Category --</option>
               <option v-for="cat in categories" :key="cat._id" :value="cat._id">
@@ -353,7 +353,7 @@ const submitForm = async () => {
               id="suggestedCategory"
               v-model="suggestedCategory"
               type="text"
-              class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-none"
+              class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-hidden"
               placeholder="Or suggest a new category"
             />
           </div>
@@ -372,7 +372,7 @@ const submitForm = async () => {
             id="tagIds"
             v-model="tagIds"
             multiple
-            class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-none min-h-[100px]"
+            class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-hidden min-h-25"
           >
             <option v-for="tag in tags" :key="tag._id" :value="tag._id">
               {{ tag.title }}
@@ -392,7 +392,7 @@ const submitForm = async () => {
             id="suggestedTagsInput"
             v-model="suggestedTagsInput"
             type="text"
-            class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-none"
+            class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-hidden"
             placeholder="e.g. rocket, events, tips (comma separated)"
           />
         </div>

@@ -60,7 +60,7 @@ useSeo(
         v-for="guide in category.guides"
         :key="guide._id"
         :to="`/guides/${guide.slug}`"
-        class="flex flex-col p-6 rounded-3xl bg-white dark:bg-brand-surface/20 border border-slate-200 dark:border-brand-surface hover:bg-white dark:bg-brand-surface/40 hover:border-mystic-blue/30 transition-all duration-300 cursor-pointer group"
+        class="flex flex-col p-6 rounded-3xl bg-white dark:bg-brand-surface/20 border border-slate-200 dark:border-brand-surface hover:bg-white hover:border-mystic-blue/30 transition-all duration-300 cursor-pointer group"
       >
         <h2
           class="text-xl font-bold text-slate-900 dark:text-brand-text mb-3 group-hover:text-mystic-blue"

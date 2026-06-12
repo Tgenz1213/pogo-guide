@@ -2,7 +2,7 @@
   <div class="admin-shell">
     <!-- Mobile Header (Hidden on desktop) -->
     <header
-      class="md:hidden flex items-center justify-between px-4 h-14 bg-slate-900 border-b border-slate-800 flex-shrink-0"
+      class="md:hidden flex items-center justify-between px-4 h-14 bg-slate-900 border-b border-slate-800 shrink-0"
     >
       <NuxtLink
         to="/"
