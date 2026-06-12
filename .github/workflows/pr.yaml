@@ -38,6 +38,36 @@ jobs:
 
           echo "queue_e2e=$MATCHED" >> "$GITHUB_OUTPUT"
 
+  migration-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      migrations_changed: ${{ steps.filter.outputs.migrations_changed }}
+    steps:
+      - uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231 # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - id: filter
+        name: Detect migration relevant changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          if git rev-parse --verify "$BASE_SHA" >/dev/null 2>&1 && git rev-parse --verify "$HEAD_SHA" >/dev/null 2>&1; then
+            FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          elif git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+            FILES=$(git diff --name-only HEAD~1 HEAD)
+          else
+            FILES=$(git ls-files)
+          fi
+
+          echo "$FILES" | grep -E '^web/server/db/migrations/' >/dev/null && MATCHED=true || MATCHED=false
+
+          echo "migrations_changed=$MATCHED" >> "$GITHUB_OUTPUT"
+
   quality:
     runs-on: ubuntu-latest
     steps:
@@ -88,9 +118,10 @@ jobs:
       - name: Run Web UI tests
         run: pnpm --filter web run test:ui
 
-  web-server-integration:
+  apply-migrations:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    needs: [migration-changes]
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && needs.migration-changes.outputs.migrations_changed == 'true' }}
     env:
       PREVIEW_DB_ID: ${{ vars.PREVIEW_DB_ID }}
     steps:
@@ -132,6 +163,27 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: pnpm exec wrangler d1 migrations apply DB --config wrangler.test.jsonc --remote
+
+  web-server-integration:
+    runs-on: ubuntu-latest
+    needs: [apply-migrations]
+    if: ${{ always() && github.event.pull_request.head.repo.full_name == github.repository && (needs.apply-migrations.result == 'success' || needs.apply-migrations.result == 'skipped') }}
+    steps:
+      - uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231 # v6.0.2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 9
+
+      - name: Use Node.js
+        uses: actions/setup-node@670825a89dc0abd596e7a3abd0f5e3f6e5faf37c # v6.4.0
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run Web server integration tests
         run: pnpm --filter web run test:server:ci
