@@ -201,7 +201,7 @@ const timeAgo = (dateString?: string) => {
           v-for="guide in recentGuides"
           :key="guide._id"
           :to="`/guides/${guide.slug}`"
-          class="group block p-6 rounded-3xl bg-white dark:bg-brand-surface/10 border border-slate-200 dark:border-brand-surface hover:border-mystic-blue/50 hover:bg-white dark:bg-brand-surface/30 transition-all duration-300 cursor-pointer"
+          class="group block p-6 rounded-3xl bg-white dark:bg-brand-surface/10 border border-slate-200 dark:border-brand-surface hover:border-mystic-blue/50 hover:bg-white transition-all duration-300 cursor-pointer"
         >
           <div class="flex items-center gap-3 mb-4">
             <span

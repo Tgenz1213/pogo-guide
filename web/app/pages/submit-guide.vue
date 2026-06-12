@@ -372,7 +372,7 @@ const submitForm = async () => {
             id="tagIds"
             v-model="tagIds"
             multiple
-            class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-hidden min-h-[100px]"
+            class="w-full bg-white dark:bg-brand-surface border border-slate-200 dark:border-brand-lightBorder rounded-lg p-3 text-slate-900 dark:text-brand-text focus:ring-2 focus:ring-mystic-blue outline-hidden min-h-25"
           >
             <option v-for="tag in tags" :key="tag._id" :value="tag._id">
               {{ tag.title }}

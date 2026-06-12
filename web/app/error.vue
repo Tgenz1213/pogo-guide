@@ -17,7 +17,7 @@ const handleError = () => clearError({ redirect: "/" });
   >
     <!-- Visual Glow Background -->
     <div
-      class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-brand-bg to-brand-bg -z-10"
+      class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-slate-900 via-brand-bg to-brand-bg -z-10"
     ></div>
 
     <div
@@ -33,7 +33,7 @@ const handleError = () => clearError({ redirect: "/" });
 
       <div class="relative text-center space-y-6">
         <h1
-          class="text-8xl md:text-9xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-amber-400 select-none animate-pulse"
+          class="text-8xl md:text-9xl font-black tracking-tight text-transparent bg-clip-text bg-linear-to-r from-brand-accent to-amber-400 select-none animate-pulse"
         >
           {{ error.status || "404" }}
         </h1>

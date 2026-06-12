@@ -74,7 +74,7 @@
               <div class="md:col-span-2">
                 <dt class="font-medium text-slate-400">Additional Details</dt>
                 <dd
-                  class="mt-1 text-slate-300 bg-slate-900 p-3 rounded-md border border-slate-800 whitespace-pre-wrap break-words"
+                  class="mt-1 text-slate-300 bg-slate-900 p-3 rounded-md border border-slate-800 whitespace-pre-wrap wrap-break-word"
                 >
                   {{ report.details || "No additional details provided." }}
                 </dd>
