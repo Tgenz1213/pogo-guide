@@ -4,7 +4,29 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
+  vue-demi: true
   workerd: true
+minimumReleaseAgeExclude:
+  - '@nuxtjs/robots@6.1.1'
+  - '@nuxtjs/sitemap@8.2.1'
+  - '@tailwindcss/node@4.3.1'
+  - '@tailwindcss/oxide-android-arm64@4.3.1'
+  - '@tailwindcss/oxide-darwin-arm64@4.3.1'
+  - '@tailwindcss/oxide-darwin-x64@4.3.1'
+  - '@tailwindcss/oxide-freebsd-x64@4.3.1'
+  - '@tailwindcss/oxide-linux-arm-gnueabihf@4.3.1'
+  - '@tailwindcss/oxide-linux-arm64-gnu@4.3.1'
+  - '@tailwindcss/oxide-linux-arm64-musl@4.3.1'
+  - '@tailwindcss/oxide-linux-x64-gnu@4.3.1'
+  - '@tailwindcss/oxide-linux-x64-musl@4.3.1'
+  - '@tailwindcss/oxide-wasm32-wasi@4.3.1'
+  - '@tailwindcss/oxide-win32-arm64-msvc@4.3.1'
+  - '@tailwindcss/oxide-win32-x64-msvc@4.3.1'
+  - '@tailwindcss/oxide@4.3.1'
+  - '@tailwindcss/vite@4.3.1'
+  - eslint@10.5.0
+  - nuxtseo-shared@5.3.0
+  - tailwindcss@4.3.1
 nodeVersion: "22.16.0"
 packages:
   - "web"
