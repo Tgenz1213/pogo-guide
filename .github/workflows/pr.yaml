@@ -38,6 +38,36 @@ jobs:
 
           echo "queue_e2e=$MATCHED" >> "$GITHUB_OUTPUT"
 
+  migration-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      migrations_changed: ${{ steps.filter.outputs.migrations_changed }}
+    steps:
+      - uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231 # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - id: filter
+        name: Detect migration relevant changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          if git rev-parse --verify "$BASE_SHA" >/dev/null 2>&1 && git rev-parse --verify "$HEAD_SHA" >/dev/null 2>&1; then
+            FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          elif git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+            FILES=$(git diff --name-only HEAD~1 HEAD)
+          else
+            FILES=$(git ls-files)
+          fi
+
+          echo "$FILES" | grep -E '^web/server/db/migrations/' >/dev/null && MATCHED=true || MATCHED=false
+
+          echo "migrations_changed=$MATCHED" >> "$GITHUB_OUTPUT"
+
   quality:
     runs-on: ubuntu-latest
     steps:
@@ -90,7 +120,8 @@ jobs:
 
   web-server-integration:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    needs: [migration-changes]
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && needs.migration-changes.outputs.migrations_changed == 'true' }}
     env:
       PREVIEW_DB_ID: ${{ vars.PREVIEW_DB_ID }}
     steps:
