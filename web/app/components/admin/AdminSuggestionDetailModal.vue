@@ -10,7 +10,7 @@
     >
       <div class="modal-panel flex flex-col max-h-[90vh]">
         <!-- Header -->
-        <div class="modal-header flex-shrink-0">
+        <div class="modal-header shrink-0">
           <div>
             <h2 id="suggestion-detail-title" class="modal-title">
               Suggestion Details
@@ -40,7 +40,7 @@
         >
           <!-- Suggestion Info Section -->
           <section
-            class="bg-slate-800 rounded-lg shadow-sm border border-slate-700 p-5"
+            class="bg-slate-800 rounded-lg shadow-xs border border-slate-700 p-5"
           >
             <h3 class="text-lg font-semibold text-white mb-4">
               Suggestion Information
@@ -78,7 +78,7 @@
         </div>
 
         <!-- Footer Actions -->
-        <div class="modal-footer flex-shrink-0">
+        <div class="modal-footer shrink-0">
           <div class="flex justify-end gap-3">
             <button
               class="px-4 py-2 border border-slate-600 rounded-md text-slate-300 hover:bg-slate-800 transition-colors"
