@@ -1,6 +1,24 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Poppins, Montserrat, Inter, sans-serif;
+
+  --color-brand-bg: #020617;
+  --color-brand-surface: #0f172a;
+  --color-brand-text: #f8fafc;
+  --color-brand-accent: #e2e8f0;
+  --color-brand-warning: #fbbf24;
+
+  --color-brand-lightBg: #f1f5f9;
+  --color-brand-lightSurface: #ffffff;
+  --color-brand-lightText: #0f172a;
+  --color-brand-lightMuted: #64748b;
+  --color-brand-lightBorder: #e2e8f0;
+
+  --color-mystic-blue: #3b82f6;
+  --color-valor-red: #ef4444;
+  --color-instinct-yellow: #facc15;
+}
 
 body {
   @apply bg-slate-50 dark:bg-brand-bg text-slate-900 dark:text-brand-text min-h-screen font-sans transition-colors duration-300;

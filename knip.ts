@@ -27,7 +27,6 @@ const config: KnipConfig = {
   ignoreIssues: {
     "web/sanity.cli.ts": ["unlisted"],
     "web/server/api/submit-suggestion.post.ts": ["unlisted"],
-    "web/tailwind.config.ts": ["unlisted"],
     "web/shared/types/sanity.d.ts": ["exports", "types"],
     "web/shared/types/auth.d.ts": ["files"],
     "web/tests/nuxt-test-globals.d.ts": ["files"],

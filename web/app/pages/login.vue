@@ -84,7 +84,7 @@ if (loggedIn.value) {
 
         <a
           href="/auth/google"
-          class="flex items-center justify-center gap-3 w-full py-3 px-4 bg-white dark:bg-brand-surface hover:bg-slate-50 dark:hover:bg-brand-surface/80 text-slate-900 dark:text-brand-text border border-slate-200 dark:border-brand-surface font-bold rounded-xl transition-colors duration-200 shadow-sm"
+          class="flex items-center justify-center gap-3 w-full py-3 px-4 bg-white dark:bg-brand-surface hover:bg-slate-50 dark:hover:bg-brand-surface/80 text-slate-900 dark:text-brand-text border border-slate-200 dark:border-brand-surface font-bold rounded-xl transition-colors duration-200 shadow-xs"
         >
           <svg class="w-5 h-5" viewBox="0 0 24 24">
             <path

@@ -28,13 +28,13 @@ const closeMenu = () => {
 
 <template>
   <header
-    class="sticky top-0 z-50 bg-brand-lightSurface dark:bg-brand-bg shadow-sm shadow-slate-200/50 dark:shadow-none border-b border-brand-lightBorder dark:border-brand-surface"
+    class="sticky top-0 z-50 bg-brand-lightSurface dark:bg-brand-bg shadow-xs shadow-slate-200/50 dark:shadow-none border-b border-brand-lightBorder dark:border-brand-surface"
   >
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
       <div class="flex items-center gap-4">
         <!-- Mobile Menu Toggle -->
         <button
-          class="md:hidden p-2 rounded-md text-slate-500 dark:text-brand-accent hover:bg-white dark:bg-brand-surface transition-colors focus:outline-none"
+          class="md:hidden p-2 rounded-md text-slate-500 dark:text-brand-accent hover:bg-white dark:bg-brand-surface transition-colors focus:outline-hidden"
           aria-label="Toggle Menu"
           :aria-expanded="isMenuOpen"
           @click="isMenuOpen = !isMenuOpen"
@@ -191,7 +191,7 @@ const closeMenu = () => {
 
           <div
             v-if="isProfileMenuOpen"
-            class="absolute right-0 mt-2 w-48 bg-white dark:bg-brand-bg rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none z-50 border border-slate-200 dark:border-brand-surface"
+            class="absolute right-0 mt-2 w-48 bg-white dark:bg-brand-bg rounded-md shadow-lg py-1 ring-1 ring-black/5 focus:outline-hidden z-50 border border-slate-200 dark:border-brand-surface"
             @click="closeProfileMenu"
           >
             <NuxtLink
