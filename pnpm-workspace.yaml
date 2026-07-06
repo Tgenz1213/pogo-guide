@@ -37,3 +37,5 @@ packages:
   - "web"
   - "studio"
   - "packages/*"
+patchedDependencies:
+  vite-plugin-checker@0.14.1: patches/vite-plugin-checker@0.14.1.patch
