@@ -47,7 +47,7 @@ export default defineNuxtConfig({
     format: ["avif", "webp"],
   },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [...tailwindcss()],
     optimizeDeps: {
       include: ["@portabletext/vue", "@sanity/client"],
     },
