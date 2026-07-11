@@ -7,8 +7,11 @@ allowBuilds:
   vue-demi: true
   workerd: true
 minimumReleaseAgeExclude:
+  - '@codemirror/state@6.7.1'
   - '@nuxtjs/robots@6.1.1'
   - '@nuxtjs/sitemap@8.2.1'
+  - '@sanity/ui@3.3.2'
+  - color2k@2.0.4
   - '@tailwindcss/node@4.3.1'
   - '@tailwindcss/oxide-android-arm64@4.3.1'
   - '@tailwindcss/oxide-darwin-arm64@4.3.1'
