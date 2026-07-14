@@ -16,7 +16,7 @@ Per `docs/adr/0010-inter-service-endpoint-authentication.md`, this route require
 
 - The request must include `Authorization: Bearer <token>`, checked with a timing-safe comparison against the `DEBUG_PROCESS_TOKEN` secret.
 - If `DEBUG_PROCESS_TOKEN` is unset, or the supplied token doesn't match, the route responds `401 Unauthorized` in `development`/`preview` (`env.ENVIRONMENT` is anything other than `"production"`).
-- In `production` (`env.ENVIRONMENT === "production"`), a missing/invalid/unconfigured token instead responds `404 Not Found`, so the route's existence isn't discoverable by an unauthenticated caller. Production deploys do **not** have `DEBUG_PROCESS_TOKEN` provisioned, so the route is inert there by default.
+- In `production` (`env.ENVIRONMENT === "production"`), a missing/invalid/unconfigured token instead gets the exact same response as any other unmatched path (`200 "Queue Consumer is running"`, this Worker's generic catch-all — it has no real router), so the route's existence isn't discoverable by an unauthenticated caller. Production deploys do **not** have `DEBUG_PROCESS_TOKEN` provisioned, so the route is inert there by default.
 
 To use it locally, set `DEBUG_PROCESS_TOKEN` in `web/.dev.vars` (or your local env) and send the header:
 

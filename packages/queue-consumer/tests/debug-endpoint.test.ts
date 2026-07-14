@@ -48,27 +48,60 @@ describe("/__debug/process auth gating", () => {
     });
   });
 
-  it("returns 404 in production when no token is configured and none is provided", async () => {
+  it("mirrors the generic catch-all response in production when no token is configured and none is provided", async () => {
     const env: Env = { ...baseEnv, ENVIRONMENT: "production" };
     const request = makeRequest(validGuidePayload);
+    const unmatchedRouteResponse = await worker.fetch(
+      new Request("https://queue-consumer.example.com/some-other-path"),
+      env,
+      emptyCtx,
+    );
 
     const response = await worker.fetch(request, env, emptyCtx);
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(unmatchedRouteResponse.status);
+    expect(await response.text()).toBe(await unmatchedRouteResponse.text());
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it("returns 404 in production when a token is configured but the request provides the wrong one", async () => {
+  it("mirrors the generic catch-all response in production when a token is configured but the request provides the wrong one", async () => {
     const env: Env = {
       ...baseEnv,
       ENVIRONMENT: "production",
       DEBUG_PROCESS_TOKEN: "correct-secret",
     };
     const request = makeRequest(validGuidePayload, "wrong-secret");
+    const unmatchedRouteResponse = await worker.fetch(
+      new Request("https://queue-consumer.example.com/some-other-path"),
+      env,
+      emptyCtx,
+    );
 
     const response = await worker.fetch(request, env, emptyCtx);
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(unmatchedRouteResponse.status);
+    expect(await response.text()).toBe(await unmatchedRouteResponse.text());
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it("returns the same generic response for GET /__debug/process as for any other unmatched route, in production", async () => {
+    const env: Env = { ...baseEnv, ENVIRONMENT: "production" };
+    const unmatchedRouteResponse = await worker.fetch(
+      new Request("https://queue-consumer.example.com/some-other-path"),
+      env,
+      emptyCtx,
+    );
+
+    const response = await worker.fetch(
+      new Request("https://queue-consumer.example.com/__debug/process", {
+        method: "GET",
+      }),
+      env,
+      emptyCtx,
+    );
+
+    expect(response.status).toBe(unmatchedRouteResponse.status);
+    expect(await response.text()).toBe(await unmatchedRouteResponse.text());
     expect(mockFetch).not.toHaveBeenCalled();
   });
 

@@ -150,6 +150,17 @@ function generateSuggestionMutations(
 type ParsedEnvelope = ReturnType<typeof queueMessageSchema.parse>;
 
 /**
+ * The response returned for any request this Worker doesn't specifically
+ * handle. Reused verbatim for unauthorized `/__debug/process` requests in
+ * production (see `isProduction` branch below) so those responses are
+ * byte-for-byte identical to hitting a route that doesn't exist — a
+ * distinct 404 would itself be a signal that the path is special-cased.
+ */
+function genericResponse(): Response {
+  return new Response("Queue Consumer is running", { status: 200 });
+}
+
+/**
  * Verifies the `Authorization: Bearer <token>` header on a request to the
  * `/__debug/process` HTTP debug route against `env.DEBUG_PROCESS_TOKEN`.
  *
@@ -218,11 +229,15 @@ export default {
 
       if (!authorized) {
         // In production the route must be indistinguishable from a route
-        // that doesn't exist (404), so an unauthenticated prober can't even
-        // discover it's there. Non-production environments still require a
-        // token, but can surface 401 to make local/dev debugging easier.
+        // that doesn't exist, so an unauthenticated prober can't even
+        // discover it's there. This worker's own "not found" behavior is
+        // the 200 catch-all below (it has no real router), so we mirror
+        // that response exactly rather than returning a 404 — a 404 would
+        // stand out as unique to this path instead of blending in.
+        // Non-production environments still require a token, but surface
+        // 401 to make local/dev debugging easier.
         if (isProduction) {
-          return new Response(null, { status: 404 });
+          return genericResponse();
         }
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
           status: 401,
@@ -283,7 +298,7 @@ export default {
       }
     }
 
-    return new Response("Queue Consumer is running", { status: 200 });
+    return genericResponse();
   },
 
   async queue(
