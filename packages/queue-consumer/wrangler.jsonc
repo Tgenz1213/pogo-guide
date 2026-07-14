@@ -4,7 +4,8 @@
   "compatibility_date": "2024-05-12",
   "vars": {
     "SANITY_PROJECT_ID": "84tfhiiz",
-    "SANITY_DATASET": "preview"
+    "SANITY_DATASET": "preview",
+    "ENVIRONMENT": "development"
   },
   "queues": {
     "consumers": [
@@ -28,7 +29,8 @@
       },
       "vars": {
         "SANITY_PROJECT_ID": "84tfhiiz",
-        "SANITY_DATASET": "preview"
+        "SANITY_DATASET": "preview",
+        "ENVIRONMENT": "preview"
       }
     },
     "production": {
@@ -43,8 +45,14 @@
       },
       "vars": {
         "SANITY_PROJECT_ID": "84tfhiiz",
-        "SANITY_DATASET": "production"
+        "SANITY_DATASET": "production",
+        "ENVIRONMENT": "production"
       }
     }
   }
+  // DEBUG_PROCESS_TOKEN is a secret, not a var — never commit it here.
+  // Provision it per-environment with:
+  //   pnpm --filter queue-consumer exec wrangler secret put DEBUG_PROCESS_TOKEN --env preview
+  // Intentionally left unset for production; the /__debug/process route is
+  // inert (404) there unless a token has been explicitly provisioned.
 }

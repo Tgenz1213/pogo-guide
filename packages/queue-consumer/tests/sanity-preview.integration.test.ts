@@ -148,17 +148,23 @@ describe.skipIf(!hasIntegrationEnv)(
         },
       };
 
+      const debugProcessToken = "integration-test-debug-token";
       const env: Env = {
         SANITY_PROJECT_ID: projectId,
         SANITY_DATASET: dataset,
         SANITY_WRITE_TOKEN: writeToken,
+        ENVIRONMENT: "preview",
+        DEBUG_PROCESS_TOKEN: debugProcessToken,
       };
 
       try {
         const response = await worker.fetch(
           new Request("https://integration.test/__debug/process", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${debugProcessToken}`,
+            },
             body: JSON.stringify(envelope),
           }),
           env,
