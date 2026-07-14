@@ -47,7 +47,7 @@ const stripTags = (value: string) =>
   );
 
 const splitTopLevelBlocks = (cleanHtml: string) => {
-  const blockPattern = /<(p|h2|h3|ul|ol)\b[^>]*>[\s\S]*?<\/\1>|<br\s*\/?\s*>/gi;
+  const blockPattern = /<(p|h2|h3|ul|ol)\b[^>]*>[\s\S]*?<\/\1>|<br[\s/]*>/gi;
   const matches = cleanHtml.match(blockPattern);
 
   if (!matches) {
@@ -79,21 +79,27 @@ const parseInlineSegments = (
     children.push(createSpan(normalized, marks));
   };
 
-  const linkPattern = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  const linkPattern = /<a\b([^>]*)>([\s\S]*?)<\/a>/gi;
+  const hrefPattern = /href\s*=\s*["']([^"']+)["']/i;
   let lastIndex = 0;
   let linkMatch: RegExpExecArray | null;
 
   while ((linkMatch = linkPattern.exec(html)) !== null) {
     appendFormattedText(html.slice(lastIndex, linkMatch.index), appendText);
 
-    const href = decodeHtmlEntities(linkMatch[1] ?? "");
-    const markKey = createPortableTextKey();
-    markDefs.push({
-      _key: markKey,
-      _type: "link",
-      href,
-    });
-    appendFormattedText(linkMatch[2] ?? "", appendText, [markKey]);
+    const hrefMatch = hrefPattern.exec(linkMatch[1] ?? "");
+    if (hrefMatch) {
+      const href = decodeHtmlEntities(hrefMatch[1] ?? "");
+      const markKey = createPortableTextKey();
+      markDefs.push({
+        _key: markKey,
+        _type: "link",
+        href,
+      });
+      appendFormattedText(linkMatch[2] ?? "", appendText, [markKey]);
+    } else {
+      appendFormattedText(linkMatch[2] ?? "", appendText);
+    }
     lastIndex = linkMatch.index + linkMatch[0].length;
   }
 
@@ -114,7 +120,7 @@ const appendFormattedText = (
   appendText: (text: string, marks?: string[]) => void,
   extraMarks: string[] = [],
 ) => {
-  const normalizedHtml = html.replace(/<br\s*\/?\s*>/gi, "\n");
+  const normalizedHtml = html.replace(/<br[\s/]*>/gi, "\n");
   const tokenPattern =
     /<(strong|b)>([\s\S]*?)<\/\1>|<(em|i)>([\s\S]*?)<\/\3>|\n+|[^<\n]+/gi;
 
@@ -166,7 +172,7 @@ export const htmlToPortableTextBlocks = (
   const blocks: PortableTextBlock[] = [];
 
   for (const blockHtml of splitTopLevelBlocks(cleanHtml)) {
-    if (/^<br\s*\/?\s*>$/i.test(blockHtml)) {
+    if (/^<br[\s/]*>$/i.test(blockHtml)) {
       continue;
     }
 
