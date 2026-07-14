@@ -38,7 +38,7 @@
     "@pogo/shared-utils": "workspace:*",
     "@portabletext/vue": "^1.0.14",
     "@sentry/nuxt": "^10.53.1",
-    "@tiptap/starter-kit": "^3.26.1",
+    "@tiptap/starter-kit": "^3.27.4",
     "@tiptap/vue-3": "^3.26.1",
     "drizzle-orm": "^0.45.2",
     "nuxt": "^4.4.8",
