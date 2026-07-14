@@ -1,10 +1,8 @@
-# 5. Cloudflare D1 with Drizzle ORM
-
-Date: 2026-05-27
-
-## Status
-
-Accepted
+---
+title: "Cloudflare D1 with Drizzle ORM"
+status: "Accepted"
+scope: "web/server/db/**/*.ts"
+---
 
 ## Context
 

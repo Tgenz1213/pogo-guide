@@ -1,10 +1,8 @@
-# 8. GDPR-Compliant Bans
-
-Date: 2026-05-27
-
-## Status
-
-Accepted
+---
+title: "GDPR-Compliant Bans"
+status: "Accepted"
+scope: "web/server/db/**/*.ts,web/server/routes/auth/**/*.ts"
+---
 
 ## Context
 

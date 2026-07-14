@@ -1,10 +1,8 @@
-# 6. Sanity Soft Deletes for Moderation
-
-Date: 2026-05-27
-
-## Status
-
-Accepted
+---
+title: "Sanity Soft Deletes for Moderation"
+status: "Accepted"
+scope: "web/**/*.{ts,vue},studio/**/*.ts"
+---
 
 ## Context
 
