@@ -1,0 +1,6 @@
+- Workspace Install: `pnpm install`
+- Run Frontend Web: `pnpm --filter web dev`
+- Run CMS Studio: `pnpm --filter studio dev`
+- Analyze Dead Code: `pnpm run knip`
+- Run Linter Checks: `pnpm run lint`
+- Run Vitest Suite: `pnpm --filter web run test`

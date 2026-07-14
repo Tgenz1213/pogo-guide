@@ -1,0 +1,3 @@
+- Run Vitest suite to ensure tests pass: `pnpm --filter web run test`
+- Run dead code analysis to ensure no unused exports: `pnpm run knip`
+- Run linter checks to ensure no formatting issues: `pnpm run lint`

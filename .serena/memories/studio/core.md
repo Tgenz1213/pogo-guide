@@ -1,0 +1,2 @@
+- Sanity Studio v6 Backend codebase
+- See `mem:core` for wider monorepo context.
