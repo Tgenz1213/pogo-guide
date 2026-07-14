@@ -189,6 +189,6 @@ describe.skipIf(!hasIntegrationEnv)(
           );
         }
       }
-    });
+    }, 20000);
   },
 );
