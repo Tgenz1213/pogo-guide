@@ -172,7 +172,10 @@ const emit = defineEmits<{
   action: [action: "reviewed" | "dismissed", reportId: string];
 }>();
 
-// Fetch the guide content from Sanity
+// Fetch the guide content from Sanity. Intentionally does NOT filter
+// isHiddenByModeration (see docs/adr/0006-sanity-soft-deletes.md) — moderators
+// reviewing a report need to see the guide even if it was already hidden,
+// otherwise reports against already-moderated guides would show nothing here.
 const guideQuery = groq`*[_type == "guide" && _id == $docId][0]`;
 
 const {

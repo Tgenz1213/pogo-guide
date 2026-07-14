@@ -23,7 +23,7 @@ function resolvePepper(): string {
 }
 
 /**
- * Canonical identity hash for `banned_identities.hashed_identity` /
+ * Canonical identity hash for `bannedIdentities.hashedIdentity` /
  * `infractions.identityHash` (docs/adr/0008-gdpr-compliant-bans.md).
  * Every call site that writes or checks these columns must go through this
  * function with the `users.id` composite (`${provider}:${providerAccountId}`)

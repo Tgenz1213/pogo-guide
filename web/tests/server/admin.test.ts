@@ -118,12 +118,12 @@ describe("POST /api/admin/users/action", () => {
     const infractionInsert = capturedInsertValues.find(
       (v) => "identityHash" in v,
     );
-    const banInsert = capturedInsertValues.find((v) => "hashed_identity" in v);
+    const banInsert = capturedInsertValues.find((v) => "hashedIdentity" in v);
 
     expect(infractionInsert?.identityHash).toBe(expectedHash);
-    expect(banInsert?.hashed_identity).toBe(expectedHash);
+    expect(banInsert?.hashedIdentity).toBe(expectedHash);
     // The old implementation used btoa(targetUser.id) - guard against regressing to it.
-    expect(banInsert?.hashed_identity).not.toBe(btoa(targetUser.id));
+    expect(banInsert?.hashedIdentity).not.toBe(btoa(targetUser.id));
   }, 20000);
 });
 

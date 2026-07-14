@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { users, banned_identities } from "../../db/schema";
+import { users, bannedIdentities } from "../../db/schema";
 import { useDB } from "../../utils/db";
 import { isEmailAdmin } from "../../utils/admin";
 import { sanitizeRedirectPath } from "../../../shared/utils/auth";
@@ -20,8 +20,8 @@ export default defineOAuthGoogleEventHandler({
 
       const banned = await db
         .select()
-        .from(banned_identities)
-        .where(eq(banned_identities.hashed_identity, identityHash));
+        .from(bannedIdentities)
+        .where(eq(bannedIdentities.hashedIdentity, identityHash));
 
       if (banned.length > 0) {
         return sendRedirect(event, "/login?error=banned");
