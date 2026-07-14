@@ -59,8 +59,7 @@ const submitSuggestion = async () => {
   } catch (err: unknown) {
     if (err instanceof FetchError) {
       const responseData = err.data as
-        | { statusMessage?: string; message?: string }
-        | undefined;
+        { statusMessage?: string; message?: string } | undefined;
       errorMessage.value =
         responseData?.statusMessage ||
         responseData?.message ||
