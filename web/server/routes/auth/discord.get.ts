@@ -2,13 +2,7 @@ import { eq } from "drizzle-orm";
 import { users, banned_identities } from "../../db/schema";
 import { useDB } from "../../utils/db";
 import { sanitizeRedirectPath } from "../../../shared/utils/auth";
-
-async function sha256(message: string): Promise<string> {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
+import { computeIdentityHash } from "../../utils/identity-hash";
 
 export default defineOAuthDiscordEventHandler({
   async onSuccess(event, { user }) {
@@ -20,8 +14,7 @@ export default defineOAuthDiscordEventHandler({
       }
 
       const providerAccountId = `discord:${user.id}`;
-      const pepper = process.env.NUXT_HASH_PEPPER || "fallback_pepper";
-      const identityHash = await sha256(providerAccountId + pepper);
+      const identityHash = await computeIdentityHash(providerAccountId);
 
       const banned = await db
         .select()

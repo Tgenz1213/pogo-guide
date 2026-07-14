@@ -2,6 +2,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { users, infractions, banned_identities } from "../../../db/schema";
 import { useDB } from "../../../utils/db";
+import { computeIdentityHash } from "../../../utils/identity-hash";
 
 const actionSchema = z.object({
   userId: z.string(),
@@ -36,7 +37,7 @@ export default defineEventHandler(async (event) => {
     return { success: true, message: `Admin status toggled` };
   }
 
-  const identityHash = btoa(targetUser.id); // Simple hash for demo
+  const identityHash = await computeIdentityHash(targetUser.id);
 
   if (body.action === "warn") {
     await db
