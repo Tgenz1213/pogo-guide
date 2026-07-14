@@ -18,7 +18,7 @@
     "@pogo/shared-utils": "workspace:*"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260528.1",
+    "@cloudflare/workers-types": "^5.20260713.1",
     "typescript": "6.0.3",
     "vitest": "^4.1.7",
     "wrangler": "^4.94.0"
