@@ -1,10 +1,8 @@
-# 7. Database Third Normal Form (3NF) Strictness
-
-Date: 2026-05-27
-
-## Status
-
-Accepted
+---
+title: "Database Third Normal Form (3NF) Strictness"
+status: "Accepted"
+scope: "web/server/db/**/*.ts"
+---
 
 ## Context
 
