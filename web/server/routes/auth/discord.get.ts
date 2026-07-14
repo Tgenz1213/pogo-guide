@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { users, banned_identities } from "../../db/schema";
 import { useDB } from "../../utils/db";
+import { isEmailAdmin } from "../../utils/admin";
 import { sanitizeRedirectPath } from "../../../shared/utils/auth";
 import { computeIdentityHash } from "../../utils/identity-hash";
 
@@ -36,13 +37,10 @@ export default defineOAuthDiscordEventHandler({
         user.email ||
         `discord-user-${String(user.id || "unknown")}`;
 
-      let isAdmin = false;
+      const isInitialAdmin = isEmailAdmin(user.email || "");
+      let isAdmin = isInitialAdmin;
 
       if (currentUser.length === 0) {
-        const adminEmails = process.env.INITIAL_ADMIN_EMAILS?.split(",") || [];
-        const userEmail = user.email;
-        isAdmin = !!userEmail && adminEmails.includes(userEmail);
-
         await db.insert(users).values({
           id: providerAccountId,
           username,
@@ -51,7 +49,14 @@ export default defineOAuthDiscordEventHandler({
           isAdmin,
         });
       } else {
-        isAdmin = currentUser[0]!.isAdmin;
+        isAdmin = currentUser[0]?.isAdmin ?? false;
+        if (isInitialAdmin && !isAdmin) {
+          isAdmin = true;
+          await db
+            .update(users)
+            .set({ isAdmin: true })
+            .where(eq(users.id, providerAccountId));
+        }
       }
 
       await setUserSession(event, {
