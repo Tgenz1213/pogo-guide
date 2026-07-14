@@ -1,3 +1,8 @@
+import { eq } from "drizzle-orm";
+import type { H3Event } from "h3";
+import { users } from "../db/schema";
+import { useDB } from "./db";
+
 export function isEmailAdmin(email: string): boolean {
   if (!email) return false;
 
@@ -8,4 +13,32 @@ export function isEmailAdmin(email: string): boolean {
     .map((e) => e.trim());
 
   return initialAdmins.includes(email);
+}
+
+/**
+ * Guards `/api/admin/*` routes. `session.user.isAdmin` is baked into the
+ * sealed session cookie at login time, so demoting a user in D1 (see
+ * `/api/admin/users/action.post.ts`) does not by itself revoke an already
+ * -issued session. This re-reads the user's current `isAdmin` from D1 on
+ * every admin request so demotion takes effect immediately, without
+ * requiring a server-side session store to invalidate by user id.
+ */
+export async function requireAdmin(event: H3Event) {
+  const session = await getUserSession(event);
+
+  if (!session?.user?.isAdmin) {
+    throw createError({ statusCode: 403, message: "Forbidden" });
+  }
+
+  const db = useDB(event);
+  const [currentUser] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, session.user.id));
+
+  if (!currentUser?.isAdmin) {
+    throw createError({ statusCode: 403, message: "Forbidden" });
+  }
+
+  return session;
 }

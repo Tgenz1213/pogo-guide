@@ -1,16 +1,10 @@
 import { eq, desc } from "drizzle-orm";
 import { accountDeletionRequests, users } from "../../db/schema";
 import { useDB } from "../../utils/db";
+import { requireAdmin } from "../../utils/admin";
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event);
-
-  if (!session || !session.user || !session.user.isAdmin) {
-    throw createError({
-      statusCode: 403,
-      message: "Forbidden",
-    });
-  }
+  await requireAdmin(event);
 
   const db = useDB(event);
 

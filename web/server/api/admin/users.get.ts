@@ -1,16 +1,10 @@
 import { like, desc, count } from "drizzle-orm";
 import { users } from "../../db/schema";
 import { useDB } from "../../utils/db";
+import { requireAdmin } from "../../utils/admin";
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event);
-
-  if (!session || !session.user || !session.user.isAdmin) {
-    throw createError({
-      statusCode: 403,
-      message: "Forbidden",
-    });
-  }
+  await requireAdmin(event);
 
   const query = getQuery(event);
   const page = parseInt(query.page as string) || 1;

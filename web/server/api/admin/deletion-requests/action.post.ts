@@ -2,6 +2,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { accountDeletionRequests, users } from "../../../db/schema";
 import { useDB } from "../../../utils/db";
+import { requireAdmin } from "../../../utils/admin";
 
 const actionSchema = z.object({
   requestId: z.string(),
@@ -9,11 +10,7 @@ const actionSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event);
-
-  if (!session || !session.user || !session.user.isAdmin) {
-    throw createError({ statusCode: 403, message: "Forbidden" });
-  }
+  await requireAdmin(event);
 
   const body = await readValidatedBody(event, actionSchema.parse);
   const db = useDB(event);

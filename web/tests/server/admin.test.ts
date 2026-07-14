@@ -60,6 +60,8 @@ describe("POST /api/admin/users/action", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     vi.unstubAllEnvs();
+    vi.doUnmock("../../server/utils/admin");
+    vi.doUnmock("../../server/utils/db");
     vi.resetModules();
   });
 
@@ -81,6 +83,15 @@ describe("POST /api/admin/users/action", () => {
     });
 
     const capturedInsertValues: Array<Record<string, unknown>> = [];
+
+    // requireAdmin's D1 re-check is exercised by its own dedicated tests
+    // below; stub it here so this test stays focused on the hash regression.
+    vi.doMock("../../server/utils/admin", () => ({
+      requireAdmin: vi
+        .fn()
+        .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
+      isEmailAdmin: vi.fn(),
+    }));
 
     vi.doMock("../../server/utils/db", () => ({
       useDB: vi.fn(() => ({
@@ -114,4 +125,80 @@ describe("POST /api/admin/users/action", () => {
     // The old implementation used btoa(targetUser.id) - guard against regressing to it.
     expect(banInsert?.hashed_identity).not.toBe(btoa(targetUser.id));
   }, 20000);
+});
+
+// ---------------------------------------------------------------------------
+// requireAdmin
+// ---------------------------------------------------------------------------
+describe("requireAdmin", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.doUnmock("../../server/utils/db");
+    vi.resetModules();
+  });
+
+  function stubAdminGlobals(session: unknown) {
+    vi.stubGlobal("getUserSession", vi.fn().mockResolvedValue(session));
+    vi.stubGlobal(
+      "createError",
+      vi.fn((data: { statusCode: number; message: string }) => {
+        const err = new Error(data.message) as Error & { statusCode: number };
+        err.statusCode = data.statusCode;
+        return err;
+      }),
+    );
+  }
+
+  it("regression: rejects a session claiming isAdmin=true when D1 shows the user has since been demoted", async () => {
+    stubAdminGlobals({ user: { id: "discord:12345", isAdmin: true } });
+
+    vi.doMock("../../server/utils/db", () => ({
+      useDB: vi.fn(() => ({
+        select: vi.fn().mockReturnThis(),
+        from: vi.fn().mockReturnThis(),
+        where: vi
+          .fn()
+          .mockResolvedValue([{ id: "discord:12345", isAdmin: false }]),
+      })),
+    }));
+
+    const { requireAdmin } = await import("../../server/utils/admin");
+
+    await expect(requireAdmin({} as never)).rejects.toMatchObject({
+      statusCode: 403,
+    });
+  });
+
+  it("allows the request when D1 confirms the session's admin status is still current", async () => {
+    stubAdminGlobals({ user: { id: "discord:12345", isAdmin: true } });
+
+    vi.doMock("../../server/utils/db", () => ({
+      useDB: vi.fn(() => ({
+        select: vi.fn().mockReturnThis(),
+        from: vi.fn().mockReturnThis(),
+        where: vi
+          .fn()
+          .mockResolvedValue([{ id: "discord:12345", isAdmin: true }]),
+      })),
+    }));
+
+    const { requireAdmin } = await import("../../server/utils/admin");
+
+    await expect(requireAdmin({} as never)).resolves.toMatchObject({
+      user: { id: "discord:12345", isAdmin: true },
+    });
+  });
+
+  it("rejects when there is no session, without querying D1", async () => {
+    stubAdminGlobals(null);
+    const useDBSpy = vi.fn();
+    vi.doMock("../../server/utils/db", () => ({ useDB: useDBSpy }));
+
+    const { requireAdmin } = await import("../../server/utils/admin");
+
+    await expect(requireAdmin({} as never)).rejects.toMatchObject({
+      statusCode: 403,
+    });
+    expect(useDBSpy).not.toHaveBeenCalled();
+  });
 });

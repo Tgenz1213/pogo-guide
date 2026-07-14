@@ -19,6 +19,7 @@ function stubOAuthGlobals() {
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
+  vi.doUnmock("../../../server/utils/db");
   vi.resetModules();
 });
 
