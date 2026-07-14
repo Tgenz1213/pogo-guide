@@ -15,6 +15,14 @@ export interface Env {
   NUXT_SANITY_DATASET?: string;
   NUXT_SANITY_WRITE_TOKEN?: string;
   NUXT_SANITY_API_WRITE_TOKEN?: string;
+  /** Set via wrangler.jsonc `vars` per-environment: "development" | "preview" | "production". */
+  ENVIRONMENT?: string;
+  /**
+   * Secret bearer token required to call the `/__debug/process` HTTP debug
+   * route. Provisioned with `wrangler secret put DEBUG_PROCESS_TOKEN`, never
+   * committed. See docs/adr/0010-inter-service-endpoint-authentication.md.
+   */
+  DEBUG_PROCESS_TOKEN?: string;
 }
 
 interface ResolvedSanityEnv {

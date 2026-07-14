@@ -14,6 +14,7 @@ import {
   DownstreamContractError,
   PermanentMessageError,
 } from "./errors";
+import { timingSafeEqual } from "./security";
 
 function toSanitySlug(value: string, fallback = "untitled") {
   const normalized = value
@@ -148,6 +149,33 @@ function generateSuggestionMutations(
 
 type ParsedEnvelope = ReturnType<typeof queueMessageSchema.parse>;
 
+/**
+ * Verifies the `Authorization: Bearer <token>` header on a request to the
+ * `/__debug/process` HTTP debug route against `env.DEBUG_PROCESS_TOKEN`.
+ *
+ * Returns false whenever the token is unconfigured, so the route is
+ * unreachable by default in every environment unless a secret has been
+ * explicitly provisioned (see
+ * docs/adr/0010-inter-service-endpoint-authentication.md).
+ */
+async function isDebugRequestAuthorized(
+  request: Request,
+  env: Env,
+): Promise<boolean> {
+  const configuredToken = env.DEBUG_PROCESS_TOKEN;
+  if (!configuredToken) {
+    return false;
+  }
+
+  const authHeader = request.headers.get("Authorization") ?? "";
+  const match = /^Bearer\s+(.+)$/.exec(authHeader);
+  if (!match) {
+    return false;
+  }
+
+  return timingSafeEqual(match[1], configuredToken);
+}
+
 async function processEnvelope(
   envelope: ParsedEnvelope,
   env: Env,
@@ -185,6 +213,22 @@ export default {
       request.method === "POST" &&
       new URL(request.url).pathname === "/__debug/process"
     ) {
+      const isProduction = env.ENVIRONMENT === "production";
+      const authorized = await isDebugRequestAuthorized(request, env);
+
+      if (!authorized) {
+        // In production the route must be indistinguishable from a route
+        // that doesn't exist (404), so an unauthenticated prober can't even
+        // discover it's there. Non-production environments still require a
+        // token, but can surface 401 to make local/dev debugging easier.
+        if (isProduction) {
+          return new Response(null, { status: 404 });
+        }
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+        });
+      }
+
       const envPresence = {
         SANITY_PROJECT_ID: Boolean(env.SANITY_PROJECT_ID),
         SANITY_DATASET: Boolean(env.SANITY_DATASET),
