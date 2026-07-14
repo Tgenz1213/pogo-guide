@@ -17,7 +17,7 @@
     "@types/node": "^25.9.1",
     "@types/sanitize-html": "^2.16.1",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.10"
   },
   "scripts": {
     "lint": "eslint .",
