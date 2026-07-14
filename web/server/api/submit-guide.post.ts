@@ -2,6 +2,7 @@ import {
   submitGuideSchema,
   generateGuideIdempotencyKey,
 } from "@pogo/shared-utils";
+import { verifySubmissionTurnstile } from "../utils/turnstile";
 
 interface CloudflareEnv {
   POGO_QUEUE?: {
@@ -28,6 +29,9 @@ export default defineEventHandler(async (event) => {
     console.warn("Honeypot triggered, ignoring request.");
     return { success: true };
   }
+
+  // 2. Turnstile Verification
+  await verifySubmissionTurnstile(event, data.turnstileToken);
 
   const env = (event.context.cloudflare?.env || {}) as CloudflareEnv;
   const { POGO_QUEUE } = env;

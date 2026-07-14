@@ -141,6 +141,7 @@ describe.skipIf(!hasQueueE2eEnv)(
         title: `Queue E2E Guide ${runId}`,
         description: "Queue E2E content fidelity assertion",
         suggestedCategory,
+        turnstileToken: "",
         htmlContent: [
           "<h2>Search String 101</h2>",
           "<p>The search bar in your Pokemon storage can filter your entire collection.</p>",

@@ -2,6 +2,7 @@ import {
   suggestionSchema,
   generateSuggestionIdempotencyKey,
 } from "@pogo/shared-utils";
+import { verifySubmissionTurnstile } from "../utils/turnstile";
 
 interface CloudflareEnv {
   POGO_QUEUE?: {
@@ -29,50 +30,10 @@ export default defineEventHandler(async (event) => {
     return { success: true, mocked: true };
   }
 
-  const runtimeConfig = useRuntimeConfig();
-  const isE2eMode = runtimeConfig.public.e2eMode;
-  const hasTurnstileSecret = Boolean(runtimeConfig.turnstile?.secretKey);
-  const hasTurnstileSiteKey = Boolean(runtimeConfig.public.turnstileSiteKey);
-  const isProduction = process.env.NODE_ENV === "production";
-
-  if (
-    !isE2eMode &&
-    isProduction &&
-    hasTurnstileSecret !== hasTurnstileSiteKey
-  ) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Turnstile is misconfigured on the server.",
-    });
-  }
-
-  const shouldVerifyTurnstile =
-    !isE2eMode && isProduction && hasTurnstileSecret && hasTurnstileSiteKey;
-
   // 2. Turnstile Verification
-  if (shouldVerifyTurnstile) {
-    if (!data.turnstileToken) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: "Invalid Turnstile token. Please try again.",
-      });
-    }
+  await verifySubmissionTurnstile(event, data.turnstileToken);
 
-    const turnstileValidation = await verifyTurnstileToken(
-      data.turnstileToken,
-      event,
-    );
-    if (!turnstileValidation.success) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: "Invalid Turnstile token. Please try again.",
-        data: {
-          turnstile: turnstileValidation,
-        },
-      });
-    }
-  }
-
+  const isProduction = process.env.NODE_ENV === "production";
   const env = (event.context.cloudflare?.env || {}) as CloudflareEnv;
   const { POGO_QUEUE } = env;
   const isMockMode = !isProduction && !POGO_QUEUE;

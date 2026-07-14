@@ -7,9 +7,32 @@ interface ZodValidationErrorData {
   data: Record<string, unknown>;
 }
 
+interface TurnstileRuntimeConfig {
+  e2eMode?: boolean;
+  turnstileSiteKey?: string;
+  turnstileSecretKey?: string;
+}
+
 describe("Submit Guide API (Producer)", () => {
   let submitGuideHandler: EventHandler;
   let mockQueueSend: ReturnType<typeof vi.fn>;
+  let mockVerifyTurnstileToken: ReturnType<typeof vi.fn>;
+
+  const stubRuntimeConfig = ({
+    e2eMode = false,
+    turnstileSiteKey = "",
+    turnstileSecretKey = "",
+  }: TurnstileRuntimeConfig = {}) => {
+    vi.stubGlobal("useRuntimeConfig", () => ({
+      public: {
+        e2eMode,
+        turnstileSiteKey,
+      },
+      turnstile: {
+        secretKey: turnstileSecretKey,
+      },
+    }));
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -36,6 +59,14 @@ describe("Submit Guide API (Producer)", () => {
         name: string,
       ) => event.context?.cloudflare?.req?.headers?.get(name),
     );
+
+    // By default, Turnstile is unconfigured (no secret/site key), matching
+    // local/dev environments — this keeps the pre-existing tests, which
+    // don't set up Turnstile at all, passing unaffected.
+    stubRuntimeConfig();
+
+    mockVerifyTurnstileToken = vi.fn().mockResolvedValue({ success: true });
+    vi.stubGlobal("verifyTurnstileToken", mockVerifyTurnstileToken);
 
     mockQueueSend = vi.fn().mockResolvedValue(undefined);
   });
@@ -214,5 +245,94 @@ describe("Submit Guide API (Producer)", () => {
       requestId?: string;
     };
     expect(payload.requestId).toBe("test-cf-ray");
+  });
+
+  it("9. rejects submissions without a Turnstile token outside E2E mode", async () => {
+    stubRuntimeConfig({
+      turnstileSiteKey: "test-site-key",
+      turnstileSecretKey: "test-secret-key",
+    });
+
+    const event = createEvent(validBody); // isProduction = true by default
+
+    try {
+      await submitGuideHandler(event);
+      expect.unreachable("Should have thrown");
+    } catch (err) {
+      const error = err as { statusCode: number; statusMessage: string };
+      expect(error.statusCode).toBe(400);
+      expect(error.statusMessage).toBe(
+        "Invalid Turnstile token. Please try again.",
+      );
+    }
+
+    expect(mockVerifyTurnstileToken).not.toHaveBeenCalled();
+    expect(mockQueueSend).not.toHaveBeenCalled();
+  });
+
+  it("10. allows a valid Turnstile token through to the queue", async () => {
+    stubRuntimeConfig({
+      turnstileSiteKey: "test-site-key",
+      turnstileSecretKey: "test-secret-key",
+    });
+    mockVerifyTurnstileToken.mockResolvedValue({ success: true });
+
+    const event = createEvent({
+      ...validBody,
+      turnstileToken: "valid-token",
+    });
+
+    const result = await submitGuideHandler(event);
+
+    expect(result).toEqual({
+      success: true,
+      messageId: expect.any(String),
+    });
+    expect(mockVerifyTurnstileToken).toHaveBeenCalledWith("valid-token", event);
+    expect(mockQueueSend).toHaveBeenCalledTimes(1);
+  });
+
+  it("11. rejects submissions when Turnstile verification fails", async () => {
+    stubRuntimeConfig({
+      turnstileSiteKey: "test-site-key",
+      turnstileSecretKey: "test-secret-key",
+    });
+    mockVerifyTurnstileToken.mockResolvedValue({ success: false });
+
+    const event = createEvent({
+      ...validBody,
+      turnstileToken: "invalid-token",
+    });
+
+    try {
+      await submitGuideHandler(event);
+      expect.unreachable("Should have thrown");
+    } catch (err) {
+      const error = err as { statusCode: number; statusMessage: string };
+      expect(error.statusCode).toBe(400);
+      expect(error.statusMessage).toBe(
+        "Invalid Turnstile token. Please try again.",
+      );
+    }
+
+    expect(mockQueueSend).not.toHaveBeenCalled();
+  });
+
+  it("12. skips Turnstile verification in E2E mode even when configured", async () => {
+    stubRuntimeConfig({
+      e2eMode: true,
+      turnstileSiteKey: "test-site-key",
+      turnstileSecretKey: "test-secret-key",
+    });
+
+    const event = createEvent(validBody); // no turnstileToken supplied
+    const result = await submitGuideHandler(event);
+
+    expect(result).toEqual({
+      success: true,
+      messageId: expect.any(String),
+    });
+    expect(mockVerifyTurnstileToken).not.toHaveBeenCalled();
+    expect(mockQueueSend).toHaveBeenCalledTimes(1);
   });
 });
