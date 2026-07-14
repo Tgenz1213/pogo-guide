@@ -1,0 +1,12 @@
+- Monorepo containing Nuxt 4 frontend and Sanity Studio v6 backend, deployed entirely on Cloudflare
+- Content/infra split: Sanity is source of truth for guide/category/tag/resource content; Cloudflare D1 (Drizzle ORM) holds operational state (users, infractions, guide_submissions, banned_identities, account_deletion_requests, guide_reports). The two are synced manually, not via FK constraints - see `docs/adr/0007-database-3nf-strictness.md`.
+- User-submitted guides/suggestions are never written to Sanity synchronously: web validates and pushes an envelope onto a Cloudflare Queue (`POGO_QUEUE`); a separate `packages/queue-consumer` Worker consumes it and performs the actual Sanity mutations, using deterministic doc IDs so retries don't duplicate content.
+- Moderation is soft-delete only: Sanity docs use `isHiddenByModeration`; every GROQ query reading guides must filter it out - see `docs/adr/0006-sanity-soft-deletes.md`.
+- Pinned GitHub Action workflows in `.github/`
+- Unified ESLint 10 Flat Config and Knip dead code analyzer
+- See `mem:web/core` for Nuxt 4 frontend codebase (Cloudflare Workers deployment) specifics.
+- See `mem:studio/core` for Sanity Studio v6 backend codebase (CMS) specifics.
+- See `mem:tech_stack` for project-wide languages, frameworks, and tooling.
+- See `mem:suggested_commands` for execution commands.
+- See `mem:conventions` for code conventions and architectural rules.
+- See `mem:task_completion` for completion criteria.

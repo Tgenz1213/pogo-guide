@@ -1,0 +1,7 @@
+- Compiler strict-mode enabled across workspaces. `any` type and untyped CMS query mappings prohibited.
+- Dead code strictly blocked on pre-commit and CI pipelines via Knip.
+- Navigation links, breadcrumbs, and tags dynamically compiled from CMS GROQ typegen schemas.
+- Zod validation enforced at Cloudflare Edge isolates.
+- No premature commits. Wait for human developer review.
+- TDD & Evidence First: Write a failing test, verify failure, implement, verify passing.
+- Public suggestion endpoints must validate payload bounds securely using Zod schemas.

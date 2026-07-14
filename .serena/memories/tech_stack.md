@@ -1,0 +1,8 @@
+- Package Manager: pnpm (Monorepo setup with `pnpm-workspace.yaml`)
+- Frontend: Nuxt 4, Vue 3, deployed to Cloudflare Workers (nitro `cloudflare_module` preset)
+- Backend/CMS: Sanity Studio v6
+- Operational/relational state: Cloudflare D1 via Drizzle ORM (`web/server/db/schema.ts`), accessed only via `useDB(event)` - never instantiate Drizzle directly
+- Async write path: Cloudflare Queues (`POGO_QUEUE`) + standalone `packages/queue-consumer` Worker; poison messages route to per-environment DLQs
+- Shared code: `packages/shared-utils` (`@pogo/shared-utils`) - Zod schemas, sanitization, idempotency helpers used by both `web` and `queue-consumer`
+- Tooling: Vitest, ESLint 10, Knip (Dead code analyzer), Husky (Git hooks)
+- Validation: Zod mandatory at every public API boundary (shared between `web` and `queue-consumer`)

@@ -1,0 +1,7 @@
+- Nuxt 4 + Vue 3 frontend codebase
+- Deployed to Cloudflare Workers (nitro `cloudflare_module` preset, output to `.cloudflare`)
+- Navigation dynamically compiled from CMS GROQ typegen schemas; run `pnpm --filter web typegen` after Sanity schema changes
+- Auth via `nuxt-auth-utils` (Discord/Google OAuth in `web/server/routes/auth/`). Web-app admin (`isEmailAdmin`) and Sanity Studio admin are separate, unrelated concepts - don't conflate them.
+- D1 (Drizzle) holds users/infractions/guide_submissions/banned_identities/account_deletion_requests/guide_reports; access only via `useDB(event)`.
+- Guide/suggestion submissions go through Cloudflare Queues, not direct Sanity writes - see `mem:core`.
+- See `mem:core` for wider monorepo context.
