@@ -118,6 +118,9 @@ async function sanityDeleteById(id: string): Promise<void> {
   }
 }
 
+type LoginResult =
+  { ok: true; cookie: string } | { ok: false; status: number; body: string };
+
 /**
  * Authenticates against the preview web worker's secret-gated test-harness
  * login route (web/server/api/e2e-login.post.ts, see
@@ -125,8 +128,17 @@ async function sanityDeleteById(id: string): Promise<void> {
  * `Cookie` header value carrying the resulting session, since submit-guide
  * now requires an authenticated session. Must be called per-target since
  * the session cookie is host-specific.
+ *
+ * Returns a discriminated result instead of throwing on a non-2xx, so the
+ * caller can apply the same retry-on-403 fallback used for the submit-guide
+ * call below: a 403 here means the target's edge (e.g. Cloudflare's
+ * bot/managed-challenge on the custom preview.pogo.guide domain) challenged
+ * the request before it reached the Worker at all -- our route itself never
+ * returns 403 (404 on auth failure, 200 on success) -- and the next target
+ * (the raw *.workers.dev URL, which isn't behind that same challenge)
+ * should be tried instead of failing the whole test.
  */
-async function loginForCookie(target: string): Promise<string> {
+async function loginForCookie(target: string): Promise<LoginResult> {
   const response = await fetch(new URL("/api/e2e-login", target), {
     signal: AbortSignal.timeout(fetchTimeoutMs),
     method: "POST",
@@ -136,10 +148,11 @@ async function loginForCookie(target: string): Promise<string> {
   });
 
   if (!response.ok) {
-    const responseBody = await response.text();
-    throw new Error(
-      `E2E login failed (${response.status}) via ${target}: ${responseBody}`,
-    );
+    return {
+      ok: false,
+      status: response.status,
+      body: await response.text(),
+    };
   }
 
   const setCookies =
@@ -148,10 +161,17 @@ async function loginForCookie(target: string): Promise<string> {
       : [response.headers.get("set-cookie") ?? ""].filter(Boolean);
 
   if (setCookies.length === 0) {
-    throw new Error(`E2E login via ${target} did not set a session cookie`);
+    return {
+      ok: false,
+      status: response.status,
+      body: "E2E login response did not include a Set-Cookie header",
+    };
   }
 
-  return setCookies.map((cookie) => cookie.split(";")[0]).join("; ");
+  return {
+    ok: true,
+    cookie: setCookies.map((cookie) => cookie.split(";")[0]).join("; "),
+  };
 }
 
 async function waitForGuideById(id: string): Promise<PersistedGuide> {
@@ -213,16 +233,28 @@ describe.skipIf(!hasQueueE2eEnv)(
       try {
         let submitResponse: Response | null = null;
         let submitTarget = "";
+        let lastLoginChallengeTarget = "";
 
         for (const target of submitTargets) {
           submitTarget = target;
-          const cookie = await loginForCookie(target);
+
+          const loginResult = await loginForCookie(target);
+          if (!loginResult.ok) {
+            if (loginResult.status === 403) {
+              lastLoginChallengeTarget = target;
+              continue;
+            }
+            throw new Error(
+              `E2E login failed (${loginResult.status}) via ${target}: ${loginResult.body}`,
+            );
+          }
+
           submitResponse = await fetch(new URL("/api/submit-guide", target), {
             signal: AbortSignal.timeout(fetchTimeoutMs),
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Cookie: cookie,
+              Cookie: loginResult.cookie,
             },
             body: JSON.stringify(payload),
           });
@@ -237,7 +269,11 @@ describe.skipIf(!hasQueueE2eEnv)(
         }
 
         if (!submitResponse) {
-          throw new Error("No preview submit target configured for queue E2E");
+          throw new Error(
+            lastLoginChallengeTarget
+              ? `All preview submit targets challenged the E2E login request at the edge (last: ${lastLoginChallengeTarget})`
+              : "No preview submit target configured for queue E2E",
+          );
         }
 
         if (submitResponse.status !== 202) {
