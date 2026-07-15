@@ -239,4 +239,113 @@ describe("POST /api/webhooks/sanity", () => {
     expect(result).toEqual({ success: true });
     expect(await getStatus()).toBe("published");
   });
+
+  it("rejects a validly-signed request whose timestamp is outside the replay window, without touching D1", async () => {
+    const rawBody = JSON.stringify({
+      _type: "guide",
+      _id: SANITY_DOC_ID,
+      isHiddenByModeration: true,
+    });
+    const staleTimestamp = Date.now() - 6 * 60 * 1000; // 6 minutes old
+    const signature = await signPayload(rawBody, staleTimestamp, TEST_SECRET);
+    stubServerGlobals({
+      rawBody,
+      signatureHeader: `t=${staleTimestamp},v1=${signature}`,
+      secret: TEST_SECRET,
+    });
+
+    const { default: handler } =
+      await import("../../../../server/api/webhooks/sanity.post");
+
+    await expect(handler(createEvent())).rejects.toMatchObject({
+      statusCode: 401,
+    });
+    expect(await getStatus()).toBe("pending");
+  });
+
+  it("rejects a signature header that doesn't match the t=/v1= format, without touching D1", async () => {
+    const rawBody = JSON.stringify({
+      _type: "guide",
+      _id: SANITY_DOC_ID,
+      isHiddenByModeration: true,
+    });
+    stubServerGlobals({
+      rawBody,
+      signatureHeader: "not-the-expected-format",
+      secret: TEST_SECRET,
+    });
+
+    const { default: handler } =
+      await import("../../../../server/api/webhooks/sanity.post");
+
+    await expect(handler(createEvent())).rejects.toMatchObject({
+      statusCode: 401,
+    });
+    expect(await getStatus()).toBe("pending");
+  });
+
+  it("returns 400 and does not touch D1 when the validly-signed body is malformed JSON", async () => {
+    const rawBody = "{not valid json";
+    const timestamp = Date.now();
+    const signature = await signPayload(rawBody, timestamp, TEST_SECRET);
+    stubServerGlobals({
+      rawBody,
+      signatureHeader: `t=${timestamp},v1=${signature}`,
+      secret: TEST_SECRET,
+    });
+
+    const { default: handler } =
+      await import("../../../../server/api/webhooks/sanity.post");
+
+    await expect(handler(createEvent())).rejects.toMatchObject({
+      statusCode: 400,
+    });
+    expect(await getStatus()).toBe("pending");
+  });
+
+  it("returns 400 and does not touch D1 when _id is not a string", async () => {
+    const rawBody = JSON.stringify({
+      _type: "guide",
+      _id: 12345,
+      isHiddenByModeration: true,
+    });
+    const timestamp = Date.now();
+    const signature = await signPayload(rawBody, timestamp, TEST_SECRET);
+    stubServerGlobals({
+      rawBody,
+      signatureHeader: `t=${timestamp},v1=${signature}`,
+      secret: TEST_SECRET,
+    });
+
+    const { default: handler } =
+      await import("../../../../server/api/webhooks/sanity.post");
+
+    await expect(handler(createEvent())).rejects.toMatchObject({
+      statusCode: 400,
+    });
+    expect(await getStatus()).toBe("pending");
+  });
+
+  it("returns 400 and does not touch D1 when isHiddenByModeration is not a boolean", async () => {
+    const rawBody = JSON.stringify({
+      _type: "guide",
+      _id: SANITY_DOC_ID,
+      isHiddenByModeration: "false",
+    });
+    const timestamp = Date.now();
+    const signature = await signPayload(rawBody, timestamp, TEST_SECRET);
+    stubServerGlobals({
+      rawBody,
+      signatureHeader: `t=${timestamp},v1=${signature}`,
+      secret: TEST_SECRET,
+    });
+
+    const { default: handler } =
+      await import("../../../../server/api/webhooks/sanity.post");
+
+    await expect(handler(createEvent())).rejects.toMatchObject({
+      statusCode: 400,
+    });
+    expect(await getStatus()).toBe("pending");
+  });
 });

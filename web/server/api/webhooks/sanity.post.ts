@@ -1,10 +1,17 @@
 import { useDB } from "../../utils/db";
 import { guideSubmissions } from "../../db/schema";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 import {
   SANITY_WEBHOOK_SIGNATURE_HEADER,
   verifySanityWebhookSignature,
 } from "../../utils/sanityWebhook";
+
+const sanityWebhookPayloadSchema = z.object({
+  _type: z.string().optional(),
+  _id: z.string().optional(),
+  isHiddenByModeration: z.boolean().optional(),
+});
 
 export default defineEventHandler(async (event) => {
   // Security-critical ordering: verify the signature over the raw body
@@ -29,14 +36,27 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  let body: { _type?: unknown; _id?: unknown; isHiddenByModeration?: unknown };
+  let parsedBody: unknown;
   try {
-    body = rawBody ? JSON.parse(rawBody) : {};
+    parsedBody = rawBody ? JSON.parse(rawBody) : {};
   } catch {
-    body = {};
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Malformed webhook payload",
+    });
   }
 
-  if (body?._type === "guide" && body._id) {
+  const validation = sanityWebhookPayloadSchema.safeParse(parsedBody);
+  if (!validation.success) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Bad Request",
+      data: validation.error.format(),
+    });
+  }
+  const body = validation.data;
+
+  if (body._type === "guide" && body._id) {
     const db = useDB(event);
 
     // Determine D1 status based on Sanity state
@@ -45,7 +65,7 @@ export default defineEventHandler(async (event) => {
     await db
       .update(guideSubmissions)
       .set({ status: newStatus })
-      .where(eq(guideSubmissions.sanityDocId, body._id as string));
+      .where(eq(guideSubmissions.sanityDocId, body._id));
   }
 
   return { success: true };
