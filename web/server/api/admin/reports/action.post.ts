@@ -2,6 +2,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { guideReports } from "../../../db/schema";
 import { useDB } from "../../../utils/db";
+import { requireAdmin } from "../../../utils/admin";
 
 const bodySchema = z.object({
   reportId: z.string().min(1),
@@ -9,11 +10,7 @@ const bodySchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event);
-
-  if (!session?.user?.isAdmin) {
-    throw createError({ statusCode: 403, message: "Forbidden" });
-  }
+  await requireAdmin(event);
 
   const body = await readBody(event);
   const parsed = bodySchema.safeParse(body);

@@ -1,9 +1,7 @@
-export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event);
+import { requireAdmin } from "../../utils/admin";
 
-  if (!session?.user?.isAdmin) {
-    throw createError({ statusCode: 403, message: "Forbidden" });
-  }
+export default defineEventHandler(async (event) => {
+  await requireAdmin(event);
 
   const query = getQuery(event);
   const page = parseInt(query.page as string) || 1;

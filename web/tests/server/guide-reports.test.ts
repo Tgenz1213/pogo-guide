@@ -20,6 +20,8 @@ function stubServerGlobals({
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.doUnmock("../../server/utils/admin");
+  vi.doUnmock("../../server/utils/db");
   vi.resetModules();
 });
 
@@ -198,11 +200,24 @@ describe("POST /api/admin/reports/action", () => {
     });
   });
 
+  function stubRequireAdmin() {
+    // requireAdmin's D1 re-check is covered by its own dedicated tests in
+    // admin.test.ts; stub it here so these tests stay focused on their own
+    // handler logic.
+    vi.doMock("../../server/utils/admin", () => ({
+      requireAdmin: vi
+        .fn()
+        .mockResolvedValue({ user: { id: "user:123", isAdmin: true } }),
+      isEmailAdmin: vi.fn(),
+    }));
+  }
+
   it("returns 400 when action is invalid", async () => {
     stubServerGlobals({
       session: { user: { id: "user:123", isAdmin: true } },
       body: { reportId: "r1", action: "delete" },
     });
+    stubRequireAdmin();
 
     const { default: handler } =
       await import("../../server/api/admin/reports/action.post");
@@ -215,6 +230,7 @@ describe("POST /api/admin/reports/action", () => {
       session: { user: { id: "user:123", isAdmin: true } },
       body: { reportId: "nonexistent", action: "dismissed" },
     });
+    stubRequireAdmin();
 
     vi.doMock("../../server/utils/db", () => ({
       useDB: vi.fn(() => ({
@@ -239,6 +255,7 @@ describe("POST /api/admin/reports/action", () => {
       session: { user: { id: "user:123", isAdmin: true } },
       body: { reportId: "r1", action: "reviewed" },
     });
+    stubRequireAdmin();
 
     vi.doMock("../../server/utils/db", () => ({
       useDB: vi.fn(() => ({
