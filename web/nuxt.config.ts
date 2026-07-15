@@ -73,6 +73,7 @@ export default defineNuxtConfig({
     },
     sanityWriteToken: "", // Will be overridden by NUXT_SANITY_WRITE_TOKEN
     sanityWebhookSecret: "", // Will be overridden by NUXT_SANITY_WEBHOOK_SECRET
+    e2eLoginToken: "", // Will be overridden by NUXT_E2E_LOGIN_TOKEN
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://pogo.guide",
       testMode: process.env.TEST_MODE || "",

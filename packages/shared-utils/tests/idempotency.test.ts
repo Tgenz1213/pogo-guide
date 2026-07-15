@@ -11,12 +11,14 @@ describe("Idempotency Hashing", () => {
         title: "Guide Title",
         htmlContent: "<p>Content</p>",
         suggestedCategory: "Cat",
+        turnstileToken: "",
       };
 
       const data2 = {
         title: " Guide Title  ",
         htmlContent: "  <p>Content</p>\r\n",
         suggestedCategory: "Cat",
+        turnstileToken: "",
       };
 
       const hash1 = await generateGuideIdempotencyKey(data1);
@@ -31,11 +33,13 @@ describe("Idempotency Hashing", () => {
         title: "Guide 1",
         htmlContent: "<p>Content</p>",
         suggestedCategory: "Cat",
+        turnstileToken: "",
       };
       const data2 = {
         title: "Guide 2",
         htmlContent: "<p>Content</p>",
         suggestedCategory: "Cat",
+        turnstileToken: "",
       };
 
       const hash1 = await generateGuideIdempotencyKey(data1);

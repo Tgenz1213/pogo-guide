@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import { submitGuideSchema } from "@pogo/shared-utils";
@@ -8,6 +8,12 @@ import { FetchError } from "ofetch";
 definePageMeta({
   middleware: ["auth"],
 });
+
+const config = useRuntimeConfig();
+const isE2eMode = computed(() => config.public.e2eMode);
+const hasTurnstileSiteKey = computed(() =>
+  Boolean(config.public.turnstileSiteKey),
+);
 
 // Data Fetching
 interface SanityReferenceItem {
@@ -29,6 +35,7 @@ const suggestedCategory = ref("");
 const tagIds = ref<string[]>([]);
 const suggestedTagsInput = ref("");
 const websiteAddress = ref(""); // Honeypot
+const turnstileToken = ref("");
 
 // UI State
 const isHydrated = ref(false);
@@ -173,6 +180,11 @@ const submitForm = async () => {
     return;
   }
 
+  if (!turnstileToken.value && !isE2eMode.value && hasTurnstileSiteKey.value) {
+    errorMessage.value = "Please complete the security check to continue.";
+    return;
+  }
+
   isSubmitting.value = true;
   errorMessage.value = "";
   successMessage.value = "";
@@ -189,6 +201,7 @@ const submitForm = async () => {
         suggestedTags: suggestedTags,
         htmlContent: htmlContent,
         websiteAddress: websiteAddress.value,
+        turnstileToken: turnstileToken.value,
       },
     });
 
@@ -455,6 +468,11 @@ const submitForm = async () => {
         <editor-content :editor="editor" />
       </div>
 
+      <!-- Turnstile Widget -->
+      <div v-if="hasTurnstileSiteKey && !isE2eMode">
+        <NuxtTurnstile v-model="turnstileToken" />
+      </div>
+
       <!-- Error Message -->
       <div v-if="errorMessage" class="text-red-500 text-sm font-semibold">
         {{ errorMessage }}
@@ -466,7 +484,11 @@ const submitForm = async () => {
       >
         <button
           type="submit"
-          :disabled="!isHydrated || isSubmitting"
+          :disabled="
+            !isHydrated ||
+            isSubmitting ||
+            (!turnstileToken && !isE2eMode && hasTurnstileSiteKey)
+          "
           class="px-6 py-3 bg-mystic-blue hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-lg shadow-md transition-all"
         >
           {{ isSubmitting ? "Submitting..." : "Submit Guide" }}

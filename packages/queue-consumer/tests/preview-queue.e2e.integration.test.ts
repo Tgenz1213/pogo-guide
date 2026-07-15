@@ -29,10 +29,17 @@ const previewFallbackBaseUrl = runtimeEnv.PREVIEW_WEB_FALLBACK_BASE_URL || "";
 const projectId = runtimeEnv.SANITY_PROJECT_ID || "";
 const writeToken = runtimeEnv.SANITY_WRITE_TOKEN || "";
 const dataset = runtimeEnv.SANITY_DATASET || "preview";
+const e2eLoginToken = runtimeEnv.E2E_LOGIN_TOKEN || "";
 
-const hasQueueE2eEnv = Boolean(previewBaseUrl && projectId && writeToken);
+const hasQueueE2eEnv = Boolean(
+  previewBaseUrl && projectId && writeToken && e2eLoginToken,
+);
 const sanityApiVersion = "2023-08-01";
 const fetchTimeoutMs = 20000;
+// Cloudflare's documented dummy Turnstile response token, accepted only by
+// the paired test secret key -- see
+// https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+const TURNSTILE_DUMMY_TOKEN = "XXXX.DUMMY.TOKEN.XXXX";
 
 const sanitizeLine = (value: string) => value.replace(/\s+/g, " ").trim();
 
@@ -111,6 +118,62 @@ async function sanityDeleteById(id: string): Promise<void> {
   }
 }
 
+type LoginResult =
+  { ok: true; cookie: string } | { ok: false; status: number; body: string };
+
+/**
+ * Authenticates against the preview web worker's secret-gated test-harness
+ * login route (web/server/api/e2e-login.post.ts, see
+ * docs/adr/0010-inter-service-endpoint-authentication.md) and returns a
+ * `Cookie` header value carrying the resulting session, since submit-guide
+ * now requires an authenticated session. Must be called per-target since
+ * the session cookie is host-specific.
+ *
+ * Returns a discriminated result instead of throwing on a non-2xx, so the
+ * caller can apply the same retry-on-403 fallback used for the submit-guide
+ * call below: a 403 here means the target's edge (e.g. Cloudflare's
+ * bot/managed-challenge on the custom preview.pogo.guide domain) challenged
+ * the request before it reached the Worker at all -- our route itself never
+ * returns 403 (404 on auth failure, 200 on success) -- and the next target
+ * (the raw *.workers.dev URL, which isn't behind that same challenge)
+ * should be tried instead of failing the whole test.
+ */
+async function loginForCookie(target: string): Promise<LoginResult> {
+  const response = await fetch(new URL("/api/e2e-login", target), {
+    signal: AbortSignal.timeout(fetchTimeoutMs),
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${e2eLoginToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    return {
+      ok: false,
+      status: response.status,
+      body: await response.text(),
+    };
+  }
+
+  const setCookies =
+    typeof response.headers.getSetCookie === "function"
+      ? response.headers.getSetCookie()
+      : [response.headers.get("set-cookie") ?? ""].filter(Boolean);
+
+  if (setCookies.length === 0) {
+    return {
+      ok: false,
+      status: response.status,
+      body: "E2E login response did not include a Set-Cookie header",
+    };
+  }
+
+  return {
+    ok: true,
+    cookie: setCookies.map((cookie) => cookie.split(";")[0]).join("; "),
+  };
+}
+
 async function waitForGuideById(id: string): Promise<PersistedGuide> {
   const query = "*[_id == $id][0]{_id, content[]{children[]{text}}}";
 
@@ -141,6 +204,7 @@ describe.skipIf(!hasQueueE2eEnv)(
         title: `Queue E2E Guide ${runId}`,
         description: "Queue E2E content fidelity assertion",
         suggestedCategory,
+        turnstileToken: TURNSTILE_DUMMY_TOKEN,
         htmlContent: [
           "<h2>Search String 101</h2>",
           "<p>The search bar in your Pokemon storage can filter your entire collection.</p>",
@@ -169,14 +233,28 @@ describe.skipIf(!hasQueueE2eEnv)(
       try {
         let submitResponse: Response | null = null;
         let submitTarget = "";
+        let lastLoginChallengeTarget = "";
 
         for (const target of submitTargets) {
           submitTarget = target;
+
+          const loginResult = await loginForCookie(target);
+          if (!loginResult.ok) {
+            if (loginResult.status === 403) {
+              lastLoginChallengeTarget = target;
+              continue;
+            }
+            throw new Error(
+              `E2E login failed (${loginResult.status}) via ${target}: ${loginResult.body}`,
+            );
+          }
+
           submitResponse = await fetch(new URL("/api/submit-guide", target), {
             signal: AbortSignal.timeout(fetchTimeoutMs),
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Cookie: loginResult.cookie,
             },
             body: JSON.stringify(payload),
           });
@@ -191,7 +269,11 @@ describe.skipIf(!hasQueueE2eEnv)(
         }
 
         if (!submitResponse) {
-          throw new Error("No preview submit target configured for queue E2E");
+          throw new Error(
+            lastLoginChallengeTarget
+              ? `All preview submit targets challenged the E2E login request at the edge (last: ${lastLoginChallengeTarget})`
+              : "No preview submit target configured for queue E2E",
+          );
         }
 
         if (submitResponse.status !== 202) {

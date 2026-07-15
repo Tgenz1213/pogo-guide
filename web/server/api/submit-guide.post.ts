@@ -2,6 +2,7 @@ import {
   submitGuideSchema,
   generateGuideIdempotencyKey,
 } from "@pogo/shared-utils";
+import { verifySubmissionTurnstile } from "../utils/turnstile";
 
 interface CloudflareEnv {
   POGO_QUEUE?: {
@@ -10,6 +11,15 @@ interface CloudflareEnv {
 }
 
 export default defineEventHandler(async (event) => {
+  // 0. Session check. The "auth" page middleware on submit-guide.vue is
+  // client-side navigation only and enforces nothing server-side, so this
+  // endpoint must independently require a session per
+  // docs/adr/0011-rate-limiting-bot-protection.md.
+  const session = await getUserSession(event);
+  if (!session?.user?.id) {
+    throw createError({ statusCode: 401, message: "Unauthorized" });
+  }
+
   const body = await readBody(event);
 
   const validation = submitGuideSchema.safeParse(body);
@@ -28,6 +38,9 @@ export default defineEventHandler(async (event) => {
     console.warn("Honeypot triggered, ignoring request.");
     return { success: true };
   }
+
+  // 2. Turnstile Verification
+  await verifySubmissionTurnstile(event, data.turnstileToken);
 
   const env = (event.context.cloudflare?.env || {}) as CloudflareEnv;
   const { POGO_QUEUE } = env;
