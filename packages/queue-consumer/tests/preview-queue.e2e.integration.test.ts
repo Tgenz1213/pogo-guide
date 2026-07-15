@@ -29,10 +29,17 @@ const previewFallbackBaseUrl = runtimeEnv.PREVIEW_WEB_FALLBACK_BASE_URL || "";
 const projectId = runtimeEnv.SANITY_PROJECT_ID || "";
 const writeToken = runtimeEnv.SANITY_WRITE_TOKEN || "";
 const dataset = runtimeEnv.SANITY_DATASET || "preview";
+const e2eLoginToken = runtimeEnv.E2E_LOGIN_TOKEN || "";
 
-const hasQueueE2eEnv = Boolean(previewBaseUrl && projectId && writeToken);
+const hasQueueE2eEnv = Boolean(
+  previewBaseUrl && projectId && writeToken && e2eLoginToken,
+);
 const sanityApiVersion = "2023-08-01";
 const fetchTimeoutMs = 20000;
+// Cloudflare's documented dummy Turnstile response token, accepted only by
+// the paired test secret key -- see
+// https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+const TURNSTILE_DUMMY_TOKEN = "XXXX.DUMMY.TOKEN.XXXX";
 
 const sanitizeLine = (value: string) => value.replace(/\s+/g, " ").trim();
 
@@ -111,6 +118,41 @@ async function sanityDeleteById(id: string): Promise<void> {
   }
 }
 
+/**
+ * Authenticates against the preview web worker's secret-gated test-harness
+ * login route (web/server/api/e2e-login.post.ts) and returns a `Cookie`
+ * header value carrying the resulting session, since submit-guide now
+ * requires an authenticated session. Must be called per-target since the
+ * session cookie is host-specific.
+ */
+async function loginForCookie(target: string): Promise<string> {
+  const response = await fetch(new URL("/api/e2e-login", target), {
+    signal: AbortSignal.timeout(fetchTimeoutMs),
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${e2eLoginToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const responseBody = await response.text();
+    throw new Error(
+      `E2E login failed (${response.status}) via ${target}: ${responseBody}`,
+    );
+  }
+
+  const setCookies =
+    typeof response.headers.getSetCookie === "function"
+      ? response.headers.getSetCookie()
+      : [response.headers.get("set-cookie") ?? ""].filter(Boolean);
+
+  if (setCookies.length === 0) {
+    throw new Error(`E2E login via ${target} did not set a session cookie`);
+  }
+
+  return setCookies.map((cookie) => cookie.split(";")[0]).join("; ");
+}
+
 async function waitForGuideById(id: string): Promise<PersistedGuide> {
   const query = "*[_id == $id][0]{_id, content[]{children[]{text}}}";
 
@@ -141,7 +183,7 @@ describe.skipIf(!hasQueueE2eEnv)(
         title: `Queue E2E Guide ${runId}`,
         description: "Queue E2E content fidelity assertion",
         suggestedCategory,
-        turnstileToken: "",
+        turnstileToken: TURNSTILE_DUMMY_TOKEN,
         htmlContent: [
           "<h2>Search String 101</h2>",
           "<p>The search bar in your Pokemon storage can filter your entire collection.</p>",
@@ -173,11 +215,13 @@ describe.skipIf(!hasQueueE2eEnv)(
 
         for (const target of submitTargets) {
           submitTarget = target;
+          const cookie = await loginForCookie(target);
           submitResponse = await fetch(new URL("/api/submit-guide", target), {
             signal: AbortSignal.timeout(fetchTimeoutMs),
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Cookie: cookie,
             },
             body: JSON.stringify(payload),
           });

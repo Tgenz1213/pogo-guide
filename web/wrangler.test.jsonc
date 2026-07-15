@@ -3,24 +3,29 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "compatibility_date": "2026-05-25",
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "main": "./.cloudflare/server/index.mjs",
   "assets": {
     "binding": "ASSETS",
-    "directory": "./.cloudflare/public/"
+    "directory": "./.cloudflare/public/",
   },
   "compatibility_flags": ["nodejs_compat"],
   "kv_namespaces": [
     {
       "binding": "POGO_RATE_LIMIT",
-      "id": "b354aaa883f848af8ac07ceb7d74acb4"
-    }
+      "id": "b354aaa883f848af8ac07ceb7d74acb4",
+    },
   ],
   "vars": {
-    "NUXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAADVbfcTmxy5OfQ7i",
+    // Cloudflare's documented always-pass Turnstile testing pair (not secret,
+    // safe to commit): https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+    // Keeps Turnstile a deliberate no-op on preview so both human QA and the
+    // queue-preview-e2e CI test can submit without solving a real challenge.
+    "NUXT_PUBLIC_TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+    "NUXT_TURNSTILE_SECRET_KEY": "1x0000000000000000000000000000000AA",
     "NUXT_OAUTH_GOOGLE_CLIENT_ID": "453047639463-5tcg1tnbr12prhvepeb254l2vtlopfoa.apps.googleusercontent.com",
-    "NUXT_OAUTH_DISCORD_CLIENT_ID": "1509199470464733266"
+    "NUXT_OAUTH_DISCORD_CLIENT_ID": "1509199470464733266",
   },
   "d1_databases": [
     {
@@ -28,15 +33,15 @@
       "database_name": "pogo-guide-preview",
       "database_id": "31b5f470-52dc-4de5-99bd-ba4dd03cbff2",
       "preview_database_id": "31b5f470-52dc-4de5-99bd-ba4dd03cbff2",
-      "migrations_dir": "./server/db/migrations"
-    }
+      "migrations_dir": "./server/db/migrations",
+    },
   ],
   "queues": {
     "producers": [
       {
         "binding": "POGO_QUEUE",
-        "queue": "pogo-preview"
-      }
-    ]
-  }
+        "queue": "pogo-preview",
+      },
+    ],
+  },
 }
