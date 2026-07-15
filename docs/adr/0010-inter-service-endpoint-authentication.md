@@ -1,12 +1,12 @@
 ---
 title: "Inter-Service Endpoint Authentication"
 status: "Accepted"
-scope: "web/server/api/webhooks/**/*.ts,packages/queue-consumer/**/*.ts"
+scope: "web/server/api/webhooks/**/*.ts,web/server/api/e2e-login.post.ts,packages/queue-consumer/**/*.ts"
 ---
 
 ## Context
 
-Some HTTP endpoints exist purely for service-to-service communication (the Sanity → web moderation webhook) or operational debugging (the queue-consumer's HTTP fallback route), not for direct end-user traffic. These sit outside the Turnstile/honeypot/rate-limit protections built for public submission endpoints (see `docs/adr/0011-rate-limiting-bot-protection.md`), so they need their own, distinct defense — and historically have had none, which is a defect rather than a deliberate omission.
+Some HTTP endpoints exist purely for service-to-service communication (the Sanity → web moderation webhook), operational debugging (the queue-consumer's HTTP fallback route), or CI/test-harness use against real deployed infrastructure (the web app's `e2e-login` route, which the queue-preview-e2e CI job authenticates against so it can exercise submit-guide's session check against the live preview worker), not for direct end-user traffic. These sit outside the Turnstile/honeypot/rate-limit protections built for public submission endpoints (see `docs/adr/0011-rate-limiting-bot-protection.md`), so they need their own, distinct defense — and historically have had none, which is a defect rather than a deliberate omission.
 
 ## Decision
 

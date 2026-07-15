@@ -6,11 +6,12 @@ const BEARER_TOKEN_REGEX = /^Bearer\s+(.+)$/;
  * Test-harness-only login for the queue-preview-e2e CI job, which exercises
  * the real deployed preview worker and needs a session cookie to pass
  * submit-guide's auth check. Gated by a private NUXT_E2E_LOGIN_TOKEN secret
- * that is only ever provisioned on the preview worker (never production).
- * Unlike `login.post.ts` (gated by the *public* e2eMode flag for
- * local/Playwright use, and which accepts an arbitrary id/isAdmin body),
- * this route mints a session for one fixed, non-admin identity only, since
- * it's reachable on real deployed infrastructure.
+ * that is only ever provisioned on the preview worker (never production),
+ * per docs/adr/0010-inter-service-endpoint-authentication.md. Unlike
+ * `login.post.ts` (gated by the *public* e2eMode flag for local/Playwright
+ * use, and which accepts an arbitrary id/isAdmin body), this route mints a
+ * session for one fixed, non-admin identity only, since it's reachable on
+ * real deployed infrastructure.
  *
  * Fails closed to a 404 -- not 401/403 -- on any missing/unconfigured/wrong
  * token, so the route's existence isn't discoverable by an unauthenticated

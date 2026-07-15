@@ -120,10 +120,11 @@ async function sanityDeleteById(id: string): Promise<void> {
 
 /**
  * Authenticates against the preview web worker's secret-gated test-harness
- * login route (web/server/api/e2e-login.post.ts) and returns a `Cookie`
- * header value carrying the resulting session, since submit-guide now
- * requires an authenticated session. Must be called per-target since the
- * session cookie is host-specific.
+ * login route (web/server/api/e2e-login.post.ts, see
+ * docs/adr/0010-inter-service-endpoint-authentication.md) and returns a
+ * `Cookie` header value carrying the resulting session, since submit-guide
+ * now requires an authenticated session. Must be called per-target since
+ * the session cookie is host-specific.
  */
 async function loginForCookie(target: string): Promise<string> {
   const response = await fetch(new URL("/api/e2e-login", target), {
