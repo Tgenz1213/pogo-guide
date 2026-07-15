@@ -1,0 +1,8 @@
+# Copy this file to `.dev.vars` (gitignored) for local development.
+#
+# Shared secret configured on the Sanity Studio webhook (Project settings ->
+# API -> Webhooks -> Secret). Used to verify the `sanity-webhook-signature`
+# header on POST /api/webhooks/sanity before any D1 mutation is performed.
+# See docs/adr/0010-inter-service-endpoint-authentication.md and
+# docs/adr/0006-sanity-soft-deletes.md.
+NUXT_SANITY_WEBHOOK_SECRET=
