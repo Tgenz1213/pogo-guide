@@ -11,6 +11,15 @@ interface CloudflareEnv {
 }
 
 export default defineEventHandler(async (event) => {
+  // 0. Session check. The "auth" page middleware on submit-guide.vue is
+  // client-side navigation only and enforces nothing server-side, so this
+  // endpoint must independently require a session per
+  // docs/adr/0011-rate-limiting-bot-protection.md.
+  const session = await getUserSession(event);
+  if (!session?.user?.id) {
+    throw createError({ statusCode: 401, message: "Unauthorized" });
+  }
+
   const body = await readBody(event);
 
   const validation = submitGuideSchema.safeParse(body);

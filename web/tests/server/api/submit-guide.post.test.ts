@@ -17,6 +17,7 @@ describe("Submit Guide API (Producer)", () => {
   let submitGuideHandler: EventHandler;
   let mockQueueSend: ReturnType<typeof vi.fn>;
   let mockVerifyTurnstileToken: ReturnType<typeof vi.fn>;
+  let mockGetUserSession: ReturnType<typeof vi.fn>;
 
   const stubRuntimeConfig = ({
     e2eMode = false,
@@ -67,6 +68,13 @@ describe("Submit Guide API (Producer)", () => {
 
     mockVerifyTurnstileToken = vi.fn().mockResolvedValue({ success: true });
     vi.stubGlobal("verifyTurnstileToken", mockVerifyTurnstileToken);
+
+    // By default, requests are authenticated — matches the pre-existing
+    // tests, none of which exercise the unauthenticated path.
+    mockGetUserSession = vi
+      .fn()
+      .mockResolvedValue({ user: { id: "discord:12345" } });
+    vi.stubGlobal("getUserSession", mockGetUserSession);
 
     mockQueueSend = vi.fn().mockResolvedValue(undefined);
   });
@@ -313,6 +321,40 @@ describe("Submit Guide API (Producer)", () => {
       expect(error.statusMessage).toBe(
         "Invalid Turnstile token. Please try again.",
       );
+    }
+
+    expect(mockQueueSend).not.toHaveBeenCalled();
+  });
+
+  it("13. rejects submissions with no session and does not touch the queue", async () => {
+    mockGetUserSession.mockResolvedValue(null);
+
+    const event = createEvent(validBody);
+
+    try {
+      await submitGuideHandler(event);
+      expect.unreachable("Should have thrown");
+    } catch (err) {
+      const error = err as { statusCode: number; message: string };
+      expect(error.statusCode).toBe(401);
+      expect(error.message).toBe("Unauthorized");
+    }
+
+    expect(mockQueueSend).not.toHaveBeenCalled();
+  });
+
+  it("14. rejects submissions with a session lacking a user id and does not touch the queue", async () => {
+    mockGetUserSession.mockResolvedValue({ user: {} });
+
+    const event = createEvent(validBody);
+
+    try {
+      await submitGuideHandler(event);
+      expect.unreachable("Should have thrown");
+    } catch (err) {
+      const error = err as { statusCode: number; message: string };
+      expect(error.statusCode).toBe(401);
+      expect(error.message).toBe("Unauthorized");
     }
 
     expect(mockQueueSend).not.toHaveBeenCalled();
