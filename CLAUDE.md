@@ -86,6 +86,7 @@ User-submitted content (guides, suggestions) is never written to Sanity synchron
 - Knip (`knip.ts`) enforces no dead code/unused deps per-workspace and gates CI (`quality` job in `.github/workflows/ci.yaml`). If you intentionally add an export only consumed externally (e.g. a Cloudflare entry point), add it to `entry` in `knip.ts` rather than suppressing the warning ad hoc.
 - ESLint config is a single flat config at the repo root (`eslint.config.mjs`) built on the Nuxt-generated config, with `studio/**` ignored (Studio lints separately via its own Sanity ESLint config since it's a React codebase).
 - Husky + lint-staged run on commit (`.husky/pre-commit`) — formatting/lint/tests scoped to staged files per workspace (see `lint-staged` config in root `package.json`).
+- `web/server/utils/**` filenames use kebab-case (e.g. `sanity-webhook.ts`, `identity-hash.ts`), matching the convention already used in `web/server/api/**` (e.g. `submit-guide.post.ts`). Not currently enforced by lint — a manual convention, not a rule.
 
 ## Testing Structure (web)
 
