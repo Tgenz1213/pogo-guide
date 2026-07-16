@@ -1,4 +1,4 @@
-import { timingSafeEqualStrings } from "../utils/e2eAuth";
+import { timingSafeEqualStrings } from "../utils/e2e-auth";
 
 const BEARER_TOKEN_REGEX = /^Bearer\s+(.+)$/;
 

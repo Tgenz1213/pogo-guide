@@ -5,7 +5,7 @@ import { z } from "zod";
 import {
   SANITY_WEBHOOK_SIGNATURE_HEADER,
   verifySanityWebhookSignature,
-} from "../../utils/sanityWebhook";
+} from "../../utils/sanity-webhook";
 
 const sanityWebhookPayloadSchema = z.object({
   _type: z.string().optional(),
