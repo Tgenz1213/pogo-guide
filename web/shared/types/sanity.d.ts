@@ -248,9 +248,9 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint;
 
-// Source: app/pages/guides/[slug].vue
+// Source: app/components/admin/AdminReportDetailModal.vue
 // Variable: guideQuery
-// Query: *[_type == "guide" && slug.current == $slug][0]
+// Query: *[_type == "guide" && _id == $docId][0]
 export type GuideQueryResult = {
   _id: string;
   _type: "guide";
@@ -288,7 +288,7 @@ export type GuideQueryResult = {
 
 // Source: app/pages/guides/category/[slug].vue
 // Variable: categoryGuidesQuery
-// Query: *[_type == "category" && slug.current == $slug][0] {  _id,  title,  description,  "guides": *[_type == "guide" && references(^._id)] {    _id,    title,    "slug": slug.current  }}
+// Query: *[_type == "category" && slug.current == $slug][0] {  _id,  title,  description,  "guides": *[_type == "guide" && isHiddenByModeration != true && references(^._id)] {    _id,    title,    "slug": slug.current  }}
 export type CategoryGuidesQueryResult = {
   _id: string;
   title: string | null;
@@ -312,12 +312,12 @@ export type CategoriesQueryResult = Array<{
 
 // Source: app/pages/index.vue
 // Variable: featuredQuery
-// Query: *[_type == "guide" && isFeatured == true] | order(_updatedAt desc)[0...3] {  _id,  title,  "slug": slug.current,  description,  "category": category->title}
+// Query: *[_type == "guide" && isHiddenByModeration != true && isFeatured == true] | order(_updatedAt desc)[0...3] {  _id,  title,  "slug": slug.current,  description,  "category": category->title}
 export type FeaturedQueryResult = Array<never>;
 
 // Source: app/pages/index.vue
 // Variable: recentQuery
-// Query: *[_type == "guide"] | order(_updatedAt desc)[0...3] {  _id,  title,  "slug": slug.current,  description,  "category": category->title,  _updatedAt}
+// Query: *[_type == "guide" && isHiddenByModeration != true] | order(_updatedAt desc)[0...3] {  _id,  title,  "slug": slug.current,  description,  "category": category->title,  _updatedAt}
 export type RecentQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -338,11 +338,11 @@ export type ResourcesQueryResult = Array<{
 }>;
 declare module "@sanity/client" {
   interface SanityQueries {
-    '*[_type == "guide" && slug.current == $slug][0]': GuideQueryResult;
-    '*[_type == "category" && slug.current == $slug][0] {\n  _id,\n  title,\n  description,\n  "guides": *[_type == "guide" && references(^._id)] {\n    _id,\n    title,\n    "slug": slug.current\n  }\n}': CategoryGuidesQueryResult;
+    '*[_type == "guide" && _id == $docId][0]': GuideQueryResult;
+    '*[_type == "category" && slug.current == $slug][0] {\n  _id,\n  title,\n  description,\n  "guides": *[_type == "guide" && isHiddenByModeration != true && references(^._id)] {\n    _id,\n    title,\n    "slug": slug.current\n  }\n}': CategoryGuidesQueryResult;
     '*[_type == "category"] {\n  _id,\n  title,\n  "slug": slug.current,\n  description\n}': CategoriesQueryResult;
-    '*[_type == "guide" && isFeatured == true] | order(_updatedAt desc)[0...3] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  "category": category->title\n}': FeaturedQueryResult;
-    '*[_type == "guide"] | order(_updatedAt desc)[0...3] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  "category": category->title,\n  _updatedAt\n}': RecentQueryResult;
+    '*[_type == "guide" && isHiddenByModeration != true && isFeatured == true] | order(_updatedAt desc)[0...3] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  "category": category->title\n}': FeaturedQueryResult;
+    '*[_type == "guide" && isHiddenByModeration != true] | order(_updatedAt desc)[0...3] {\n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  "category": category->title,\n  _updatedAt\n}': RecentQueryResult;
     '*[_type == "resource"] {\n  _id,\n  name,\n  description,\n  url\n}': ResourcesQueryResult;
   }
 }

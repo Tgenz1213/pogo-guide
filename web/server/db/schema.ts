@@ -34,10 +34,10 @@ export const guideSubmissions = sqliteTable("guide_submissions", {
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
 
-export const banned_identities = sqliteTable("banned_identities", {
+export const bannedIdentities = sqliteTable("banned_identities", {
   id: text("id").primaryKey(),
-  hashed_identity: text("hashed_identity").notNull().unique(),
-  banned_at: integer("banned_at", { mode: "timestamp" }).notNull(),
+  hashedIdentity: text("hashed_identity").notNull().unique(),
+  bannedAt: integer("banned_at", { mode: "timestamp" }).notNull(),
   reason: text("reason"),
 });
 

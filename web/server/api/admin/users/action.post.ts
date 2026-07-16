@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { eq } from "drizzle-orm";
-import { users, infractions, banned_identities } from "../../../db/schema";
+import { users, infractions, bannedIdentities } from "../../../db/schema";
 import { useDB } from "../../../utils/db";
 import { computeIdentityHash } from "../../../utils/identity-hash";
 import { requireAdmin } from "../../../utils/admin";
@@ -66,13 +66,13 @@ export default defineEventHandler(async (event) => {
       issuedAt: new Date(),
     });
 
-    // Also insert into banned_identities
+    // Also insert into bannedIdentities
     await db
-      .insert(banned_identities)
+      .insert(bannedIdentities)
       .values({
         id: crypto.randomUUID(),
-        hashed_identity: identityHash,
-        banned_at: new Date(),
+        hashedIdentity: identityHash,
+        bannedAt: new Date(),
         reason: body.reason || "Banned by admin",
       })
       .onConflictDoNothing();
