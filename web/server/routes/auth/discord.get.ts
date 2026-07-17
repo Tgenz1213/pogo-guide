@@ -1,7 +1,12 @@
 import { eq } from "drizzle-orm";
 import { users, bannedIdentities } from "../../db/schema";
 import { useDB } from "../../utils/db";
-import { isEmailAdmin } from "../../utils/admin";
+import {
+  isEmailAdmin,
+  isSuperAdminId,
+  enforceSuperAdmin,
+  reconcileBootstrapAdmin,
+} from "../../utils/admin";
 import { sanitizeRedirectPath } from "../../../shared/utils/auth";
 import { computeIdentityHash } from "../../utils/identity-hash";
 
@@ -37,26 +42,45 @@ export default defineOAuthDiscordEventHandler({
         user.email ||
         `discord-user-${String(user.id || "unknown")}`;
 
-      const isInitialAdmin = isEmailAdmin(user.email || "");
-      let isAdmin = isInitialAdmin;
+      const isOnAllowlist = isEmailAdmin(user.email || "");
+      let isAdmin: boolean;
 
       if (currentUser.length === 0) {
+        const isSuperAdmin = isSuperAdminId(providerAccountId);
+        isAdmin = isSuperAdmin || isOnAllowlist;
         await db.insert(users).values({
           id: providerAccountId,
           username,
           status: "active",
           createdAt: new Date(),
           isAdmin,
+          adminGrantedVia: isSuperAdmin
+            ? "super_admin"
+            : isOnAllowlist
+              ? "bootstrap"
+              : null,
         });
       } else {
-        isAdmin = currentUser[0]?.isAdmin ?? false;
-        if (isInitialAdmin && !isAdmin) {
-          isAdmin = true;
-          await db
-            .update(users)
-            .set({ isAdmin: true })
-            .where(eq(users.id, providerAccountId));
-        }
+        const existing = currentUser[0]!;
+        const existingState = {
+          isAdmin: existing.isAdmin,
+          adminGrantedVia: existing.adminGrantedVia,
+        };
+
+        const isSuperAdmin = await enforceSuperAdmin(
+          db,
+          providerAccountId,
+          existingState,
+        );
+
+        isAdmin = isSuperAdmin
+          ? true
+          : await reconcileBootstrapAdmin(
+              db,
+              providerAccountId,
+              existingState,
+              isOnAllowlist,
+            );
       }
 
       await setUserSession(event, {
