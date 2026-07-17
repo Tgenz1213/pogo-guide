@@ -15,6 +15,18 @@ export function isEmailAdmin(email: string): boolean {
   return initialAdmins.includes(email);
 }
 
+export function isSuperAdminId(id: string): boolean {
+  if (!id) return false;
+
+  const superAdminIdsStr = process.env.SUPER_ADMIN_IDS || "";
+  const superAdminIds = superAdminIdsStr
+    .replace(/['"]/g, "")
+    .split(",")
+    .map((v) => v.trim());
+
+  return superAdminIds.includes(id);
+}
+
 /**
  * Guards `/api/admin/*` routes. `session.user.isAdmin` is baked into the
  * sealed session cookie at login time, so demoting a user in D1 (see

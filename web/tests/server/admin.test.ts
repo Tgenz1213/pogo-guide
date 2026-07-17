@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { isEmailAdmin } from "../../server/utils/admin";
+import { isEmailAdmin, isSuperAdminId } from "../../server/utils/admin";
 import { computeIdentityHash } from "../../server/utils/identity-hash";
 
 describe("isEmailAdmin", () => {
@@ -33,6 +33,37 @@ describe("isEmailAdmin", () => {
   it("should return false for empty email", () => {
     vi.stubEnv("INITIAL_ADMIN_EMAILS", "admin1@example.com");
     expect(isEmailAdmin("")).toBe(false);
+  });
+});
+
+describe("isSuperAdminId", () => {
+  beforeEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("should return false if no SUPER_ADMIN_IDS env variable is set", () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "");
+    expect(isSuperAdminId("discord:12345")).toBe(false);
+  });
+
+  it("should return true if id is in SUPER_ADMIN_IDS", () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:111,google:222");
+    expect(isSuperAdminId("google:222")).toBe(true);
+  });
+
+  it("should return false if id is not in SUPER_ADMIN_IDS", () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:111");
+    expect(isSuperAdminId("discord:999")).toBe(false);
+  });
+
+  it("should handle spaces around ids in the env var", () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", " discord:111 , google:222 ");
+    expect(isSuperAdminId("google:222")).toBe(true);
+  });
+
+  it("should return false for empty id", () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:111");
+    expect(isSuperAdminId("")).toBe(false);
   });
 });
 
