@@ -122,6 +122,7 @@ describe("POST /api/admin/users/action", () => {
         .fn()
         .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
       isEmailAdmin: vi.fn(),
+      isSuperAdminId: vi.fn().mockReturnValue(false),
     }));
 
     vi.doMock("../../server/utils/db", () => ({
@@ -156,6 +157,426 @@ describe("POST /api/admin/users/action", () => {
     // The old implementation used btoa(targetUser.id) - guard against regressing to it.
     expect(banInsert?.hashedIdentity).not.toBe(btoa(targetUser.id));
   }, 20000);
+
+  it("make_admin granting sets adminGrantedVia to 'admin_panel'", async () => {
+    const targetUser = {
+      id: "discord:12345",
+      username: "testuser",
+      status: "active",
+      createdAt: new Date(),
+      isAdmin: false,
+      adminGrantedVia: null,
+    };
+
+    stubServerGlobals({
+      session: { user: { id: "admin:1", isAdmin: true } },
+      body: { userId: targetUser.id, action: "make_admin" },
+    });
+
+    vi.doMock("../../server/utils/admin", () => ({
+      requireAdmin: vi
+        .fn()
+        .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
+      isEmailAdmin: vi.fn(),
+      isSuperAdminId: vi.fn().mockReturnValue(false),
+    }));
+
+    const setCalls: Array<Record<string, unknown>> = [];
+    vi.doMock("../../server/utils/db", () => ({
+      useDB: vi.fn(() => ({
+        select: vi.fn().mockReturnThis(),
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockResolvedValue([targetUser]),
+        update: vi.fn().mockReturnThis(),
+        set: vi.fn((v: Record<string, unknown>) => {
+          setCalls.push(v);
+          return { where: vi.fn().mockResolvedValue(undefined) };
+        }),
+      })),
+    }));
+
+    const { default: handler } =
+      await import("../../server/api/admin/users/action.post");
+
+    await handler({});
+
+    expect(setCalls).toContainEqual({
+      isAdmin: true,
+      adminGrantedVia: "admin_panel",
+    });
+  }, 20000);
+
+  it("make_admin revoking clears adminGrantedVia", async () => {
+    const targetUser = {
+      id: "discord:12345",
+      username: "testuser",
+      status: "active",
+      createdAt: new Date(),
+      isAdmin: true,
+      adminGrantedVia: "admin_panel",
+    };
+
+    stubServerGlobals({
+      session: { user: { id: "admin:1", isAdmin: true } },
+      body: { userId: targetUser.id, action: "make_admin" },
+    });
+
+    // The target already has isAdmin: true, so the new admin-hierarchy rule
+    // (Step 3 below) requires the ACTING admin to be a super admin for this
+    // revoke to be allowed. This test is about the adminGrantedVia clearing
+    // payload, not hierarchy enforcement (that gets its own tests in Step 6),
+    // so make the acting admin ("admin:1") a super admin here.
+    vi.doMock("../../server/utils/admin", () => ({
+      requireAdmin: vi
+        .fn()
+        .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
+      isEmailAdmin: vi.fn(),
+      isSuperAdminId: vi.fn((id: string) => id === "admin:1"),
+    }));
+
+    const setCalls: Array<Record<string, unknown>> = [];
+    vi.doMock("../../server/utils/db", () => ({
+      useDB: vi.fn(() => ({
+        select: vi.fn().mockReturnThis(),
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockResolvedValue([targetUser]),
+        update: vi.fn().mockReturnThis(),
+        set: vi.fn((v: Record<string, unknown>) => {
+          setCalls.push(v);
+          return { where: vi.fn().mockResolvedValue(undefined) };
+        }),
+      })),
+    }));
+
+    const { default: handler } =
+      await import("../../server/api/admin/users/action.post");
+
+    await handler({});
+
+    expect(setCalls).toContainEqual({
+      isAdmin: false,
+      adminGrantedVia: null,
+    });
+  }, 20000);
+
+  it.each(["warn", "ban"] as const)(
+    "rejects '%s' against a userId in SUPER_ADMIN_IDS with 403",
+    async (action) => {
+      const targetUser = {
+        id: "discord:protected-1",
+        username: "protecteduser",
+        status: "active",
+        createdAt: new Date(),
+        isAdmin: false,
+        adminGrantedVia: null,
+      };
+
+      stubServerGlobals({
+        session: { user: { id: "admin:1", isAdmin: true } },
+        body: { userId: targetUser.id, action },
+      });
+
+      vi.doMock("../../server/utils/admin", () => ({
+        requireAdmin: vi
+          .fn()
+          .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
+        isEmailAdmin: vi.fn(),
+        isSuperAdminId: vi.fn((id: string) => id === targetUser.id),
+      }));
+
+      const updateSpy = vi.fn().mockReturnThis();
+      vi.doMock("../../server/utils/db", () => ({
+        useDB: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          from: vi.fn().mockReturnThis(),
+          where: vi.fn().mockResolvedValue([targetUser]),
+          update: updateSpy,
+          set: vi.fn().mockReturnThis(),
+        })),
+      }));
+
+      const { default: handler } =
+        await import("../../server/api/admin/users/action.post");
+
+      await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
+      expect(updateSpy).not.toHaveBeenCalled();
+    },
+  );
+
+  it("rejects a make_admin revoke against a userId in SUPER_ADMIN_IDS with 403", async () => {
+    const targetUser = {
+      id: "discord:protected-2",
+      username: "protecteduser",
+      status: "active",
+      createdAt: new Date(),
+      isAdmin: true,
+      adminGrantedVia: "super_admin",
+    };
+
+    stubServerGlobals({
+      session: { user: { id: "admin:1", isAdmin: true } },
+      body: { userId: targetUser.id, action: "make_admin" },
+    });
+
+    vi.doMock("../../server/utils/admin", () => ({
+      requireAdmin: vi
+        .fn()
+        .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
+      isEmailAdmin: vi.fn(),
+      isSuperAdminId: vi.fn((id: string) => id === targetUser.id),
+    }));
+
+    const updateSpy = vi.fn().mockReturnThis();
+    vi.doMock("../../server/utils/db", () => ({
+      useDB: vi.fn(() => ({
+        select: vi.fn().mockReturnThis(),
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockResolvedValue([targetUser]),
+        update: updateSpy,
+        set: vi.fn().mockReturnThis(),
+      })),
+    }));
+
+    const { default: handler } =
+      await import("../../server/api/admin/users/action.post");
+
+    await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it("allows granting admin to a SUPER_ADMIN_IDS entry that is not yet admin (grant direction is harmless)", async () => {
+    const targetUser = {
+      id: "discord:protected-3",
+      username: "protecteduser",
+      status: "active",
+      createdAt: new Date(),
+      isAdmin: false,
+      adminGrantedVia: null,
+    };
+
+    stubServerGlobals({
+      session: { user: { id: "admin:1", isAdmin: true } },
+      body: { userId: targetUser.id, action: "make_admin" },
+    });
+
+    vi.doMock("../../server/utils/admin", () => ({
+      requireAdmin: vi
+        .fn()
+        .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
+      isEmailAdmin: vi.fn(),
+      isSuperAdminId: vi.fn((id: string) => id === targetUser.id),
+    }));
+
+    const setCalls: Array<Record<string, unknown>> = [];
+    vi.doMock("../../server/utils/db", () => ({
+      useDB: vi.fn(() => ({
+        select: vi.fn().mockReturnThis(),
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockResolvedValue([targetUser]),
+        update: vi.fn().mockReturnThis(),
+        set: vi.fn((v: Record<string, unknown>) => {
+          setCalls.push(v);
+          return { where: vi.fn().mockResolvedValue(undefined) };
+        }),
+      })),
+    }));
+
+    const { default: handler } =
+      await import("../../server/api/admin/users/action.post");
+
+    await handler({});
+
+    expect(setCalls).toContainEqual({
+      isAdmin: true,
+      adminGrantedVia: "admin_panel",
+    });
+  });
+
+  it.each(["warn", "ban"] as const)(
+    "rejects '%s' against a regular (non-super) admin when the acting admin is not a super admin",
+    async (action) => {
+      const targetUser = {
+        id: "discord:regular-admin-1",
+        username: "regularadmin",
+        status: "active",
+        createdAt: new Date(),
+        isAdmin: true,
+        adminGrantedVia: "bootstrap",
+      };
+
+      stubServerGlobals({
+        session: { user: { id: "admin:1", isAdmin: true } },
+        body: { userId: targetUser.id, action },
+      });
+
+      vi.doMock("../../server/utils/admin", () => ({
+        requireAdmin: vi
+          .fn()
+          .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
+        isEmailAdmin: vi.fn(),
+        isSuperAdminId: vi.fn().mockReturnValue(false),
+      }));
+
+      const updateSpy = vi.fn().mockReturnThis();
+      vi.doMock("../../server/utils/db", () => ({
+        useDB: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          from: vi.fn().mockReturnThis(),
+          where: vi.fn().mockResolvedValue([targetUser]),
+          update: updateSpy,
+          set: vi.fn().mockReturnThis(),
+        })),
+      }));
+
+      const { default: handler } =
+        await import("../../server/api/admin/users/action.post");
+
+      await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
+      expect(updateSpy).not.toHaveBeenCalled();
+    },
+  );
+
+  it("rejects a make_admin revoke against a regular (non-super) admin when the acting admin is not a super admin", async () => {
+    const targetUser = {
+      id: "discord:regular-admin-2",
+      username: "regularadmin",
+      status: "active",
+      createdAt: new Date(),
+      isAdmin: true,
+      adminGrantedVia: "admin_panel",
+    };
+
+    stubServerGlobals({
+      session: { user: { id: "admin:1", isAdmin: true } },
+      body: { userId: targetUser.id, action: "make_admin" },
+    });
+
+    vi.doMock("../../server/utils/admin", () => ({
+      requireAdmin: vi
+        .fn()
+        .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
+      isEmailAdmin: vi.fn(),
+      isSuperAdminId: vi.fn().mockReturnValue(false),
+    }));
+
+    const updateSpy = vi.fn().mockReturnThis();
+    vi.doMock("../../server/utils/db", () => ({
+      useDB: vi.fn(() => ({
+        select: vi.fn().mockReturnThis(),
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockResolvedValue([targetUser]),
+        update: updateSpy,
+        set: vi.fn().mockReturnThis(),
+      })),
+    }));
+
+    const { default: handler } =
+      await import("../../server/api/admin/users/action.post");
+
+    await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it.each(["warn", "ban"] as const)(
+    "allows a super admin to '%s' a regular (non-super) admin",
+    async (action) => {
+      const targetUser = {
+        id: "discord:regular-admin-3",
+        username: "regularadmin",
+        status: "active",
+        createdAt: new Date(),
+        isAdmin: true,
+        adminGrantedVia: "bootstrap",
+      };
+
+      stubServerGlobals({
+        session: { user: { id: "super:1", isAdmin: true } },
+        body: { userId: targetUser.id, action, reason: "test" },
+      });
+
+      vi.doMock("../../server/utils/admin", () => ({
+        requireAdmin: vi
+          .fn()
+          .mockResolvedValue({ user: { id: "super:1", isAdmin: true } }),
+        isEmailAdmin: vi.fn(),
+        isSuperAdminId: vi.fn((id: string) => id === "super:1"),
+      }));
+
+      const updateSpy = vi.fn().mockReturnThis();
+      vi.doMock("../../server/utils/db", () => ({
+        useDB: vi.fn(() => ({
+          select: vi.fn().mockReturnThis(),
+          from: vi.fn().mockReturnThis(),
+          where: vi.fn().mockResolvedValue([targetUser]),
+          update: updateSpy,
+          set: vi.fn().mockReturnThis(),
+          insert: vi.fn().mockReturnThis(),
+          values: vi.fn().mockReturnValue({
+            onConflictDoNothing: vi.fn().mockResolvedValue(undefined),
+          }),
+        })),
+      }));
+
+      const { default: handler } =
+        await import("../../server/api/admin/users/action.post");
+
+      const result = await handler({});
+
+      expect(result).toEqual({
+        success: true,
+        message: action === "warn" ? "User warned" : "User banned",
+      });
+      expect(updateSpy).toHaveBeenCalled();
+    },
+  );
+
+  it("allows a super admin to revoke a regular (non-super) admin via make_admin", async () => {
+    const targetUser = {
+      id: "discord:regular-admin-4",
+      username: "regularadmin",
+      status: "active",
+      createdAt: new Date(),
+      isAdmin: true,
+      adminGrantedVia: "bootstrap",
+    };
+
+    stubServerGlobals({
+      session: { user: { id: "super:1", isAdmin: true } },
+      body: { userId: targetUser.id, action: "make_admin" },
+    });
+
+    vi.doMock("../../server/utils/admin", () => ({
+      requireAdmin: vi
+        .fn()
+        .mockResolvedValue({ user: { id: "super:1", isAdmin: true } }),
+      isEmailAdmin: vi.fn(),
+      isSuperAdminId: vi.fn((id: string) => id === "super:1"),
+    }));
+
+    const setCalls: Array<Record<string, unknown>> = [];
+    vi.doMock("../../server/utils/db", () => ({
+      useDB: vi.fn(() => ({
+        select: vi.fn().mockReturnThis(),
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockResolvedValue([targetUser]),
+        update: vi.fn().mockReturnThis(),
+        set: vi.fn((v: Record<string, unknown>) => {
+          setCalls.push(v);
+          return { where: vi.fn().mockResolvedValue(undefined) };
+        }),
+      })),
+    }));
+
+    const { default: handler } =
+      await import("../../server/api/admin/users/action.post");
+
+    await handler({});
+
+    expect(setCalls).toContainEqual({
+      isAdmin: false,
+      adminGrantedVia: null,
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------
