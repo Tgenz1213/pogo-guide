@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { users, infractions, bannedIdentities } from "../../../db/schema";
 import { useDB } from "../../../utils/db";
 import { computeIdentityHash } from "../../../utils/identity-hash";
-import { requireAdmin, isSuperAdminId } from "../../../utils/admin";
+import { requireAdmin, isProtectedFromActor } from "../../../utils/admin";
 
 const actionSchema = z.object({
   userId: z.string(),
@@ -36,21 +36,11 @@ export default defineEventHandler(async (event) => {
   const isRestrictedAction =
     body.action === "warn" || body.action === "ban" || wouldRevokeAdmin;
 
-  if (isRestrictedAction) {
-    if (isSuperAdminId(targetUser.id)) {
-      throw createError({
-        statusCode: 403,
-        message: "This account is protected and cannot be modified.",
-      });
-    }
-
-    if (targetUser.isAdmin && !isSuperAdminId(session.user.id)) {
-      throw createError({
-        statusCode: 403,
-        message:
-          "Only a super admin can take this action against another admin.",
-      });
-    }
+  if (isRestrictedAction && isProtectedFromActor(session.user.id, targetUser)) {
+    throw createError({
+      statusCode: 403,
+      message: "This account is protected and cannot be modified.",
+    });
   }
 
   if (body.action === "make_admin") {
@@ -59,7 +49,7 @@ export default defineEventHandler(async (event) => {
       .update(users)
       .set({
         isAdmin: nextIsAdmin,
-        adminGrantedVia: nextIsAdmin ? "admin_panel" : null,
+        adminGrantedVia: nextIsAdmin ? "admin_panel" : "revoked",
       })
       .where(eq(users.id, body.userId));
     return { success: true, message: `Admin status toggled` };

@@ -14,7 +14,7 @@ export const users = sqliteTable("users", {
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
   adminGrantedVia: text("admin_granted_via", {
-    enum: ["bootstrap", "admin_panel", "super_admin"],
+    enum: ["bootstrap", "admin_panel", "super_admin", "revoked"],
   }),
 });
 

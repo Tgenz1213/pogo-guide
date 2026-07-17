@@ -26,7 +26,8 @@ afterEach(() => {
 async function insertUser(row: {
   id: string;
   isAdmin: boolean;
-  adminGrantedVia: "bootstrap" | "admin_panel" | "super_admin" | null;
+  adminGrantedVia:
+    "bootstrap" | "admin_panel" | "super_admin" | "revoked" | null;
 }) {
   await db.insert(schema.users).values({
     id: row.id,
@@ -146,6 +147,27 @@ test("enforceSuperAdmin leaves a real non-protected row completely untouched", a
   const row = await loadUser("google:real-not-super");
   expect(row?.isAdmin).toBe(true);
   expect(row?.adminGrantedVia).toBe("bootstrap");
+});
+
+test("reconcileBootstrapAdmin does not re-grant a real persisted panel-revoked user even when still on the allowlist (sticky revoke)", async () => {
+  await insertUser({
+    id: "discord:real-revoked-1",
+    isAdmin: false,
+    adminGrantedVia: "revoked",
+  });
+
+  const result = await reconcileBootstrapAdmin(
+    db,
+    "discord:real-revoked-1",
+    { isAdmin: false, adminGrantedVia: "revoked" },
+    true,
+  );
+
+  expect(result).toBe(false);
+
+  const row = await loadUser("discord:real-revoked-1");
+  expect(row?.isAdmin).toBe(false);
+  expect(row?.adminGrantedVia).toBe("revoked");
 });
 
 test("isSuperAdminId reads the real process.env.SUPER_ADMIN_IDS value", () => {

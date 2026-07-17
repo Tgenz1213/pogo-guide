@@ -2,7 +2,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { accountDeletionRequests, users } from "../../../db/schema";
 import { useDB } from "../../../utils/db";
-import { requireAdmin } from "../../../utils/admin";
+import { requireAdmin, isProtectedFromActor } from "../../../utils/admin";
 
 const actionSchema = z.object({
   requestId: z.string(),
@@ -10,7 +10,10 @@ const actionSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  const session = await requireAdmin(event);
+  if (!session.user) {
+    throw createError({ statusCode: 403, message: "Forbidden" });
+  }
 
   const body = await readValidatedBody(event, actionSchema.parse);
   const db = useDB(event);
@@ -36,6 +39,20 @@ export default defineEventHandler(async (event) => {
   }
 
   if (body.action === "approve") {
+    if (request.userId) {
+      const [targetUser] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, request.userId));
+
+      if (targetUser && isProtectedFromActor(session.user.id, targetUser)) {
+        throw createError({
+          statusCode: 403,
+          message: "This account is protected and cannot be modified.",
+        });
+      }
+    }
+
     // 1. Mark request as approved
     await db
       .update(accountDeletionRequests)

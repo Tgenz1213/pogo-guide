@@ -3,33 +3,52 @@ import type { H3Event } from "h3";
 import { users } from "../db/schema";
 import { useDB } from "./db";
 
+function parseCommaSeparatedEnvList(value: string | undefined): string[] {
+  return (value || "")
+    .replace(/['"]/g, "") // Strip any accidental quotes
+    .split(",")
+    .map((v) => v.trim());
+}
+
 export function isEmailAdmin(email: string): boolean {
   if (!email) return false;
 
-  const initialAdminsStr = process.env.INITIAL_ADMIN_EMAILS || "";
-  const initialAdmins = initialAdminsStr
-    .replace(/['"]/g, "") // Strip any accidental quotes
-    .split(",")
-    .map((e) => e.trim());
-
-  return initialAdmins.includes(email);
+  return parseCommaSeparatedEnvList(process.env.INITIAL_ADMIN_EMAILS).includes(
+    email,
+  );
 }
 
 export function isSuperAdminId(id: string): boolean {
   if (!id) return false;
 
-  const superAdminIdsStr = process.env.SUPER_ADMIN_IDS || "";
-  const superAdminIds = superAdminIdsStr
-    .replace(/['"]/g, "")
-    .split(",")
-    .map((v) => v.trim());
-
-  return superAdminIds.includes(id);
+  return parseCommaSeparatedEnvList(process.env.SUPER_ADMIN_IDS).includes(id);
 }
 
-interface AdminProvenanceState {
+export interface AdminProvenanceState {
   isAdmin: boolean;
-  adminGrantedVia: "bootstrap" | "admin_panel" | "super_admin" | null;
+  adminGrantedVia:
+    "bootstrap" | "admin_panel" | "super_admin" | "revoked" | null;
+}
+
+/**
+ * Determines initial admin state for a brand-new user row at first login.
+ * Shared by both OAuth handlers so the insert-path precedence (super admin
+ * wins over allowlist) can't drift between providers.
+ */
+export function resolveNewUserAdminState(
+  providerAccountId: string,
+  isOnAllowlist: boolean,
+): AdminProvenanceState {
+  const isSuperAdmin = isSuperAdminId(providerAccountId);
+
+  return {
+    isAdmin: isSuperAdmin || isOnAllowlist,
+    adminGrantedVia: isSuperAdmin
+      ? "super_admin"
+      : isOnAllowlist
+        ? "bootstrap"
+        : null,
+  };
 }
 
 export async function reconcileBootstrapAdmin(
@@ -38,7 +57,11 @@ export async function reconcileBootstrapAdmin(
   currentUser: AdminProvenanceState,
   isOnAllowlist: boolean,
 ): Promise<boolean> {
-  if (!currentUser.isAdmin && isOnAllowlist) {
+  if (
+    !currentUser.isAdmin &&
+    isOnAllowlist &&
+    currentUser.adminGrantedVia !== "revoked"
+  ) {
     await db
       .update(users)
       .set({ isAdmin: true, adminGrantedVia: "bootstrap" })
@@ -76,6 +99,22 @@ export async function enforceSuperAdmin(
   }
 
   return true;
+}
+
+/**
+ * Shared authorization primitive for every admin-panel route that mutates
+ * another account: a super admin can never be acted on by anyone, and a
+ * regular admin can only be acted on by a super admin. Callers decide which
+ * of their actions are restricted enough to check this (e.g. granting admin
+ * to a non-admin is never restricted).
+ */
+export function isProtectedFromActor(
+  actingUserId: string,
+  target: { id: string; isAdmin: boolean },
+): boolean {
+  if (isSuperAdminId(target.id)) return true;
+  if (target.isAdmin && !isSuperAdminId(actingUserId)) return true;
+  return false;
 }
 
 /**

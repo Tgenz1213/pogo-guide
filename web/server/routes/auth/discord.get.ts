@@ -3,7 +3,7 @@ import { users, bannedIdentities } from "../../db/schema";
 import { useDB } from "../../utils/db";
 import {
   isEmailAdmin,
-  isSuperAdminId,
+  resolveNewUserAdminState,
   enforceSuperAdmin,
   reconcileBootstrapAdmin,
 } from "../../utils/admin";
@@ -46,31 +46,26 @@ export default defineOAuthDiscordEventHandler({
       let isAdmin: boolean;
 
       if (currentUser.length === 0) {
-        const isSuperAdmin = isSuperAdminId(providerAccountId);
-        isAdmin = isSuperAdmin || isOnAllowlist;
+        const newUserState = resolveNewUserAdminState(
+          providerAccountId,
+          isOnAllowlist,
+        );
+        isAdmin = newUserState.isAdmin;
         await db.insert(users).values({
           id: providerAccountId,
           username,
           status: "active",
           createdAt: new Date(),
-          isAdmin,
-          adminGrantedVia: isSuperAdmin
-            ? "super_admin"
-            : isOnAllowlist
-              ? "bootstrap"
-              : null,
+          isAdmin: newUserState.isAdmin,
+          adminGrantedVia: newUserState.adminGrantedVia,
         });
       } else {
         const existing = currentUser[0]!;
-        const existingState = {
-          isAdmin: existing.isAdmin,
-          adminGrantedVia: existing.adminGrantedVia,
-        };
 
         const isSuperAdmin = await enforceSuperAdmin(
           db,
           providerAccountId,
-          existingState,
+          existing,
         );
 
         isAdmin = isSuperAdmin
@@ -78,7 +73,7 @@ export default defineOAuthDiscordEventHandler({
           : await reconcileBootstrapAdmin(
               db,
               providerAccountId,
-              existingState,
+              existing,
               isOnAllowlist,
             );
       }
