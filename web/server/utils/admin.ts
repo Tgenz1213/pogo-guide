@@ -27,6 +27,57 @@ export function isSuperAdminId(id: string): boolean {
   return superAdminIds.includes(id);
 }
 
+interface AdminProvenanceState {
+  isAdmin: boolean;
+  adminGrantedVia: "bootstrap" | "admin_panel" | "super_admin" | null;
+}
+
+export async function reconcileBootstrapAdmin(
+  db: ReturnType<typeof useDB>,
+  userId: string,
+  currentUser: AdminProvenanceState,
+  isOnAllowlist: boolean,
+): Promise<boolean> {
+  if (!currentUser.isAdmin && isOnAllowlist) {
+    await db
+      .update(users)
+      .set({ isAdmin: true, adminGrantedVia: "bootstrap" })
+      .where(eq(users.id, userId));
+    return true;
+  }
+
+  if (
+    currentUser.isAdmin &&
+    !isOnAllowlist &&
+    currentUser.adminGrantedVia === "bootstrap"
+  ) {
+    await db
+      .update(users)
+      .set({ isAdmin: false, adminGrantedVia: null })
+      .where(eq(users.id, userId));
+    return false;
+  }
+
+  return currentUser.isAdmin;
+}
+
+export async function enforceSuperAdmin(
+  db: ReturnType<typeof useDB>,
+  userId: string,
+  currentUser: AdminProvenanceState,
+): Promise<boolean> {
+  if (!isSuperAdminId(userId)) return false;
+
+  if (!currentUser.isAdmin || currentUser.adminGrantedVia !== "super_admin") {
+    await db
+      .update(users)
+      .set({ isAdmin: true, adminGrantedVia: "super_admin" })
+      .where(eq(users.id, userId));
+  }
+
+  return true;
+}
+
 /**
  * Guards `/api/admin/*` routes. `session.user.isAdmin` is baked into the
  * sealed session cookie at login time, so demoting a user in D1 (see

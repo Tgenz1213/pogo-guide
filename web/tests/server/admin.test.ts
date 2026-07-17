@@ -233,3 +233,218 @@ describe("requireAdmin", () => {
     expect(useDBSpy).not.toHaveBeenCalled();
   });
 });
+
+// ---------------------------------------------------------------------------
+// reconcileBootstrapAdmin
+// ---------------------------------------------------------------------------
+describe("reconcileBootstrapAdmin", () => {
+  afterEach(() => {
+    vi.resetModules();
+  });
+
+  function buildDbMock() {
+    const setCalls: Array<Record<string, unknown>> = [];
+    const db = {
+      update: vi.fn().mockReturnThis(),
+      set: vi.fn((v: Record<string, unknown>) => {
+        setCalls.push(v);
+        return db;
+      }),
+      where: vi.fn().mockResolvedValue(undefined),
+    };
+    return { db, setCalls };
+  }
+
+  it("promotes when the email is on the allowlist and the user is not yet admin", async () => {
+    const { reconcileBootstrapAdmin } =
+      await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await reconcileBootstrapAdmin(
+      db as never,
+      "discord:1",
+      { isAdmin: false, adminGrantedVia: null },
+      true,
+    );
+
+    expect(result).toBe(true);
+    expect(setCalls).toContainEqual({
+      isAdmin: true,
+      adminGrantedVia: "bootstrap",
+    });
+  });
+
+  it("demotes when the email is off the allowlist and admin was granted via bootstrap", async () => {
+    const { reconcileBootstrapAdmin } =
+      await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await reconcileBootstrapAdmin(
+      db as never,
+      "discord:1",
+      { isAdmin: true, adminGrantedVia: "bootstrap" },
+      false,
+    );
+
+    expect(result).toBe(false);
+    expect(setCalls).toContainEqual({
+      isAdmin: false,
+      adminGrantedVia: null,
+    });
+  });
+
+  it("leaves an admin_panel-granted admin untouched when off the allowlist", async () => {
+    const { reconcileBootstrapAdmin } =
+      await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await reconcileBootstrapAdmin(
+      db as never,
+      "discord:1",
+      { isAdmin: true, adminGrantedVia: "admin_panel" },
+      false,
+    );
+
+    expect(result).toBe(true);
+    expect(setCalls).toEqual([]);
+    expect(db.update).not.toHaveBeenCalled();
+  });
+
+  it("leaves a legacy admin (no tracked provenance) untouched when off the allowlist", async () => {
+    const { reconcileBootstrapAdmin } =
+      await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await reconcileBootstrapAdmin(
+      db as never,
+      "discord:1",
+      { isAdmin: true, adminGrantedVia: null },
+      false,
+    );
+
+    expect(result).toBe(true);
+    expect(setCalls).toEqual([]);
+    expect(db.update).not.toHaveBeenCalled();
+  });
+
+  it("is a no-op when already admin and still on the allowlist", async () => {
+    const { reconcileBootstrapAdmin } =
+      await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await reconcileBootstrapAdmin(
+      db as never,
+      "discord:1",
+      { isAdmin: true, adminGrantedVia: "bootstrap" },
+      true,
+    );
+
+    expect(result).toBe(true);
+    expect(setCalls).toEqual([]);
+    expect(db.update).not.toHaveBeenCalled();
+  });
+
+  it("is a no-op when not admin and still not on the allowlist", async () => {
+    const { reconcileBootstrapAdmin } =
+      await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await reconcileBootstrapAdmin(
+      db as never,
+      "discord:1",
+      { isAdmin: false, adminGrantedVia: null },
+      false,
+    );
+
+    expect(result).toBe(false);
+    expect(setCalls).toEqual([]);
+    expect(db.update).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// enforceSuperAdmin
+// ---------------------------------------------------------------------------
+describe("enforceSuperAdmin", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  function buildDbMock() {
+    const setCalls: Array<Record<string, unknown>> = [];
+    const db = {
+      update: vi.fn().mockReturnThis(),
+      set: vi.fn((v: Record<string, unknown>) => {
+        setCalls.push(v);
+        return db;
+      }),
+      where: vi.fn().mockResolvedValue(undefined),
+    };
+    return { db, setCalls };
+  }
+
+  it("returns false and makes no DB call when the id is not in SUPER_ADMIN_IDS", async () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:other");
+    const { enforceSuperAdmin } = await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await enforceSuperAdmin(db as never, "discord:1", {
+      isAdmin: false,
+      adminGrantedVia: null,
+    });
+
+    expect(result).toBe(false);
+    expect(setCalls).toEqual([]);
+    expect(db.update).not.toHaveBeenCalled();
+  });
+
+  it("grants and tags adminGrantedVia 'super_admin' when the id matches and the user is not yet admin", async () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:1");
+    const { enforceSuperAdmin } = await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await enforceSuperAdmin(db as never, "discord:1", {
+      isAdmin: false,
+      adminGrantedVia: null,
+    });
+
+    expect(result).toBe(true);
+    expect(setCalls).toContainEqual({
+      isAdmin: true,
+      adminGrantedVia: "super_admin",
+    });
+  });
+
+  it("normalizes provenance to 'super_admin' when already admin via a different path, without ever setting isAdmin false", async () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:1");
+    const { enforceSuperAdmin } = await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await enforceSuperAdmin(db as never, "discord:1", {
+      isAdmin: true,
+      adminGrantedVia: "bootstrap",
+    });
+
+    expect(result).toBe(true);
+    expect(setCalls).toContainEqual({
+      isAdmin: true,
+      adminGrantedVia: "super_admin",
+    });
+  });
+
+  it("is a no-op when the id matches and state is already correct", async () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:1");
+    const { enforceSuperAdmin } = await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await enforceSuperAdmin(db as never, "discord:1", {
+      isAdmin: true,
+      adminGrantedVia: "super_admin",
+    });
+
+    expect(result).toBe(true);
+    expect(setCalls).toEqual([]);
+    expect(db.update).not.toHaveBeenCalled();
+  });
+});
