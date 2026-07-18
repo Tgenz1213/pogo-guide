@@ -34,7 +34,7 @@ const closeMenu = () => {
       <div class="flex items-center gap-4">
         <!-- Mobile Menu Toggle -->
         <button
-          class="md:hidden p-2 rounded-md text-slate-500 dark:text-brand-accent hover:bg-white dark:bg-brand-surface transition-colors focus:outline-hidden"
+          class="md:hidden p-2 rounded-md text-slate-500 dark:text-brand-accent hover:bg-white dark:hover:bg-brand-surface transition-colors focus:outline-hidden"
           aria-label="Toggle Menu"
           :aria-expanded="isMenuOpen"
           @click="isMenuOpen = !isMenuOpen"
@@ -232,7 +232,7 @@ const closeMenu = () => {
 
         <!-- Dark/Light Mode (Desktop) -->
         <button
-          class="hidden md:block p-2 rounded-full bg-white dark:bg-brand-surface hover:bg-white dark:bg-brand-surface/80 text-slate-500 dark:text-brand-accent transition-colors"
+          class="hidden md:block p-2 rounded-full bg-white dark:bg-brand-surface hover:bg-white dark:hover:bg-brand-surface/80 text-slate-500 dark:text-brand-accent transition-colors"
           aria-label="Toggle Dark Mode"
           @click="toggleDarkMode"
         >
@@ -411,7 +411,7 @@ const closeMenu = () => {
         </nav>
         <div class="pt-2">
           <button
-            class="flex items-center gap-3 p-2 w-full rounded-md bg-white dark:bg-brand-surface hover:bg-white dark:bg-brand-surface/80 text-slate-500 dark:text-brand-accent transition-colors"
+            class="flex items-center gap-3 p-2 w-full rounded-md bg-white dark:bg-brand-surface hover:bg-white dark:hover:bg-brand-surface/80 text-slate-500 dark:text-brand-accent transition-colors"
             aria-label="Toggle Dark Mode"
             @click="toggleDarkMode"
           >

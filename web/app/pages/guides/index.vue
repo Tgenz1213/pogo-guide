@@ -44,7 +44,7 @@ const getTheme = (index: number) => {
         v-for="(cat, idx) in categories"
         :key="cat?._id || idx"
         :to="`/guides/category/${cat?.slug}`"
-        class="flex flex-col p-6 rounded-3xl bg-white dark:bg-brand-surface/20 border border-slate-200 dark:border-brand-surface hover:bg-white transition-all duration-300 cursor-pointer group"
+        class="flex flex-col p-6 rounded-3xl bg-white dark:bg-brand-surface/20 border border-slate-200 dark:border-brand-surface hover:bg-white dark:hover:bg-brand-surface/30 transition-all duration-300 cursor-pointer group"
         :class="`hover:${getTheme(idx).border}`"
       >
         <span

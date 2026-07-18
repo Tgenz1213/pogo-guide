@@ -15,3 +15,4 @@ dist
 .worktrees/
 .wrangler
 .workers
+.playwright-mcp/
