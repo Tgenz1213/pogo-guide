@@ -2,7 +2,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { accountDeletionRequests, users } from "../../../db/schema";
 import { useDB } from "../../../utils/db";
-import { requireAdmin } from "../../../utils/admin";
+import { requireAdmin, assertNotProtected } from "../../../utils/admin";
 
 const actionSchema = z.object({
   requestId: z.string(),
@@ -10,7 +10,7 @@ const actionSchema = z.object({
 });
 
 export default defineEventHandler(async (event) => {
-  await requireAdmin(event);
+  const session = await requireAdmin(event);
 
   const body = await readValidatedBody(event, actionSchema.parse);
   const db = useDB(event);
@@ -36,6 +36,22 @@ export default defineEventHandler(async (event) => {
   }
 
   if (body.action === "approve") {
+    // A protected admin may always approve their OWN deletion request (GDPR
+    // self-service erasure) — a super admin's account is recreated with
+    // super-admin status on their next login regardless, so this isn't a
+    // lockout. Approving someone ELSE's deletion still respects the hierarchy.
+    const isSelfAction = request.userId === session.user.id;
+    if (request.userId && !isSelfAction) {
+      const [targetUser] = await db
+        .select({ id: users.id, isAdmin: users.isAdmin })
+        .from(users)
+        .where(eq(users.id, request.userId));
+
+      if (targetUser) {
+        assertNotProtected(session.user.id, targetUser);
+      }
+    }
+
     // 1. Mark request as approved
     await db
       .update(accountDeletionRequests)

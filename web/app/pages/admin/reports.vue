@@ -193,7 +193,7 @@ import type { ReportRow } from "~/components/admin/AdminReportDetailModal.vue";
 
 definePageMeta({
   layout: "admin",
-  middleware: ["auth"],
+  middleware: ["auth", "admin"],
 });
 
 const tabs = [

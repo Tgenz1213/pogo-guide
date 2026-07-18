@@ -188,7 +188,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 
 definePageMeta({
   layout: "admin",
-  middleware: ["auth"],
+  middleware: ["auth", "admin"],
 });
 
 const page = ref(1);

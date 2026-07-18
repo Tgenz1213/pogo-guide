@@ -1,7 +1,11 @@
 import { eq } from "drizzle-orm";
 import { users, bannedIdentities } from "../../db/schema";
 import { useDB } from "../../utils/db";
-import { isEmailAdmin } from "../../utils/admin";
+import {
+  isEmailAdmin,
+  resolveNewUserAdminState,
+  resolveReturningUserAdmin,
+} from "../../utils/admin";
 import { sanitizeRedirectPath } from "../../../shared/utils/auth";
 import { computeIdentityHash } from "../../utils/identity-hash";
 
@@ -37,27 +41,32 @@ export default defineOAuthGoogleEventHandler({
         user.email ||
         `google-user-${String(user.sub || user.id || "unknown")}`;
 
-      const email = user.email || "";
-      const isInitialAdmin = isEmailAdmin(email);
-      let isAdmin = isInitialAdmin;
+      const isOnAllowlist = isEmailAdmin(user.email || "");
+      let isAdmin: boolean;
 
       if (currentUser.length === 0) {
+        const newUserState = resolveNewUserAdminState(
+          providerAccountId,
+          isOnAllowlist,
+        );
+        isAdmin = newUserState.isAdmin;
         await db.insert(users).values({
           id: providerAccountId,
           username,
           status: "active",
           createdAt: new Date(),
-          isAdmin,
+          isAdmin: newUserState.isAdmin,
+          adminGrantedVia: newUserState.adminGrantedVia,
         });
       } else {
-        isAdmin = currentUser[0]?.isAdmin ?? false;
-        if (isInitialAdmin && !isAdmin) {
-          isAdmin = true;
-          await db
-            .update(users)
-            .set({ isAdmin: true })
-            .where(eq(users.id, providerAccountId));
-        }
+        const existing = currentUser[0]!;
+
+        isAdmin = await resolveReturningUserAdmin(
+          db,
+          providerAccountId,
+          existing,
+          isOnAllowlist,
+        );
       }
 
       await setUserSession(event, {
