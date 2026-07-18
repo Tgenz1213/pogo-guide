@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import type { H3Event } from "h3";
+import type { User } from "#auth-utils";
 import { users } from "../db/schema";
 import { useDB } from "./db";
 
@@ -7,15 +8,17 @@ function parseCommaSeparatedEnvList(value: string | undefined): string[] {
   return (value || "")
     .replace(/['"]/g, "") // Strip any accidental quotes
     .split(",")
-    .map((v) => v.trim());
+    .map((v) => v.trim())
+    .filter(Boolean);
 }
 
 export function isEmailAdmin(email: string): boolean {
   if (!email) return false;
 
-  return parseCommaSeparatedEnvList(process.env.INITIAL_ADMIN_EMAILS).includes(
-    email,
-  );
+  const normalized = email.toLowerCase();
+  return parseCommaSeparatedEnvList(process.env.INITIAL_ADMIN_EMAILS)
+    .map((e) => e.toLowerCase())
+    .includes(normalized);
 }
 
 export function isSuperAdminId(id: string): boolean {
@@ -26,8 +29,7 @@ export function isSuperAdminId(id: string): boolean {
 
 export interface AdminProvenanceState {
   isAdmin: boolean;
-  adminGrantedVia:
-    "bootstrap" | "admin_panel" | "super_admin" | "revoked" | null;
+  adminGrantedVia: (typeof users.$inferSelect)["adminGrantedVia"];
 }
 
 /**
@@ -102,19 +104,60 @@ export async function enforceSuperAdmin(
 }
 
 /**
+ * Resolves and self-heals a returning user's admin status on login: super
+ * admin status always wins over (and short-circuits) the allowlist check.
+ * Shared by both OAuth handlers so this precedence can't drift between
+ * providers the way the individual grant/demote primitives could if each
+ * handler re-sequenced them independently.
+ */
+export async function resolveReturningUserAdmin(
+  db: ReturnType<typeof useDB>,
+  userId: string,
+  currentUser: AdminProvenanceState,
+  isOnAllowlist: boolean,
+): Promise<boolean> {
+  const isSuperAdmin = await enforceSuperAdmin(db, userId, currentUser);
+  if (isSuperAdmin) return true;
+  return reconcileBootstrapAdmin(db, userId, currentUser, isOnAllowlist);
+}
+
+/**
  * Shared authorization primitive for every admin-panel route that mutates
- * another account: a super admin can never be acted on by anyone, and a
- * regular admin can only be acted on by a super admin. Callers decide which
- * of their actions are restricted enough to check this (e.g. granting admin
- * to a non-admin is never restricted).
+ * another account: a super admin can never be acted on by anyone else, and a
+ * regular admin can only be acted on by a super admin. This has NO
+ * self-action exemption — a self-ban would insert a row into
+ * `bannedIdentities`, which the OAuth login flow checks *before*
+ * `enforceSuperAdmin` runs, so it would permanently lock the account out
+ * with no self-heal (unlike a self-demotion, which only touches `isAdmin`
+ * and heals on the next login). Callers that want to allow a specific
+ * self-directed action (self-demote via `make_admin`, self-approve a GDPR
+ * deletion request) must exempt `actingUserId === target.id` themselves,
+ * scoped to that one action — never as a blanket bypass of this function.
  */
 export function isProtectedFromActor(
   actingUserId: string,
   target: { id: string; isAdmin: boolean },
 ): boolean {
-  if (isSuperAdminId(target.id)) return true;
-  if (target.isAdmin && !isSuperAdminId(actingUserId)) return true;
+  const superAdminIds = parseCommaSeparatedEnvList(process.env.SUPER_ADMIN_IDS);
+  if (superAdminIds.includes(target.id)) return true;
+  if (target.isAdmin && !superAdminIds.includes(actingUserId)) return true;
   return false;
+}
+
+/**
+ * Throws the standard 403 for every admin-mutation route that guards a
+ * restricted action behind `isProtectedFromActor`.
+ */
+export function assertNotProtected(
+  actingUserId: string,
+  target: { id: string; isAdmin: boolean },
+): void {
+  if (isProtectedFromActor(actingUserId, target)) {
+    throw createError({
+      statusCode: 403,
+      message: "This account is protected and cannot be modified.",
+    });
+  }
 }
 
 /**
@@ -125,7 +168,7 @@ export function isProtectedFromActor(
  * every admin request so demotion takes effect immediately, without
  * requiring a server-side session store to invalidate by user id.
  */
-export async function requireAdmin(event: H3Event) {
+export async function requireAdmin(event: H3Event): Promise<{ user: User }> {
   const session = await getUserSession(event);
 
   if (!session?.user?.isAdmin) {
@@ -142,5 +185,5 @@ export async function requireAdmin(event: H3Event) {
     throw createError({ statusCode: 403, message: "Forbidden" });
   }
 
-  return session;
+  return { user: session.user };
 }

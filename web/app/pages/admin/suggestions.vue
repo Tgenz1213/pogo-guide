@@ -184,7 +184,7 @@ import type { SuggestionRow } from "~/components/admin/AdminSuggestionDetailModa
 
 definePageMeta({
   layout: "admin",
-  middleware: ["auth"],
+  middleware: ["auth", "admin"],
 });
 
 const tabs = [

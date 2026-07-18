@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { users, infractions, bannedIdentities } from "../../../db/schema";
 import { useDB } from "../../../utils/db";
 import { computeIdentityHash } from "../../../utils/identity-hash";
-import { requireAdmin, isProtectedFromActor } from "../../../utils/admin";
+import { requireAdmin, assertNotProtected } from "../../../utils/admin";
 
 const actionSchema = z.object({
   userId: z.string(),
@@ -13,12 +13,6 @@ const actionSchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const session = await requireAdmin(event);
-  // requireAdmin already throws if the session lacks an admin user, but its
-  // return type (nuxt-auth-utils' UserSession) still types `user` as
-  // optional, so narrow it here for strict-TypeScript compliance.
-  if (!session.user) {
-    throw createError({ statusCode: 403, message: "Forbidden" });
-  }
 
   const body = await readValidatedBody(event, actionSchema.parse);
   const db = useDB(event);
@@ -32,15 +26,21 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: "User not found" });
   }
 
+  const isSelfAction = session.user.id === targetUser.id;
+  // Self-demotion is allowed even against a protected row: it only flips
+  // `isAdmin`, and a super admin's next login re-grants it via
+  // enforceSuperAdmin. warn/ban are NEVER self-exempt — a self-ban would
+  // insert a row into bannedIdentities, which the login flow checks before
+  // enforceSuperAdmin runs, permanently locking the account out with no
+  // self-heal.
   const wouldRevokeAdmin = body.action === "make_admin" && targetUser.isAdmin;
   const isRestrictedAction =
-    body.action === "warn" || body.action === "ban" || wouldRevokeAdmin;
+    body.action === "warn" ||
+    body.action === "ban" ||
+    (wouldRevokeAdmin && !isSelfAction);
 
-  if (isRestrictedAction && isProtectedFromActor(session.user.id, targetUser)) {
-    throw createError({
-      statusCode: 403,
-      message: "This account is protected and cannot be modified.",
-    });
+  if (isRestrictedAction) {
+    assertNotProtected(session.user.id, targetUser);
   }
 
   if (body.action === "make_admin") {

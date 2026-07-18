@@ -4,8 +4,7 @@ import { useDB } from "../../utils/db";
 import {
   isEmailAdmin,
   resolveNewUserAdminState,
-  enforceSuperAdmin,
-  reconcileBootstrapAdmin,
+  resolveReturningUserAdmin,
 } from "../../utils/admin";
 import { sanitizeRedirectPath } from "../../../shared/utils/auth";
 import { computeIdentityHash } from "../../utils/identity-hash";
@@ -62,20 +61,12 @@ export default defineOAuthDiscordEventHandler({
       } else {
         const existing = currentUser[0]!;
 
-        const isSuperAdmin = await enforceSuperAdmin(
+        isAdmin = await resolveReturningUserAdmin(
           db,
           providerAccountId,
           existing,
+          isOnAllowlist,
         );
-
-        isAdmin = isSuperAdmin
-          ? true
-          : await reconcileBootstrapAdmin(
-              db,
-              providerAccountId,
-              existing,
-              isOnAllowlist,
-            );
       }
 
       await setUserSession(event, {

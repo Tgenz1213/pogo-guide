@@ -4,8 +4,7 @@ import { useDB } from "../../utils/db";
 import {
   isEmailAdmin,
   resolveNewUserAdminState,
-  enforceSuperAdmin,
-  reconcileBootstrapAdmin,
+  resolveReturningUserAdmin,
 } from "../../utils/admin";
 import { sanitizeRedirectPath } from "../../../shared/utils/auth";
 import { computeIdentityHash } from "../../utils/identity-hash";
@@ -42,8 +41,7 @@ export default defineOAuthGoogleEventHandler({
         user.email ||
         `google-user-${String(user.sub || user.id || "unknown")}`;
 
-      const email = user.email || "";
-      const isOnAllowlist = isEmailAdmin(email);
+      const isOnAllowlist = isEmailAdmin(user.email || "");
       let isAdmin: boolean;
 
       if (currentUser.length === 0) {
@@ -63,20 +61,12 @@ export default defineOAuthGoogleEventHandler({
       } else {
         const existing = currentUser[0]!;
 
-        const isSuperAdmin = await enforceSuperAdmin(
+        isAdmin = await resolveReturningUserAdmin(
           db,
           providerAccountId,
           existing,
+          isOnAllowlist,
         );
-
-        isAdmin = isSuperAdmin
-          ? true
-          : await reconcileBootstrapAdmin(
-              db,
-              providerAccountId,
-              existing,
-              isOnAllowlist,
-            );
       }
 
       await setUserSession(event, {

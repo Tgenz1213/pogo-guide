@@ -39,6 +39,17 @@ describe("isEmailAdmin", () => {
     vi.stubEnv("INITIAL_ADMIN_EMAILS", "admin1@example.com");
     expect(isEmailAdmin("")).toBe(false);
   });
+
+  it("should match regardless of case on either side", () => {
+    vi.stubEnv("INITIAL_ADMIN_EMAILS", "Admin@Example.com");
+    expect(isEmailAdmin("admin@example.com")).toBe(true);
+    expect(isEmailAdmin("ADMIN@EXAMPLE.COM")).toBe(true);
+  });
+
+  it("should not match an empty allowlist entry from a trailing comma", () => {
+    vi.stubEnv("INITIAL_ADMIN_EMAILS", "admin1@example.com,");
+    expect(isEmailAdmin("")).toBe(false);
+  });
 });
 
 describe("isSuperAdminId", () => {
@@ -70,6 +81,11 @@ describe("isSuperAdminId", () => {
     vi.stubEnv("SUPER_ADMIN_IDS", "discord:111");
     expect(isSuperAdminId("")).toBe(false);
   });
+
+  it("should not match an empty allowlist entry from a trailing comma", () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:111,");
+    expect(isSuperAdminId("")).toBe(false);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -96,13 +112,23 @@ function mockAdminModule({
   actingUserId = "admin:1",
   isProtected = false,
 } = {}) {
+  const assertNotProtected = vi.fn(() => {
+    if (isProtected) {
+      const err = new Error(
+        "This account is protected and cannot be modified.",
+      ) as Error & { statusCode: number };
+      err.statusCode = 403;
+      throw err;
+    }
+  });
   vi.doMock("../../server/utils/admin", () => ({
     requireAdmin: vi
       .fn()
       .mockResolvedValue({ user: { id: actingUserId, isAdmin: true } }),
     isEmailAdmin: vi.fn(),
-    isProtectedFromActor: vi.fn().mockReturnValue(isProtected),
+    assertNotProtected,
   }));
+  return assertNotProtected;
 }
 
 function mockDbCapturingSet(targetUser: Record<string, unknown>) {
@@ -289,12 +315,16 @@ describe("POST /api/admin/users/action", () => {
         body: { userId: targetUser.id, action },
       });
 
-      mockAdminModule({ isProtected: true });
+      const assertNotProtected = mockAdminModule({ isProtected: true });
       const updateSpy = mockDbWithUpdateSpy(targetUser);
       const handler = await importActionHandler();
 
       await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
       expect(updateSpy).not.toHaveBeenCalled();
+      expect(assertNotProtected).toHaveBeenCalledWith(
+        "admin:1",
+        expect.objectContaining({ id: targetUser.id }),
+      );
     },
   );
 
@@ -313,12 +343,16 @@ describe("POST /api/admin/users/action", () => {
       body: { userId: targetUser.id, action: "make_admin" },
     });
 
-    mockAdminModule({ isProtected: true });
+    const assertNotProtected = mockAdminModule({ isProtected: true });
     const updateSpy = mockDbWithUpdateSpy(targetUser);
     const handler = await importActionHandler();
 
     await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
     expect(updateSpy).not.toHaveBeenCalled();
+    expect(assertNotProtected).toHaveBeenCalledWith(
+      "admin:1",
+      expect.objectContaining({ id: targetUser.id }),
+    );
   });
 
   it.each(["warn", "ban"] as const)(
@@ -338,7 +372,7 @@ describe("POST /api/admin/users/action", () => {
         body: { userId: targetUser.id, action },
       });
 
-      mockAdminModule({
+      const assertNotProtected = mockAdminModule({
         actingUserId: "discord:super-actor",
         isProtected: true,
       });
@@ -347,6 +381,10 @@ describe("POST /api/admin/users/action", () => {
 
       await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
       expect(updateSpy).not.toHaveBeenCalled();
+      expect(assertNotProtected).toHaveBeenCalledWith(
+        "discord:super-actor",
+        expect.objectContaining({ id: targetUser.id }),
+      );
     },
   );
 
@@ -502,6 +540,109 @@ describe("POST /api/admin/users/action", () => {
     });
 
     mockAdminModule({ actingUserId: "super:1", isProtected: false });
+    const setCalls = mockDbCapturingSet(targetUser);
+    const handler = await importActionHandler();
+
+    await handler({});
+
+    expect(setCalls).toContainEqual({
+      isAdmin: false,
+      adminGrantedVia: "revoked",
+    });
+  });
+
+  it("regression: a super admin cannot ban themselves, using the real assertNotProtected", async () => {
+    const targetUser = {
+      id: "discord:super-self-ban",
+      username: "superadmin",
+      status: "active",
+      createdAt: new Date(),
+      isAdmin: true,
+      adminGrantedVia: "super_admin",
+    };
+
+    stubServerGlobals({
+      session: { user: { id: "discord:super-self-ban", isAdmin: true } },
+      body: { userId: targetUser.id, action: "ban", reason: "test" },
+    });
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:super-self-ban");
+
+    vi.doMock("../../server/utils/admin", async (importOriginal) => {
+      const actual =
+        await importOriginal<typeof import("../../server/utils/admin")>();
+      return {
+        ...actual,
+        requireAdmin: vi.fn().mockResolvedValue({
+          user: { id: "discord:super-self-ban", isAdmin: true },
+        }),
+      };
+    });
+    const updateSpy = mockDbWithUpdateSpy(targetUser);
+    const handler = await importActionHandler();
+
+    await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it("regression: a super admin cannot warn themselves, using the real assertNotProtected", async () => {
+    const targetUser = {
+      id: "discord:super-self-warn",
+      username: "superadmin",
+      status: "active",
+      createdAt: new Date(),
+      isAdmin: true,
+      adminGrantedVia: "super_admin",
+    };
+
+    stubServerGlobals({
+      session: { user: { id: "discord:super-self-warn", isAdmin: true } },
+      body: { userId: targetUser.id, action: "warn" },
+    });
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:super-self-warn");
+
+    vi.doMock("../../server/utils/admin", async (importOriginal) => {
+      const actual =
+        await importOriginal<typeof import("../../server/utils/admin")>();
+      return {
+        ...actual,
+        requireAdmin: vi.fn().mockResolvedValue({
+          user: { id: "discord:super-self-warn", isAdmin: true },
+        }),
+      };
+    });
+    const updateSpy = mockDbWithUpdateSpy(targetUser);
+    const handler = await importActionHandler();
+
+    await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it("regression: a regular admin can still revoke their own admin status via make_admin (self-demotion), using the real assertNotProtected", async () => {
+    const targetUser = {
+      id: "discord:self-demote",
+      username: "regularadmin",
+      status: "active",
+      createdAt: new Date(),
+      isAdmin: true,
+      adminGrantedVia: "bootstrap",
+    };
+
+    stubServerGlobals({
+      session: { user: { id: "discord:self-demote", isAdmin: true } },
+      body: { userId: targetUser.id, action: "make_admin" },
+    });
+    vi.stubEnv("SUPER_ADMIN_IDS", "");
+
+    vi.doMock("../../server/utils/admin", async (importOriginal) => {
+      const actual =
+        await importOriginal<typeof import("../../server/utils/admin")>();
+      return {
+        ...actual,
+        requireAdmin: vi.fn().mockResolvedValue({
+          user: { id: "discord:self-demote", isAdmin: true },
+        }),
+      };
+    });
     const setCalls = mockDbCapturingSet(targetUser);
     const handler = await importActionHandler();
 
@@ -823,6 +964,89 @@ describe("enforceSuperAdmin", () => {
 });
 
 // ---------------------------------------------------------------------------
+// resolveReturningUserAdmin
+// ---------------------------------------------------------------------------
+describe("resolveReturningUserAdmin", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  function buildDbMock() {
+    const setCalls: Array<Record<string, unknown>> = [];
+    const db = {
+      update: vi.fn().mockReturnThis(),
+      set: vi.fn((v: Record<string, unknown>) => {
+        setCalls.push(v);
+        return db;
+      }),
+      where: vi.fn().mockResolvedValue(undefined),
+    };
+    return { db, setCalls };
+  }
+
+  it("super-admin status wins over allowlist removal (short-circuits reconcileBootstrapAdmin)", async () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:1");
+    const { resolveReturningUserAdmin } =
+      await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await resolveReturningUserAdmin(
+      db as never,
+      "discord:1",
+      { isAdmin: true, adminGrantedVia: "bootstrap" },
+      false,
+    );
+
+    expect(result).toBe(true);
+    expect(setCalls).toContainEqual({
+      isAdmin: true,
+      adminGrantedVia: "super_admin",
+    });
+  });
+
+  it("falls through to reconcileBootstrapAdmin's demotion when not a super admin", async () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "");
+    const { resolveReturningUserAdmin } =
+      await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await resolveReturningUserAdmin(
+      db as never,
+      "discord:1",
+      { isAdmin: true, adminGrantedVia: "bootstrap" },
+      false,
+    );
+
+    expect(result).toBe(false);
+    expect(setCalls).toContainEqual({
+      isAdmin: false,
+      adminGrantedVia: null,
+    });
+  });
+
+  it("falls through to reconcileBootstrapAdmin's grant when not a super admin but on the allowlist", async () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "");
+    const { resolveReturningUserAdmin } =
+      await import("../../server/utils/admin");
+    const { db, setCalls } = buildDbMock();
+
+    const result = await resolveReturningUserAdmin(
+      db as never,
+      "discord:1",
+      { isAdmin: false, adminGrantedVia: null },
+      true,
+    );
+
+    expect(result).toBe(true);
+    expect(setCalls).toContainEqual({
+      isAdmin: true,
+      adminGrantedVia: "bootstrap",
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
 // isProtectedFromActor
 // ---------------------------------------------------------------------------
 describe("isProtectedFromActor", () => {
@@ -883,6 +1107,34 @@ describe("isProtectedFromActor", () => {
         isAdmin: false,
       }),
     ).toBe(false);
+  });
+
+  it("regression: has no self-action exemption — a super admin acting on their own row is still protected", () => {
+    // isProtectedFromActor deliberately has NO self-exemption. A self-ban
+    // would insert a row into bannedIdentities, which the login flow checks
+    // *before* enforceSuperAdmin runs, permanently locking the account out
+    // with no self-heal. Any self-service exemption (self-demote, self-
+    // approve a GDPR deletion) must be scoped by the caller to that one
+    // specific action, never granted here.
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:self");
+
+    expect(
+      isProtectedFromActor("discord:self", {
+        id: "discord:self",
+        isAdmin: true,
+      }),
+    ).toBe(true);
+  });
+
+  it("regular admin acting on their own row is still protected (no self-exemption)", () => {
+    vi.stubEnv("SUPER_ADMIN_IDS", "");
+
+    expect(
+      isProtectedFromActor("discord:self", {
+        id: "discord:self",
+        isAdmin: true,
+      }),
+    ).toBe(true);
   });
 });
 

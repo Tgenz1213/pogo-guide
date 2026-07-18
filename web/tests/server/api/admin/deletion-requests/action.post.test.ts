@@ -20,6 +20,7 @@ function stubServerGlobals({
 describe("POST /api/admin/deletion-requests/action", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
     vi.doUnmock("../../../../../server/utils/admin");
     vi.doUnmock("../../../../../server/utils/db");
     vi.resetModules();
@@ -38,11 +39,18 @@ describe("POST /api/admin/deletion-requests/action", () => {
       body: { requestId: request.id, action: "approve" },
     });
 
+    const assertNotProtected = vi.fn(() => {
+      const err = new Error(
+        "This account is protected and cannot be modified.",
+      ) as Error & { statusCode: number };
+      err.statusCode = 403;
+      throw err;
+    });
     vi.doMock("../../../../../server/utils/admin", () => ({
       requireAdmin: vi
         .fn()
         .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
-      isProtectedFromActor: vi.fn().mockReturnValue(true),
+      assertNotProtected,
     }));
 
     const deleteSpy = vi.fn().mockReturnThis();
@@ -67,6 +75,10 @@ describe("POST /api/admin/deletion-requests/action", () => {
     await expect(handler({})).rejects.toMatchObject({ statusCode: 403 });
     expect(deleteSpy).not.toHaveBeenCalled();
     expect(updateSpy).not.toHaveBeenCalled();
+    expect(assertNotProtected).toHaveBeenCalledWith(
+      "admin:1",
+      expect.objectContaining({ id: targetUser.id }),
+    );
   });
 
   it("approves a deletion request targeting a non-protected account and deletes the row", async () => {
@@ -82,11 +94,12 @@ describe("POST /api/admin/deletion-requests/action", () => {
       body: { requestId: request.id, action: "approve" },
     });
 
+    const assertNotProtected = vi.fn();
     vi.doMock("../../../../../server/utils/admin", () => ({
       requireAdmin: vi
         .fn()
         .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
-      isProtectedFromActor: vi.fn().mockReturnValue(false),
+      assertNotProtected,
     }));
 
     const deleteWhereSpy = vi.fn().mockResolvedValue(undefined);
@@ -112,6 +125,10 @@ describe("POST /api/admin/deletion-requests/action", () => {
 
     expect(result).toEqual({ success: true, message: "Account deleted" });
     expect(deleteWhereSpy).toHaveBeenCalled();
+    expect(assertNotProtected).toHaveBeenCalledWith(
+      "admin:1",
+      expect.objectContaining({ id: targetUser.id }),
+    );
   });
 
   it("rejects a pending request", async () => {
@@ -130,7 +147,7 @@ describe("POST /api/admin/deletion-requests/action", () => {
       requireAdmin: vi
         .fn()
         .mockResolvedValue({ user: { id: "admin:1", isAdmin: true } }),
-      isProtectedFromActor: vi.fn(),
+      assertNotProtected: vi.fn(),
     }));
 
     const setCalls: Array<Record<string, unknown>> = [];
@@ -154,5 +171,56 @@ describe("POST /api/admin/deletion-requests/action", () => {
 
     expect(result).toEqual({ success: true, message: "Request rejected" });
     expect(setCalls).toContainEqual({ status: "rejected" });
+  });
+
+  it("regression: a super admin can approve their own GDPR deletion request (self-exemption), using the real assertNotProtected", async () => {
+    const request = {
+      id: "req-self",
+      userId: "discord:super-self",
+      status: "pending",
+    };
+
+    stubServerGlobals({
+      session: { user: { id: "discord:super-self", isAdmin: true } },
+      body: { requestId: request.id, action: "approve" },
+    });
+    vi.stubEnv("SUPER_ADMIN_IDS", "discord:super-self");
+
+    vi.doMock("../../../../../server/utils/admin", async (importOriginal) => {
+      const actual =
+        await importOriginal<
+          typeof import("../../../../../server/utils/admin")
+        >();
+      return {
+        ...actual,
+        requireAdmin: vi.fn().mockResolvedValue({
+          user: { id: "discord:super-self", isAdmin: true },
+        }),
+      };
+    });
+
+    const deleteWhereSpy = vi.fn().mockResolvedValue(undefined);
+    vi.doMock("../../../../../server/utils/db", () => ({
+      useDB: vi.fn(() => ({
+        select: vi.fn().mockReturnThis(),
+        from: vi.fn().mockReturnThis(),
+        where: vi
+          .fn()
+          .mockResolvedValueOnce([request])
+          .mockResolvedValueOnce([{ id: "discord:super-self", isAdmin: true }])
+          .mockResolvedValueOnce(undefined),
+        update: vi.fn().mockReturnThis(),
+        set: vi.fn().mockReturnThis(),
+        delete: vi.fn(() => ({ where: deleteWhereSpy })),
+      })),
+    }));
+
+    const { default: handler } =
+      await import("../../../../../server/api/admin/deletion-requests/action.post");
+
+    const result = await handler({});
+
+    expect(result).toEqual({ success: true, message: "Account deleted" });
+    expect(deleteWhereSpy).toHaveBeenCalled();
   });
 });
