@@ -174,6 +174,29 @@ async function loginForCookie(target: string): Promise<LoginResult> {
   };
 }
 
+// The CI job redeploys the target Worker up to 3x in quick succession
+// (app deploy, then two `wrangler secret put` calls) immediately before
+// this test runs, and Cloudflare's edge can take a few seconds to fully
+// propagate the freshly-rotated NUXT_E2E_LOGIN_TOKEN secret to the PoP
+// serving a given request. Since e2e-login.post.ts fails closed to a 404
+// on any token mismatch (indistinguishable from "not yet propagated"),
+// retry non-403 failures a few times before treating them as fatal.
+const LOGIN_RETRY_DELAYS_MS = [1000, 2000, 4000];
+
+async function loginForCookieWithRetry(target: string): Promise<LoginResult> {
+  let result = await loginForCookie(target);
+
+  for (const delay of LOGIN_RETRY_DELAYS_MS) {
+    if (result.ok || result.status === 403) {
+      return result;
+    }
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    result = await loginForCookie(target);
+  }
+
+  return result;
+}
+
 async function waitForGuideById(id: string): Promise<PersistedGuide> {
   const query = "*[_id == $id][0]{_id, content[]{children[]{text}}}";
 
@@ -238,7 +261,7 @@ describe.skipIf(!hasQueueE2eEnv)(
         for (const target of submitTargets) {
           submitTarget = target;
 
-          const loginResult = await loginForCookie(target);
+          const loginResult = await loginForCookieWithRetry(target);
           if (!loginResult.ok) {
             if (loginResult.status === 403) {
               lastLoginChallengeTarget = target;
