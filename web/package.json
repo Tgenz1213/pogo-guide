@@ -60,7 +60,7 @@
     "@portabletext/types": "^4.0.2",
     "@sanity/cli": "^7.7.1",
     "@sanity/client": "^7.22.0",
-    "@types/node": "^25.9.1",
+    "@types/node": "^26.1.1",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/ui": "^4.1.7",
     "@vue/test-utils": "^2.4.11",
