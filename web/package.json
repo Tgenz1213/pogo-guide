@@ -38,8 +38,8 @@
     "@pogo/shared-utils": "workspace:*",
     "@portabletext/vue": "^1.0.14",
     "@sentry/nuxt": "^10.66.0",
-    "@tiptap/starter-kit": "^3.27.4",
-    "@tiptap/vue-3": "^3.26.1",
+    "@tiptap/starter-kit": "^3.28.0",
+    "@tiptap/vue-3": "^3.28.0",
     "drizzle-orm": "^0.45.2",
     "nuxt": "^4.4.8",
     "nuxt-auth-utils": "^0.5.29",
@@ -69,6 +69,6 @@
     "nitro-cloudflare-dev": "^0.2.2",
     "tailwindcss": "4.3.1",
     "vitest": "^4.1.10",
-    "wrangler": "^4.94.0"
+    "wrangler": "^4.112.0"
   }
 }
