@@ -7,12 +7,12 @@
     <div class="max-w-4xl mx-auto space-y-4">
       <p>
         pogo.guide is an unofficial, community-driven fan resource. We are not
-        affiliated with, endorsed by, sponsored by, or associated with Niantic,
+        affiliated with, endorsed by, sponsored by, or associated with Scopely,
         Nintendo, or The Pokémon Company.
       </p>
       <p>
         Pokémon and Pokémon GO are registered trademarks of Nintendo, The
-        Pokémon Company, and Niantic. All related names, images, and content are
+        Pokémon Company, and Scopely. All related names, images, and content are
         the property of their respective owners.
       </p>
       <p>&copy; 2026 pogo.guide. All rights reserved.</p>
