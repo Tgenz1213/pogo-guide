@@ -27,6 +27,7 @@
     "test:ci": "pnpm run test:ui && pnpm run test:server:ci",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test tests/e2e/smoke.spec.ts",
+    "test:e2e:prod-smoke": "playwright test tests/e2e/smoke.spec.ts -c playwright.prod.config.ts",
     "deploy": "pnpm run build && wrangler deploy",
     "cf-typegen": "wrangler types"
   },

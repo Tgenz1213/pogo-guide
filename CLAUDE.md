@@ -100,6 +100,7 @@ Three distinct Vitest configs, kept deliberately separate — don't merge them:
 
 - `queue-consumer` integration/E2E jobs only run when the diff touches `packages/queue-consumer/`, `packages/shared-utils/`, `web/server/api/submit-guide.post.ts`, or the wrangler configs (path-filtered via a `git diff` check in the `queue-e2e-changes` job) — don't expect them to run on unrelated changes.
 - Deploy (to production) only runs on push to `main` and requires every other job to have succeeded — D1 migrations are applied to production before the app is deployed.
+- After `deploy`, a `prod-smoke` job re-runs the same homepage smoke assertions against the real `https://pogo.guide` (via `web/playwright.prod.config.ts`), retrying up to 3 times over ~20s. If it still fails, `prod-rollback` automatically reverts the Worker to the version that was live immediately before the deploy via `wrangler rollback` — see `docs/adr/0013-prod-smoke-auto-rollback.md`. This is code-only: it assumes D1 migrations stay backward-compatible with the previous Worker version and never rolls back the database.
 
 ## Iron Rules (from project AI guidelines)
 
