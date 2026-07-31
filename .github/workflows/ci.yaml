@@ -287,6 +287,7 @@ jobs:
   prod-smoke:
     runs-on: ubuntu-latest
     needs: [deploy]
+    if: always() && needs.deploy.result == 'success'
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231 # v6.0.2
