@@ -260,7 +260,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          PREVIOUS_VERSION_ID=$(pnpm --filter web exec wrangler deployments list --env production --json | jq -r '.[-1].versions[-1].version_id // empty')
+          PREVIOUS_VERSION_ID=$(pnpm --filter web exec wrangler deployments list --name pogo-guide --json | jq -r '.[-1].versions[-1].version_id // empty')
           if [ -z "$PREVIOUS_VERSION_ID" ]; then
             echo "::warning::No previous Worker version captured — automatic rollback will be unavailable for this deploy."
           fi
@@ -342,4 +342,4 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           PREVIOUS_VERSION_ID: ${{ needs.deploy.outputs.previous_version_id }}
           ROLLBACK_MESSAGE: "auto-rollback: prod smoke failed for ${{ github.sha }}"
-        run: pnpm --filter web exec wrangler rollback "$PREVIOUS_VERSION_ID" --env production -y -m "$ROLLBACK_MESSAGE"
+        run: pnpm --filter web exec wrangler rollback "$PREVIOUS_VERSION_ID" --name pogo-guide -y -m "$ROLLBACK_MESSAGE"
