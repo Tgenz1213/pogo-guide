@@ -10,7 +10,7 @@
     }
   },
   "dependencies": {
-    "sanitize-html": "^2.17.4",
+    "sanitize-html": "^2.17.6",
     "zod": "^4.4.3"
   },
   "devDependencies": {
