@@ -157,8 +157,8 @@ const submitForm = async () => {
 
   const suggestedTags = suggestedTagsInput.value
     .split(",")
-    .map((t) => t.trim())
-    .filter((t) => t.length > 0);
+    .map((t: string) => t.trim())
+    .filter((t: string) => t.length > 0);
 
   const formData = {
     title: title.value,

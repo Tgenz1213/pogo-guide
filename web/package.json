@@ -39,8 +39,8 @@
     "@pogo/shared-utils": "workspace:*",
     "@portabletext/vue": "^1.0.14",
     "@sentry/nuxt": "^10.66.0",
-    "@tiptap/starter-kit": "^3.28.0",
-    "@tiptap/vue-3": "^3.28.0",
+    "@tiptap/starter-kit": "^3.31.3",
+    "@tiptap/vue-3": "^3.31.3",
     "drizzle-orm": "^0.45.2",
     "nuxt": "^4.5.2",
     "nuxt-auth-utils": "^0.5.30",
@@ -51,7 +51,6 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.3.2",
     "@cloudflare/vitest-pool-workers": "^0.20.1",
     "@cloudflare/workers-types": "^5.20260713.1",
     "@nuxt/a11y": "1.0.0-alpha.1",
@@ -61,6 +60,7 @@
     "@portabletext/types": "^4.0.2",
     "@sanity/cli": "^8.2.1",
     "@sanity/client": "^7.22.0",
+    "@tailwindcss/vite": "^4.3.2",
     "@types/node": "^26.5.1",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vitest/ui": "^4.1.7",

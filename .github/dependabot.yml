@@ -23,3 +23,6 @@ updates:
           - "knip*"
           - "husky"
           - "lint-staged"
+      tiptap-dependencies:
+        patterns:
+          - "@tiptap*"
