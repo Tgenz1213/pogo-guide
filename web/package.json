@@ -61,7 +61,7 @@
     "@sanity/cli": "^8.2.1",
     "@sanity/client": "^7.22.0",
     "@tailwindcss/vite": "^4.3.2",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.5.1",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vitest/ui": "^4.1.7",
     "@vue/test-utils": "^2.4.11",
