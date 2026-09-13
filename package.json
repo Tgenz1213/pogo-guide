@@ -7,12 +7,12 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.17.0",
-    "eslint": "^10.9.1",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "husky": "^9.1.7",
-    "knip": "^6.33.0",
-    "lint-staged": "^17.4.1",
+    "knip": "^6.35.1",
+    "lint-staged": "^17.5.1",
     "prettier": "^3.9.6",
     "typescript": "^6.0.3",
     "vue-tsc": "^3.3.11"
