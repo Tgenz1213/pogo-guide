@@ -84,7 +84,7 @@ importers:
     dependencies:
       '@sanity/vision':
         specifier: ^6.6.0
-        version: 6.6.0(@babel/runtime@7.29.7)(@codemirror/lint@6.9.7)(@codemirror/theme-one-dark@6.1.3)(@emotion/is-prop-valid@1.4.0)(codemirror@6.0.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sanity@6.13.2(750d68c049a726fa95c7f88f8515e809))(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))
+        version: 6.6.0(5df879ded59711589579dce01d130b94)
       react:
         specifier: ^19.2.8
         version: 19.2.8
@@ -93,7 +93,7 @@ importers:
         version: 19.2.8(react@19.2.8)
       sanity:
         specifier: ^6.13.2
-        version: 6.13.2(750d68c049a726fa95c7f88f8515e809)
+        version: 6.13.2(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rolldown@1.2.5)(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))
       styled-components:
         specifier: ^6.1.18
         version: 6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -191,7 +191,7 @@ importers:
         version: 4.0.2
       '@sanity/cli':
         specifier: ^8.2.1
-        version: 8.2.1(@babel/core@7.29.7(supports-color@8.1.1))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@8.1.1))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.0)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(rolldown@1.2.5)(supports-color@8.1.1)(terser@5.50.0)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(xstate@5.33.0)
+        version: 8.2.1(@babel/core@7.29.7(supports-color@8.1.1))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@8.1.1))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.0)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(rolldown@1.2.5)(supports-color@8.1.1)(terser@5.50.0)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))
       '@sanity/client':
         specifier: ^8.9.0
         version: 8.9.0(vitest@4.1.11)
@@ -976,6 +976,7 @@ packages:
 
   '@cloudflare/vitest-pool-workers@0.20.1':
     resolution: {integrity: sha512-eN5jHaX78lY/btWlyWIiNtTIgmXnI0CvwC6CPukgRjHoXs66jqX0AEKUsUJOeybfXEmZUhhy5FP/Xx+6wNwI7A==}
+    deprecated: '@cloudflare/vitest-pool-workers has been renamed to @cloudflare/vitest-plugin. This package will not receive future updates.'
     peerDependencies:
       '@vitest/runner': ^4.1.0
       '@vitest/snapshot': ^4.1.0
@@ -3310,6 +3311,7 @@ packages:
   '@opentelemetry/sdk-trace-base@2.9.0':
     resolution: {integrity: sha512-cp9zmTl62R8PJrpvFcmc8N2JQU/xfa0S+61q511Nji+QxCfZ8Ifvg7H27G8cANe4crg4RTrWsVvanHiXjSp6ag==}
     engines: {node: ^18.19.0 || >=20.6.0}
+    deprecated: Use @opentelemetry/sdk-trace package
     peerDependencies:
       '@opentelemetry/api': '>=1.3.0 <1.10.0'
 
@@ -4611,6 +4613,7 @@ packages:
   '@sanity/ui@4.2.1':
     resolution: {integrity: sha512-pBuSBo3k6ZSoVjmd8j5qs0bNC/K0LRQk8P5LfV1+EQHVcw3gCZjCXEBiVwqNdrRh2CP3AxWMUyDv16HcuunWyw==}
     engines: {node: '>=22.12'}
+    deprecated: Class names collide with @sanity/ui 4.4.4 (shipped in sanity@6.19.0) when both load on one page, breaking styles. Upgrade to @sanity/ui@^4.4.4.
     peerDependencies:
       react: ^19.2
       react-dom: ^19.2
@@ -6198,6 +6201,9 @@ packages:
     resolution: {integrity: sha512-8WB3Jcas3swSvjIeA2yvCJ+Miyz5l1ZmB6HFb9R1317dt9LCQoswg/BGrmAmkWVEszSrrg4RwmO46qIm2OEnSA==}
     engines: {node: '>=16'}
 
+  camelize@1.0.1:
+    resolution: {integrity: sha512-dU+Tx2fsypxTgtLoE36npi3UqcjSSMNYfkqgmoEhtZrraP5VWq0K7FkWVTYa8eMPtnU/G2txVsfdCJTn9uzpuQ==}
+
   caniuse-api@4.0.0:
     resolution: {integrity: sha512-B0hQ1OLyJuHTQSOWXvwibWqM6DCoqJdvBA6X1S/53bd4XU7LJ1yurIPlrsouol3mw1jh9pGI4ivubSpmJeIqCA==}
 
@@ -6454,11 +6460,18 @@ packages:
       srvx:
         optional: true
 
+  css-color-keywords@1.0.0:
+    resolution: {integrity: sha512-FyyrDHZKEjXDpNJYvVsV960FiqQyXc/LlYmsxl2BcdMb2WPx0OGRVgTg55rPSyLSNMqP52R9r8geSp7apN3Ofg==}
+    engines: {node: '>=4'}
+
   css-select@5.2.2:
     resolution: {integrity: sha512-TizTzUddG/xYLA3NXodFM0fSbNizXjOKhqiQQwvhlspadZokn1KDy0NZFS0wuEubIYAV5/c1/lAr0TaaFXEXzw==}
 
   css-select@6.0.0:
     resolution: {integrity: sha512-rZZVSLle8v0+EY8QAkDWrKhpgt6SA5OtHsgBnsj6ZaLb5dmDVOWUDtQitd9ydxxvEjhewNudS6eTVU7uOyzvXw==}
+
+  css-to-react-native@3.2.0:
+    resolution: {integrity: sha512-e8RKaLXMOFii+02mOlqwjbD00KSEKqblnpO9e++1aXS1fPQOpS1YoqdVHBqPjHNoxeF2mimzVqawm2KCbEdtHQ==}
 
   css-tree@2.2.1:
     resolution: {integrity: sha512-OA0mILzGc1kCOCSJerOeqDxDQ4HOh+G8NbOJFOTgOCzpw7fCBubk0fEyxp8AgOL/jvLgYA/uV0cMbe43ElF1JA==}
@@ -6713,8 +6726,8 @@ packages:
     resolution: {integrity: sha512-gYzvtM72ZtxQO0T048kd6HWSbbGCNOUwcnfQ01cqIJ4X2IYKFFHZ5mKvrQETcFXxsRObZulDaKmy//R7TPtsBg==}
     engines: {node: '>=20.19.0'}
 
-  dompurify@3.4.16:
-    resolution: {integrity: sha512-sqo+pNp3qRhCIpbgRi1y8Tgk27Bo2Ry7w0dC1NBeNTdZChWjz9Xb/KOoZbRP/R6pQZ80Qw8YhXw13hWWBbMRnQ==}
+  dompurify@3.4.17:
+    resolution: {integrity: sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==}
 
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
@@ -14746,16 +14759,16 @@ snapshots:
       eslint-flat-config-utils: 3.2.0
       eslint-merge-processors: 2.0.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))
       eslint-plugin-import-lite: 0.6.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))
-      eslint-plugin-import-x: 4.17.1(@typescript-eslint/utils@8.67.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@8.1.1)
-      eslint-plugin-jsdoc: 63.3.3(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@8.1.1)
+      eslint-plugin-import-x: 4.17.1(@typescript-eslint/utils@8.67.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
+      eslint-plugin-jsdoc: 63.3.3(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
       eslint-plugin-regexp: 3.2.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))
       eslint-plugin-unicorn: 73.0.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))
-      eslint-plugin-vue: 10.10.0(@stylistic/eslint-plugin@5.10.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2)))(@typescript-eslint/parser@8.67.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(vue-eslint-parser@10.4.1(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@8.1.1))
+      eslint-plugin-vue: 10.10.0(@stylistic/eslint-plugin@5.10.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2)))(@typescript-eslint/parser@8.67.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(vue-eslint-parser@10.4.1(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))
       eslint-processor-vue-blocks: 2.0.0(@vue/compiler-sfc@3.5.43)(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))
       globals: 17.11.0
       local-pkg: 1.2.1
       pathe: 2.0.3
-      vue-eslint-parser: 10.4.1(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@8.1.1)
+      vue-eslint-parser: 10.4.1(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
     transitivePeerDependencies:
       - '@typescript-eslint/utils'
       - '@vue/compiler-sfc'
@@ -15873,11 +15886,11 @@ snapshots:
       '@portabletext/types': 4.0.2
       react: 19.2.8
 
-  '@portabletext/sanity-bridge@4.0.0(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))':
+  '@portabletext/sanity-bridge@4.0.0(@types/react@19.2.17)(vitest@4.1.11)':
     dependencies:
       '@portabletext/schema': 3.0.0
-      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
+      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
     transitivePeerDependencies:
       - '@types/react'
       - vitest
@@ -16127,9 +16140,9 @@ snapshots:
     dependencies:
       '@oclif/core': 4.14.0
 
-  '@sanity/access-ui@6.13.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))':
+  '@sanity/access-ui@6.13.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(vitest@4.1.11)':
     dependencies:
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       '@sanity/icons': 5.2.2(react@19.2.8)
       '@sanity/ui': 4.2.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))
       react: 19.2.8
@@ -16161,16 +16174,16 @@ snapshots:
     optionalDependencies:
       vite: 8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)
 
-  '@sanity/cli-build@5.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(rolldown@1.2.5)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)':
+  '@sanity/cli-build@5.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(rolldown@1.2.5)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)':
     dependencies:
       '@oclif/core': 4.14.0
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))
-      '@sanity/cli-core': 3.2.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(yaml@2.9.1)
+      '@sanity/cli-core': 3.2.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(vitest@4.1.11)(yaml@2.9.1)
       '@sanity/generate-help-url': 4.0.0
-      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/workbench-cli': 2.0.2(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
+      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
+      '@sanity/workbench-cli': 2.0.2(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
       '@vitejs/plugin-react': 6.1.0(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))
       chokidar: 5.0.0
       cjs-module-lexer: 2.2.1
@@ -16265,20 +16278,20 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/cli-build@6.3.1(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(rolldown@1.2.5)(sanity@6.13.2(750d68c049a726fa95c7f88f8515e809))(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)':
+  '@sanity/cli-build@6.3.1(7e3c5bd095be363740130e736e486605)':
     dependencies:
       '@oclif/core': 4.14.0
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))
-      '@sanity/cli-core': 3.7.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(tsx@4.23.12)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(yaml@2.9.1)
+      '@sanity/cli-core': 3.7.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(tsx@4.23.12)(vitest@4.1.11)(yaml@2.9.1)
       '@sanity/generate-help-url': 4.0.0
-      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/workbench-cli': 2.5.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
+      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
+      '@sanity/workbench-cli': 2.5.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
       '@vitejs/plugin-react': 6.1.1(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))
       chokidar: 5.0.0
       cjs-module-lexer: 2.2.1
-      dompurify: 3.4.16
+      dompurify: 3.4.17
       empathic: 2.0.1
       jsdom: 29.1.1(@noble/hashes@2.2.0)
       lightningcss: 1.33.0
@@ -16292,7 +16305,7 @@ snapshots:
       vite: 8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)
       zod: 4.6.2
     optionalDependencies:
-      sanity: 6.13.2(750d68c049a726fa95c7f88f8515e809)
+      sanity: 6.13.2(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rolldown@1.2.5)(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))
     transitivePeerDependencies:
       - '@babel/core'
       - '@babel/plugin-transform-runtime'
@@ -16391,43 +16404,6 @@ snapshots:
       - terser
       - yaml
 
-  '@sanity/cli-core@3.2.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(yaml@2.9.1)':
-    dependencies:
-      '@inquirer/prompts': 8.6.0(@types/node@26.5.1)
-      '@oclif/core': 4.14.0
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      boxen: 8.0.1
-      empathic: 2.0.1
-      get-it: 9.6.1(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      get-tsconfig: 4.14.3
-      import-meta-resolve: 4.2.0
-      jiti: 2.7.0
-      jsdom: 29.1.1(@noble/hashes@2.2.0)
-      json-lexer: 1.2.0
-      log-symbols: 7.0.1
-      obug: 2.1.4
-      ora: 9.4.1
-      rxjs: 7.8.2
-      tsx: 4.23.12
-      vite: 8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)
-      vite-node: 6.0.0(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)
-      wrap-ansi: 9.0.2
-      zod: 4.6.2
-    transitivePeerDependencies:
-      - '@noble/hashes'
-      - '@types/node'
-      - '@vitejs/devtools'
-      - canvas
-      - esbuild
-      - less
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - terser
-      - vitest
-      - yaml
-
   '@sanity/cli-core@3.2.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(vitest@4.1.11)(yaml@2.9.0)':
     dependencies:
       '@inquirer/prompts': 8.6.0(@types/node@26.5.1)
@@ -16465,14 +16441,51 @@ snapshots:
       - vitest
       - yaml
 
-  '@sanity/cli-core@3.7.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(tsx@4.23.12)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(yaml@2.9.1)':
+  '@sanity/cli-core@3.2.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(vitest@4.1.11)(yaml@2.9.1)':
+    dependencies:
+      '@inquirer/prompts': 8.6.0(@types/node@26.5.1)
+      '@oclif/core': 4.14.0
+      '@sanity/client': 8.9.0(vitest@4.1.11)
+      boxen: 8.0.1
+      empathic: 2.0.1
+      get-it: 9.6.1(vitest@4.1.11)
+      get-tsconfig: 4.14.3
+      import-meta-resolve: 4.2.0
+      jiti: 2.7.0
+      jsdom: 29.1.1(@noble/hashes@2.2.0)
+      json-lexer: 1.2.0
+      log-symbols: 7.0.1
+      obug: 2.1.4
+      ora: 9.4.1
+      rxjs: 7.8.2
+      tsx: 4.23.12
+      vite: 8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)
+      vite-node: 6.0.0(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)
+      wrap-ansi: 9.0.2
+      zod: 4.6.2
+    transitivePeerDependencies:
+      - '@noble/hashes'
+      - '@types/node'
+      - '@vitejs/devtools'
+      - canvas
+      - esbuild
+      - less
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - terser
+      - vitest
+      - yaml
+
+  '@sanity/cli-core@3.7.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(tsx@4.23.12)(vitest@4.1.11)(yaml@2.9.1)':
     dependencies:
       '@inquirer/prompts': 8.7.2(@types/node@26.5.1)
       '@oclif/core': 4.14.0
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       boxen: 8.0.1
       empathic: 2.0.1
-      get-it: 9.6.1(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      get-it: 9.6.1(vitest@4.1.11)
       get-tsconfig: 4.14.3
       import-meta-resolve: 4.2.0
       jiti: 2.7.0
@@ -16501,27 +16514,27 @@ snapshots:
       - vitest
       - yaml
 
-  '@sanity/cli@8.11.0(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(react@19.2.8)(rolldown@1.2.5)(sanity@6.13.2(750d68c049a726fa95c7f88f8515e809))(supports-color@10.2.2)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(xstate@5.33.0)':
+  '@sanity/cli@8.11.0(dd4553c50a6909bc76f34dc96fd9fff2)':
     dependencies:
       '@oclif/core': 4.14.0
       '@oclif/plugin-help': 6.3.0
       '@oclif/plugin-not-found': 3.2.93(@types/node@26.5.1)
-      '@sanity/cli-build': 6.3.1(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(rolldown@1.2.5)(sanity@6.13.2(750d68c049a726fa95c7f88f8515e809))(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
-      '@sanity/cli-core': 3.7.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(tsx@4.23.12)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(yaml@2.9.1)
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/cli-build': 6.3.1(7e3c5bd095be363740130e736e486605)
+      '@sanity/cli-core': 3.7.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(tsx@4.23.12)(vitest@4.1.11)(yaml@2.9.1)
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       '@sanity/codegen': 8.1.0(react@19.2.8)(supports-color@10.2.2)(typescript@6.0.3)
       '@sanity/descriptors': 1.3.0
       '@sanity/export': 6.2.1(supports-color@10.2.2)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.1.0
-      '@sanity/import': 7.0.1(@sanity/client@8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))))(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/migrate': 8.0.2(@types/react@19.2.17)(supports-color@10.2.2)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)
-      '@sanity/runtime-cli': 17.12.1(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(rolldown@1.2.5)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
-      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/import': 7.0.1(@sanity/client@8.9.0(vitest@4.1.11))(@types/react@19.2.17)(vitest@4.1.11)
+      '@sanity/migrate': 8.0.2(@types/react@19.2.17)(supports-color@10.2.2)(vitest@4.1.11)(xstate@5.33.0)
+      '@sanity/runtime-cli': 17.12.1(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(rolldown@1.2.5)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
+      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/template-validator': 3.1.1
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/workbench-cli': 2.5.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
+      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
+      '@sanity/workbench-cli': 2.5.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
       '@sanity/worker-channels': 2.0.0
       '@sanity/workflow-cli': 0.31.0(@noble/hashes@2.2.0)(@sanity/workflow-engine@0.31.0(@types/react@19.2.17)(supports-color@10.2.2)(typescript@6.0.3))(@types/node@26.5.1)(esbuild@0.28.2)(react@19.2.8)(supports-color@10.2.2)(terser@5.50.0)(yaml@2.9.1)
       '@sanity/workflow-engine': 0.31.0(@types/react@19.2.17)(supports-color@10.2.2)(typescript@6.0.3)
@@ -16599,7 +16612,7 @@ snapshots:
       - vue-tsc
       - xstate
 
-  '@sanity/cli@8.2.1(@babel/core@7.29.7(supports-color@8.1.1))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@8.1.1))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.0)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(rolldown@1.2.5)(supports-color@8.1.1)(terser@5.50.0)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(xstate@5.33.0)':
+  '@sanity/cli@8.2.1(@babel/core@7.29.7(supports-color@8.1.1))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@8.1.1))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.0)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(rolldown@1.2.5)(supports-color@8.1.1)(terser@5.50.0)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))':
     dependencies:
       '@oclif/core': 4.14.0
       '@oclif/plugin-help': 6.2.58
@@ -16613,7 +16626,7 @@ snapshots:
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
       '@sanity/import': 6.0.4(@sanity/client@8.9.0(vitest@4.1.11))(@types/react@19.2.17)(supports-color@8.1.1)(vitest@4.1.11)
-      '@sanity/migrate': 8.0.2(@types/react@19.2.17)(supports-color@8.1.1)(vitest@4.1.11)(xstate@5.33.0)
+      '@sanity/migrate': 8.0.2(@types/react@19.2.17)(supports-color@8.1.1)(vitest@4.1.11)
       '@sanity/runtime-cli': 17.8.0(@babel/core@7.29.7(supports-color@8.1.1))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(rolldown@1.2.5)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.0)
       '@sanity/schema': 6.10.1(@types/react@19.2.17)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
@@ -16704,15 +16717,6 @@ snapshots:
       get-it: 8.8.3
       nanoid: 3.3.18
       rxjs: 7.8.2
-
-  '@sanity/client@8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))':
-    dependencies:
-      eventsource: 5.1.2
-      get-it: 9.6.1(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      obug: 3.0.0
-      rxjs: 7.8.2
-    transitivePeerDependencies:
-      - vitest
 
   '@sanity/client@8.9.0(vitest@4.1.11)':
     dependencies:
@@ -16946,13 +16950,13 @@ snapshots:
       - supports-color
       - vitest
 
-  '@sanity/import@7.0.1(@sanity/client@8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))))(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))':
+  '@sanity/import@7.0.1(@sanity/client@8.9.0(vitest@4.1.11))(@types/react@19.2.17)(vitest@4.1.11)':
     dependencies:
       '@sanity/asset-utils': 2.3.0
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       '@sanity/generate-help-url': 4.0.0
-      '@sanity/mutator': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      get-it: 9.6.1(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/mutator': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
+      get-it: 9.6.1(vitest@4.1.11)
       obug: 2.1.4
       p-map: 7.0.6
       tar: 7.5.22
@@ -16980,12 +16984,12 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.3
 
-  '@sanity/migrate@8.0.2(@types/react@19.2.17)(supports-color@10.2.2)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)':
+  '@sanity/migrate@8.0.2(@types/react@19.2.17)(supports-color@10.2.2)(vitest@4.1.11)(xstate@5.33.0)':
     dependencies:
       '@sanity/client': 7.26.2
-      '@sanity/mutate': 0.18.2(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/util': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/mutate': 0.18.2(vitest@4.1.11)(xstate@5.33.0)
+      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
+      '@sanity/util': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
       arrify: 3.0.0
       debug: 4.4.3(supports-color@10.2.2)
       fast-fifo: 1.3.2
@@ -16997,7 +17001,7 @@ snapshots:
       - vitest
       - xstate
 
-  '@sanity/migrate@8.0.2(@types/react@19.2.17)(supports-color@8.1.1)(vitest@4.1.11)(xstate@5.33.0)':
+  '@sanity/migrate@8.0.2(@types/react@19.2.17)(supports-color@8.1.1)(vitest@4.1.11)':
     dependencies:
       '@sanity/client': 7.26.2
       '@sanity/mutate': 0.18.2(vitest@4.1.11)(xstate@5.33.0)
@@ -17014,22 +17018,6 @@ snapshots:
       - vitest
       - xstate
 
-  '@sanity/mutate@0.18.2(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)':
-    dependencies:
-      '@isaacs/ttlcache': 2.1.5
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/diff-match-patch': 3.2.0
-      '@sanity/uuid': 3.0.3
-      hotscript: 1.0.13
-      lodash: 4.18.1
-      mendoza: 3.0.8
-      nanoid: 5.1.16
-      rxjs: 7.8.2
-    optionalDependencies:
-      xstate: 5.33.0
-    transitivePeerDependencies:
-      - vitest
-
   '@sanity/mutate@0.18.2(vitest@4.1.11)(xstate@5.33.0)':
     dependencies:
       '@isaacs/ttlcache': 2.1.5
@@ -17044,18 +17032,6 @@ snapshots:
     optionalDependencies:
       xstate: 5.33.0
     transitivePeerDependencies:
-      - vitest
-
-  '@sanity/mutator@6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))':
-    dependencies:
-      '@sanity/diff-match-patch': 3.2.0
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/uuid': 3.0.3
-      dequal: 2.0.3
-      lodash-es: 4.18.1
-      obug: 2.1.4
-    transitivePeerDependencies:
-      - '@types/react'
       - vitest
 
   '@sanity/mutator@6.13.2(@types/react@19.2.17)(vitest@4.1.11)':
@@ -17078,15 +17054,6 @@ snapshots:
       - '@sanity/client'
       - '@sanity/types'
 
-  '@sanity/presentation-comlink@2.2.3(@sanity/types@6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))))':
-    dependencies:
-      '@sanity/client': 7.26.2
-      '@sanity/comlink': 4.0.3
-      '@sanity/visual-editing-types': 2.1.1(@sanity/client@7.26.2)(@sanity/types@6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))))
-      xstate: 5.33.0
-    transitivePeerDependencies:
-      - '@sanity/types'
-
   '@sanity/presentation-comlink@2.2.3(@sanity/types@6.13.2(@types/react@19.2.17)(vitest@4.1.11))':
     dependencies:
       '@sanity/client': 7.26.2
@@ -17101,14 +17068,14 @@ snapshots:
       '@sanity/client': 7.26.2
       '@sanity/uuid': 3.0.3
 
-  '@sanity/preview-url-secret@4.1.5(@sanity/client@8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))))':
+  '@sanity/preview-url-secret@4.1.5(@sanity/client@8.9.0(vitest@4.1.11))':
     dependencies:
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       '@sanity/uuid': 3.0.3
 
   '@sanity/prism-groq@1.1.2': {}
 
-  '@sanity/runtime-cli@17.12.1(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(rolldown@1.2.5)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)':
+  '@sanity/runtime-cli@17.12.1(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(rolldown@1.2.5)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)':
     dependencies:
       '@architect/hydrate': 6.0.2
       '@architect/inventory': 6.1.0
@@ -17118,9 +17085,9 @@ snapshots:
       '@sanity-labs/oclif-plugin-skills-flag': 0.2.1(@oclif/core@4.14.0)
       '@sanity/blueprints': 0.24.0(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))
       '@sanity/blueprints-parser': 0.5.0
-      '@sanity/cli-build': 5.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(rolldown@1.2.5)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
-      '@sanity/cli-core': 3.7.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(tsx@4.23.12)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(yaml@2.9.1)
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/cli-build': 5.3.0(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(rolldown@1.2.5)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)
+      '@sanity/cli-core': 3.7.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(tsx@4.23.12)(vitest@4.1.11)(yaml@2.9.1)
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       adm-zip: 0.6.0
       array-treeify: 0.2.0
       cardinal: 2.1.1
@@ -17257,23 +17224,6 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@sanity/schema@6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))':
-    dependencies:
-      '@sanity/descriptors': 1.3.0
-      '@sanity/generate-help-url': 4.0.0
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      arrify: 3.0.0
-      dequal: 2.0.3
-      get-it: 9.6.1(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      groq-js: 2.0.0
-      humanize-list: 1.0.1
-      leven: 4.1.0
-      lodash-es: 4.18.1
-      object-inspect: 1.13.4
-    transitivePeerDependencies:
-      - '@types/react'
-      - vitest
-
   '@sanity/schema@6.13.2(@types/react@19.2.17)(vitest@4.1.11)':
     dependencies:
       '@sanity/descriptors': 1.3.0
@@ -17291,13 +17241,13 @@ snapshots:
       - '@types/react'
       - vitest
 
-  '@sanity/sdk-react@3.1.0(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))':
+  '@sanity/sdk-react@3.1.0(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)':
     dependencies:
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       '@sanity/message-protocol': 0.24.0
-      '@sanity/sdk': 3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/workbench': 0.1.0-alpha.45(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0))(react@19.2.8)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)
+      '@sanity/sdk': 3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0)
+      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
+      '@sanity/workbench': 0.1.0-alpha.45(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0))(react@19.2.8)(vitest@4.1.11)(xstate@5.33.0)
       groq: 3.88.1-typegen-experimental.0
       react: 19.2.8
       react-compiler-runtime: 1.0.0(react@19.2.8)
@@ -17311,10 +17261,10 @@ snapshots:
       - use-sync-external-store
       - vitest
 
-  '@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)':
+  '@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0)':
     dependencies:
       '@sanity/bifur-client': 1.0.0
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       '@sanity/comlink': 4.0.3
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/diff-patch': 6.0.0
@@ -17322,9 +17272,9 @@ snapshots:
       '@sanity/image-url': 2.1.1
       '@sanity/json-match': 1.0.5
       '@sanity/message-protocol': 0.24.0
-      '@sanity/mutate': 0.18.2(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)
+      '@sanity/mutate': 0.18.2(vitest@4.1.11)(xstate@5.33.0)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
       groq: 3.88.1-typegen-experimental.0
       groq-js: 2.0.0
       reselect: 5.2.0
@@ -17371,14 +17321,6 @@ snapshots:
       '@sanity/client': 7.26.2
       '@sanity/media-library-types': 1.6.0
       '@types/react': 19.2.17
-
-  '@sanity/types@6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))':
-    dependencies:
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/media-library-types': 1.6.0
-      '@types/react': 19.2.17
-    transitivePeerDependencies:
-      - vitest
 
   '@sanity/types@6.13.2(@types/react@19.2.17)(vitest@4.1.11)':
     dependencies:
@@ -17434,19 +17376,6 @@ snapshots:
       react-dom: 19.2.8(react@19.2.8)
       react-refractor: 4.0.0(react@19.2.8)
 
-  '@sanity/util@6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))':
-    dependencies:
-      '@date-fns/tz': 1.5.0
-      '@date-fns/utc': 2.1.1
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      date-fns: 4.4.0
-      get-it: 9.6.1(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      rxjs: 7.8.2
-    transitivePeerDependencies:
-      - '@types/react'
-      - vitest
-
   '@sanity/util@6.13.2(@types/react@19.2.17)(vitest@4.1.11)':
     dependencies:
       '@date-fns/tz': 1.5.0
@@ -17464,13 +17393,13 @@ snapshots:
     dependencies:
       uuid: 11.1.1
 
-  '@sanity/validation@6.13.2(@types/react@19.2.17)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))':
+  '@sanity/validation@6.13.2(@types/react@19.2.17)(typescript@6.0.3)(vitest@4.1.11)':
     dependencies:
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       '@sanity/id-utils': 1.1.0
-      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/util': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
+      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
+      '@sanity/util': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
       dequal: 2.0.3
       i18next: 26.4.2(typescript@6.0.3)
       lodash-es: 4.18.1
@@ -17480,7 +17409,7 @@ snapshots:
       - typescript
       - vitest
 
-  '@sanity/vision@6.6.0(@babel/runtime@7.29.7)(@codemirror/lint@6.9.7)(@codemirror/theme-one-dark@6.1.3)(@emotion/is-prop-valid@1.4.0)(codemirror@6.0.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(sanity@6.13.2(750d68c049a726fa95c7f88f8515e809))(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))':
+  '@sanity/vision@6.6.0(5df879ded59711589579dce01d130b94)':
     dependencies:
       '@codemirror/autocomplete': 6.20.3
       '@codemirror/commands': 6.10.4
@@ -17507,7 +17436,7 @@ snapshots:
       react: 19.2.8
       react-rx: 4.2.3(react@19.2.8)(rxjs@7.8.2)
       rxjs: 7.8.2
-      sanity: 6.13.2(750d68c049a726fa95c7f88f8515e809)
+      sanity: 6.13.2(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rolldown@1.2.5)(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))
     transitivePeerDependencies:
       - '@babel/runtime'
       - '@codemirror/lint'
@@ -17540,23 +17469,17 @@ snapshots:
     optionalDependencies:
       '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
 
-  '@sanity/visual-editing-types@2.1.1(@sanity/client@7.26.2)(@sanity/types@6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))))':
-    dependencies:
-      '@sanity/client': 7.26.2
-    optionalDependencies:
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-
   '@sanity/visual-editing-types@2.1.1(@sanity/client@7.26.2)(@sanity/types@6.13.2(@types/react@19.2.17)(vitest@4.1.11))':
     dependencies:
       '@sanity/client': 7.26.2
     optionalDependencies:
       '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
 
-  '@sanity/workbench-cli@2.0.2(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)':
+  '@sanity/workbench-cli@2.0.2(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)':
     dependencies:
       '@module-federation/vite': 1.20.7(typescript@6.0.3)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))(vue-tsc@3.3.11(typescript@6.0.3))
-      '@sanity/cli-core': 3.2.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(yaml@2.9.1)
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/cli-core': 3.2.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(vitest@4.1.11)(yaml@2.9.1)
+      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
       '@vitejs/plugin-react': 6.1.0(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))
       form-data: 4.0.6
       tar-fs: 3.1.3
@@ -17628,12 +17551,12 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/workbench-cli@2.5.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)':
+  '@sanity/workbench-cli@2.5.0(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3))(yaml@2.9.1)':
     dependencies:
       '@module-federation/runtime': 2.9.0
       '@module-federation/vite': 1.21.0(typescript@6.0.3)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))(vue-tsc@3.3.11(typescript@6.0.3))
-      '@sanity/cli-core': 3.7.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(tsx@4.23.12)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(yaml@2.9.1)
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/cli-core': 3.7.0(@noble/hashes@2.2.0)(@types/node@26.5.1)(esbuild@0.28.2)(terser@5.50.0)(tsx@4.23.12)(vitest@4.1.11)(yaml@2.9.1)
+      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
       '@vitejs/plugin-react': 6.1.1(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))
       form-data: 4.0.6
       rxjs: 7.8.2
@@ -17665,12 +17588,12 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/workbench@0.1.0-alpha.45(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0))(react@19.2.8)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)':
+  '@sanity/workbench@0.1.0-alpha.45(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0))(react@19.2.8)(vitest@4.1.11)(xstate@5.33.0)':
     dependencies:
       '@module-federation/runtime': 2.9.0
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       '@sanity/color': 3.0.8
-      '@sanity/sdk': 3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)
+      '@sanity/sdk': 3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       es-toolkit: 1.52.0
       rxjs: 7.8.2
@@ -17681,12 +17604,12 @@ snapshots:
       - react
       - vitest
 
-  '@sanity/workbench@0.1.0-alpha.48(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0))(react@19.2.8)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)':
+  '@sanity/workbench@0.1.0-alpha.48(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0))(react@19.2.8)(vitest@4.1.11)(xstate@5.33.0)':
     dependencies:
       '@module-federation/runtime': 2.9.0
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       '@sanity/color': 3.0.8
-      '@sanity/sdk': 3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)
+      '@sanity/sdk': 3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       es-toolkit: 1.52.0
       rxjs: 7.8.2
@@ -18353,7 +18276,7 @@ snapshots:
       '@typescript-eslint/types': 8.61.0
       '@typescript-eslint/typescript-estree': 8.61.0(supports-color@10.2.2)(typescript@6.0.3)
       '@typescript-eslint/visitor-keys': 8.61.0
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3(supports-color@10.2.2)
       eslint: 10.12.0(jiti@2.7.0)(supports-color@10.2.2)
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -18365,7 +18288,7 @@ snapshots:
       '@typescript-eslint/types': 8.67.0
       '@typescript-eslint/typescript-estree': 8.67.0(supports-color@10.2.2)(typescript@6.0.3)
       '@typescript-eslint/visitor-keys': 8.67.0
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3(supports-color@10.2.2)
       eslint: 10.12.0(jiti@2.7.0)(supports-color@10.2.2)
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -18412,7 +18335,7 @@ snapshots:
       '@typescript-eslint/types': 8.61.0
       '@typescript-eslint/typescript-estree': 8.61.0(supports-color@10.2.2)(typescript@6.0.3)
       '@typescript-eslint/utils': 8.61.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3(supports-color@10.2.2)
       eslint: 10.12.0(jiti@2.7.0)(supports-color@10.2.2)
       ts-api-utils: 2.5.0(typescript@6.0.3)
       typescript: 6.0.3
@@ -18424,7 +18347,7 @@ snapshots:
       '@typescript-eslint/types': 8.67.0
       '@typescript-eslint/typescript-estree': 8.67.0(supports-color@10.2.2)(typescript@6.0.3)
       '@typescript-eslint/utils': 8.67.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3(supports-color@10.2.2)
       eslint: 10.12.0(jiti@2.7.0)(supports-color@10.2.2)
       ts-api-utils: 2.5.0(typescript@6.0.3)
       typescript: 6.0.3
@@ -19403,6 +19326,8 @@ snapshots:
 
   camelcase@8.0.0: {}
 
+  camelize@1.0.1: {}
+
   caniuse-api@4.0.0:
     dependencies:
       browserslist: 4.28.8
@@ -19626,6 +19551,8 @@ snapshots:
     optionalDependencies:
       srvx: 0.12.7
 
+  css-color-keywords@1.0.0: {}
+
   css-select@5.2.2:
     dependencies:
       boolbase: 1.0.0
@@ -19641,6 +19568,12 @@ snapshots:
       domhandler: 5.0.3
       domutils: 3.2.2
       nth-check: 2.1.1
+
+  css-to-react-native@3.2.0:
+    dependencies:
+      camelize: 1.0.1
+      css-color-keywords: 1.0.0
+      postcss-value-parser: 4.2.0
 
   css-tree@2.2.1:
     dependencies:
@@ -19880,7 +19813,7 @@ snapshots:
     dependencies:
       domelementtype: 3.0.0
 
-  dompurify@3.4.16:
+  dompurify@3.4.17:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -20229,11 +20162,11 @@ snapshots:
     dependencies:
       eslint: 10.12.0(jiti@2.7.0)(supports-color@10.2.2)
 
-  eslint-plugin-import-x@4.17.1(@typescript-eslint/utils@8.67.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@8.1.1):
+  eslint-plugin-import-x@4.17.1(@typescript-eslint/utils@8.67.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2):
     dependencies:
       '@typescript-eslint/types': 8.67.0
       comment-parser: 1.4.8
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3(supports-color@10.2.2)
       eslint: 10.12.0(jiti@2.7.0)(supports-color@10.2.2)
       eslint-import-context: 0.1.9(unrs-resolver@1.12.2)
       is-glob: 4.0.3
@@ -20246,13 +20179,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-jsdoc@63.3.3(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@8.1.1):
+  eslint-plugin-jsdoc@63.3.3(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2):
     dependencies:
       '@es-joy/jsdoccomment': 0.91.0
       '@es-joy/resolve.exports': 1.2.0
       are-docs-informative: 0.0.2
       comment-parser: 1.4.7
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3(supports-color@10.2.2)
       escape-string-regexp: 4.0.0
       eslint: 10.12.0(jiti@2.7.0)(supports-color@10.2.2)
       espree: 11.2.0
@@ -20362,7 +20295,7 @@ snapshots:
       strip-indent: 4.1.1
       yaml: 2.9.1
 
-  eslint-plugin-vue@10.10.0(@stylistic/eslint-plugin@5.10.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2)))(@typescript-eslint/parser@8.67.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(vue-eslint-parser@10.4.1(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@8.1.1)):
+  eslint-plugin-vue@10.10.0(@stylistic/eslint-plugin@5.10.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2)))(@typescript-eslint/parser@8.67.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(vue-eslint-parser@10.4.1(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)):
     dependencies:
       '@eslint-community/eslint-utils': 4.10.1(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))
       eslint: 10.12.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -20370,7 +20303,7 @@ snapshots:
       nth-check: 2.1.1
       postcss-selector-parser: 7.1.5
       semver: 7.8.5
-      vue-eslint-parser: 10.4.1(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@8.1.1)
+      vue-eslint-parser: 10.4.1(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
       xml-name-validator: 5.0.0
     optionalDependencies:
       '@stylistic/eslint-plugin': 5.10.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))
@@ -20811,17 +20744,11 @@ snapshots:
       through2: 4.0.2
       tunnel-agent: 0.6.0
 
-  get-it@9.6.1(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))):
-    dependencies:
-      undici: 7.30.0
-    optionalDependencies:
-      vitest: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))
-
   get-it@9.6.1(vitest@4.1.11):
     dependencies:
       undici: 7.30.0
     optionalDependencies:
-      vitest: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(@vitest/ui@5.0.3)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.0))
+      vitest: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))
 
   get-latest-version@6.0.1:
     dependencies:
@@ -21409,7 +21336,7 @@ snapshots:
 
   isomorphic-dompurify@2.36.0(@noble/hashes@2.2.0)(supports-color@10.2.2):
     dependencies:
-      dompurify: 3.4.16
+      dompurify: 3.4.17
       jsdom: 28.1.0(@noble/hashes@2.2.0)(supports-color@10.2.2)
     transitivePeerDependencies:
       - '@noble/hashes'
@@ -21418,7 +21345,7 @@ snapshots:
 
   isomorphic-dompurify@2.36.0(@noble/hashes@2.2.0)(supports-color@8.1.1):
     dependencies:
-      dompurify: 3.4.16
+      dompurify: 3.4.17
       jsdom: 28.1.0(@noble/hashes@2.2.0)(supports-color@8.1.1)
     transitivePeerDependencies:
       - '@noble/hashes'
@@ -23519,7 +23446,7 @@ snapshots:
       parse-srcset: 1.0.2
       postcss: 8.5.26
 
-  sanity@6.13.2(750d68c049a726fa95c7f88f8515e809):
+  sanity@6.13.2(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rolldown@1.2.5)(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11)(vue-tsc@3.3.11(typescript@6.0.3)):
     dependencies:
       '@algorithm.ts/lcs': 4.0.6
       '@date-fns/tz': 1.5.0
@@ -23540,15 +23467,15 @@ snapshots:
       '@portabletext/plugin-table': 2.0.7(@portabletext/editor@8.1.3(@types/react@19.2.17)(react@19.2.8)(supports-color@10.2.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@portabletext/plugin-typography': 9.0.8(@portabletext/editor@8.1.3(@types/react@19.2.17)(react@19.2.8)(supports-color@10.2.2))(@types/react@19.2.17)(react@19.2.8)
       '@portabletext/react': 8.0.1(react@19.2.8)
-      '@portabletext/sanity-bridge': 4.0.0(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@portabletext/sanity-bridge': 4.0.0(@types/react@19.2.17)(vitest@4.1.11)
       '@portabletext/to-html': 6.0.0
       '@portabletext/toolkit': 6.0.0
       '@rexxars/react-json-inspector': 9.0.1(react@19.2.8)
-      '@sanity/access-ui': 6.13.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/access-ui': 6.13.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(vitest@4.1.11)
       '@sanity/asset-utils': 2.3.0
       '@sanity/bifur-client': 2.0.2
-      '@sanity/cli': 8.11.0(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(@noble/hashes@2.2.0)(@rolldown/plugin-babel@0.2.3(@babel/core@7.29.7(supports-color@10.2.2))(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(@types/node@26.5.1)(@types/react@19.2.17)(esbuild@0.28.2)(jiti@2.7.0)(react@19.2.8)(rolldown@1.2.5)(sanity@6.13.2(750d68c049a726fa95c7f88f8515e809))(supports-color@10.2.2)(terser@5.50.0)(tsx@4.23.12)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(vue-tsc@3.3.11(typescript@6.0.3))(xstate@5.33.0)
-      '@sanity/client': 8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/cli': 8.11.0(dd4553c50a6909bc76f34dc96fd9fff2)
+      '@sanity/client': 8.9.0(vitest@4.1.11)
       '@sanity/color': 3.0.8
       '@sanity/comlink': 4.0.3
       '@sanity/diff': 6.13.2
@@ -23562,21 +23489,21 @@ snapshots:
       '@sanity/logos': 2.2.5(react@19.2.8)
       '@sanity/media-library-types': 1.6.0
       '@sanity/message-protocol': 0.24.0
-      '@sanity/migrate': 8.0.2(@types/react@19.2.17)(supports-color@10.2.2)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)
-      '@sanity/mutate': 0.18.2(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)
-      '@sanity/mutator': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/presentation-comlink': 2.2.3(@sanity/types@6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))))
-      '@sanity/preview-url-secret': 4.1.5(@sanity/client@8.9.0(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1))))
+      '@sanity/migrate': 8.0.2(@types/react@19.2.17)(supports-color@10.2.2)(vitest@4.1.11)(xstate@5.33.0)
+      '@sanity/mutate': 0.18.2(vitest@4.1.11)(xstate@5.33.0)
+      '@sanity/mutator': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
+      '@sanity/presentation-comlink': 2.2.3(@sanity/types@6.13.2(@types/react@19.2.17)(vitest@4.1.11))
+      '@sanity/preview-url-secret': 4.1.5(@sanity/client@8.9.0(vitest@4.1.11))
       '@sanity/prism-groq': 1.1.2
-      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/sdk-react': 3.1.0(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/schema': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
+      '@sanity/sdk-react': 3.1.0(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
-      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/types': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
       '@sanity/ui': 4.2.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8))
-      '@sanity/util': 6.13.2(@types/react@19.2.17)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
+      '@sanity/util': 6.13.2(@types/react@19.2.17)(vitest@4.1.11)
       '@sanity/uuid': 3.0.3
-      '@sanity/validation': 6.13.2(@types/react@19.2.17)(typescript@6.0.3)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))
-      '@sanity/workbench': 0.1.0-alpha.48(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0))(react@19.2.8)(vitest@4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.5.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.2.2(@types/node@26.5.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(tsx@4.23.12)(yaml@2.9.1)))(xstate@5.33.0)
+      '@sanity/validation': 6.13.2(@types/react@19.2.17)(typescript@6.0.3)(vitest@4.1.11)
+      '@sanity/workbench': 0.1.0-alpha.48(@sanity/sdk@3.1.0(@types/react@19.2.17)(react@19.2.8)(use-sync-external-store@1.7.0(react@19.2.8))(vitest@4.1.11)(xstate@5.33.0))(react@19.2.8)(vitest@4.1.11)(xstate@5.33.0)
       '@sentry/react': 10.74.0(react@19.2.8)
       '@tanstack/react-virtual': 3.14.12(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@vanilla-extract/dynamic': 2.1.5
@@ -24135,6 +24062,7 @@ snapshots:
   styled-components@6.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       '@emotion/is-prop-valid': 1.4.0
+      css-to-react-native: 3.2.0
       csstype: 3.2.3
       react: 19.2.8
       stylis: 4.3.6
@@ -24955,9 +24883,9 @@ snapshots:
 
   vue-devtools-stub@0.1.0: {}
 
-  vue-eslint-parser@10.4.1(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@8.1.1):
+  vue-eslint-parser@10.4.1(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2):
     dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3(supports-color@10.2.2)
       eslint: 10.12.0(jiti@2.7.0)(supports-color@10.2.2)
       eslint-scope: 9.1.2
       eslint-visitor-keys: 5.0.1
