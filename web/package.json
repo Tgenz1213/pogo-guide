@@ -42,7 +42,7 @@
     "@tiptap/starter-kit": "^3.31.3",
     "@tiptap/vue-3": "^3.31.3",
     "drizzle-orm": "^0.45.2",
-    "nuxt": "^4.5.2",
+    "nuxt": "^4.6.3",
     "nuxt-auth-utils": "^0.5.30",
     "ofetch": "^1.5.1",
     "ufo": "^1.6.4",
